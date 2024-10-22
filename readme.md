@@ -25,6 +25,59 @@ Este projeto é um jogo de cartas online em tempo real, desenvolvido utilizando 
 3. Após o usuário confirmar, salvar os dados no local storage para acesso persistente.
 4. Redirecionar o usuário para a tela de seleção de sala.
 
+### Geração de Avatar
+
+Utilizamos a API DiceBear para gerar avatares únicos do tipo "bottts-neutral" com base em um seed aleatório. O seed é gerado automaticamente cada vez que o usuário clica no botão de randomização, e tanto o nome quanto o avatar são persistidos no `localStorage`.
+
+- URL de geração de avatar: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed={SEED}`
+- Persistência de dados: Nome e avatar são salvos no `localStorage` para serem recuperados em sessões futuras.
+
+#### Passos:
+
+1. Gera-se um nome aleatório (seed).
+2. Usa-se o seed para gerar um avatar via API.
+3. O nome e avatar são exibidos e persistidos localmente.
+
+### Código Básico de Exemplo
+
+```javascript
+// Função para gerar um nome/seed aleatório
+function generateRandomSeed() {
+  return Math.random().toString(36).substring(7); // Gera um valor alfanumérico aleatório
+}
+
+// Função para gerar a URL do avatar usando o seed
+function getAvatarUrl(seed) {
+  return `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${seed}`;
+}
+
+// Função para salvar o nome e o avatar no localStorage
+function saveUserData(seed, avatarUrl) {
+  localStorage.setItem('userSeed', seed);
+  localStorage.setItem('avatarUrl', avatarUrl);
+}
+
+// Verifica se há dados do usuário armazenados no localStorage
+function loadUserData() {
+  const seed = localStorage.getItem('userSeed');
+  const avatarUrl = localStorage.getItem('avatarUrl');
+  return { seed, avatarUrl };
+}
+
+// Exemplo de uso
+let { seed, avatarUrl } = loadUserData();
+
+if (!seed || !avatarUrl) {
+  // Se não houver dados armazenados, gera um novo nome e avatar
+  seed = generateRandomSeed();
+  avatarUrl = getAvatarUrl(seed);
+  saveUserData(seed, avatarUrl);
+}
+
+// Exibe o avatar no elemento img
+document.getElementById('avatar').src = avatarUrl;
+```
+
 ### 2. Tela de Criação e Entrada em Sala
 
 **Objetivo**: Permitir que o usuário crie uma nova sala ou entre em uma sala existente através de um código único.
