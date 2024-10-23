@@ -1,9 +1,21 @@
 <script setup lang="ts">
 import UserRegister from './views/UserRegister.vue';
+import { useSalas } from './composables/useSalas';
+import { onMounted } from 'vue';
+
+const {records, getRecords} = useSalas();
+
+onMounted(() => {
+  getRecords();
+})
 </script>
 
 <template>
   <UserRegister />
+  <div v-for="record in records" :key="record.id">
+    <p>{{ record.id }}</p>
+    <p>{{ record.name }}</p>
+  </div>
 </template>
 
 <style scoped>
