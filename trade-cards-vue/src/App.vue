@@ -11,11 +11,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <UserRegister />
+  <main>
+    <RouterView />
+  </main>
+  <!-- <UserRegister />
   <div v-for="record in records" :key="record.id">
     <p>{{ record.id }}</p>
     <p>{{ record.name }}</p>
-  </div>
+  </div> -->
 </template>
 
 <style scoped>
