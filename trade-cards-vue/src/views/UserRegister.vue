@@ -1,9 +1,12 @@
 <script lang='ts' setup>
 import { onMounted, ref } from 'vue';
 import UserPicture from '../components/UserPicture.vue';
+import { useRouter } from 'vue-router';
 
 const seed = ref('');
 const avatarUrl = ref('');
+const nickname = ref('');
+const router = useRouter();
 
 function generateRandomSeed() {
   return Math.random().toString(36).substring(7);
@@ -16,13 +19,14 @@ function getAvatarUrl(seed: string) {
 function generateAvatar() {
   seed.value = generateRandomSeed();
   avatarUrl.value = getAvatarUrl(seed.value);
-  saveUserData(seed.value, avatarUrl.value);
 }
 
 // Local storage functions
-function saveUserData(seed: string, avatarUrl: string) {
+function saveUserData(seed: string, avatarUrl: string, nickname: string) {
   localStorage.setItem('userSeed', seed);
   localStorage.setItem('avatarUrl', avatarUrl);
+  localStorage.setItem('nickname', nickname);
+  router.push('/sessions');
 }
 
 function loadUserData() {
@@ -44,23 +48,23 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-start gap-4 p-4
+  <div class="flex flex-col items-center justify-start gap-y-10 p-4
   border border-white rounded-xl bg-trade-blue-100
-  w-[22rem] h-[40rem]">
-    <h2 class="text-lg text-white font-bold">Criação de personagem</h2>
+  w-screen h-screen">
+    <h2 class="text-xl text-white font-bold">Criação de personagem</h2>
     <UserPicture :src="avatarUrl"/>
     <h2 class="text-lg text-trade-blue-900 font-bold">Avatar</h2>
     <div class="flex flex-col items-start w-full gap-y-2 px-4">
-      <p class="text-trade-blue-900">Name</p>
-      <input type="text" class="bg-white rounded-xl p-2 w-full text-trade-blue-900" placeholder="Insira um apelido">
+      <p class="text-trade-blue-900">Nome</p>
+      <input type="text" v-model="nickname" class="bg-white rounded-xl p-4 w-full text-trade-blue-900" placeholder="Insira um apelido">
     </div>
     <div class="flex flex-col">
-      <div class="border border-trade-blue-700 rounded-xl py-4 px-4 mt-4 bg-trade-blue-700 font-bold">
+      <div class="border border-trade-blue-700 rounded-xl py-10 px-10 mt-4 bg-trade-blue-700 font-bold">
         <button @click="generateAvatar">Gerar Avatar</button>
       </div>
-      <div class="border border-trade-blue-700 rounded-xl py-4 px-4 mt-4 bg-trade-blue-700 font-bold">
-        <button>Salvar</button>
-      </div>
+      <button :disabled="!nickname" @click="saveUserData(seed, avatarUrl, nickname)"
+      class="border border-trade-blue-700 rounded-xl py-10 px-4 mt-4 bg-trade-blue-700 font-bold
+      disabled:opacity-50 disabled:bg-opacity-50">Salvar</button>
     </div>
     <p class="text-trade-blue-900 items-end mt-10">DiceBear gera aleatoriamente seu avatar a partir de um apelido.</p>
   </div>

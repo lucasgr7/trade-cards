@@ -1,0 +1,70 @@
+<script lang='ts' setup>
+import { onMounted, ref } from 'vue';
+import { Salas, useSalas } from '../composables/useSalas';
+import onlineIcon from '../assets/icons/online_session.png';
+import offlineIcon from '../assets/icons/offline_session.png';
+import { useRouter } from 'vue-router';
+
+const { records, getRecords, getPlayersCount, getSessionsCount } = useSalas();
+const router = useRouter();
+
+const selectedSession = ref<Salas | null>(null);
+
+onMounted(() => {
+  getRecords();
+})
+
+function selectSession(session: Salas) {
+  selectedSession.value = session;
+}
+
+function joinSession() {
+  if (!selectedSession.value) return;
+  alert(`Entrando na sala ${selectedSession.value.name}`);
+}
+
+function createSession() {
+  router.push('/create-session');
+}
+
+</script>
+
+<template>
+  <div class="flex flex-col items-center justify-start gap-y-10 p-4
+    border border-white rounded-xl bg-trade-blue-100
+    w-screen h-screen">
+    <div class="flex w-full items-center justify-center relative pt-4">
+      <button @click="joinSession" :disabled="!selectedSession" class="border border-black rounded-full py-4 px-16 bg-trade-blue-800 font-bold text-xl
+        disabled:opacity-50">
+        Entrar
+      </button>
+      <span class="absolute right-2 text-trade-blue-900 text-4xl">{{ getSessionsCount() }}</span>
+    </div>
+    <div class="text-trade-blue-900 bg-trade-blue-100 border-4 rounded-2xl border-trade-blue-900 border-b-0">
+      <table class="w-20">
+        <thead>
+          <tr>
+            <th class="py-5 px-7 border-b-2 border-trade-blue-900">Sala</th>
+            <th class="py-5 px-7 border-b-2 border-trade-blue-900">Jogadores</th>
+            <th class="py-5 px-7 border-b-2 border-trade-blue-900">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="session in records" :key="session.id" @click="selectSession(session)"
+            :class="{ 'bg-trade-blue-50': selectedSession && selectedSession.id === session.id }">
+            <td class="py-5 px-7 border-b-2 border-trade-blue-900">{{ session.name }}</td>
+            <td class="py-5 px-7 border-b-2 border-trade-blue-900">{{ getPlayersCount(session) }}</td>
+            <td class="py-5 px-7 border-b-2 border-trade-blue-900">
+              <img :src="session.estado === 1 ? onlineIcon : offlineIcon" alt="Status Icon" class="w-6 h-6" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button @click="createSession" class="border border-black rounded-full py-4 px-16 bg-trade-blue-800 font-bold text-xl">
+        Criar Sala
+    </button>
+  </div>
+</template>
+
+<style scoped lang='scss'></style>
