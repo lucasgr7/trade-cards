@@ -18,3 +18,9 @@ onMounted(() => {
   </div>
   <CardDeck />
 </template>
+
+<style lang="css">
+h1 {
+  text-align: center;
+}
+</style>

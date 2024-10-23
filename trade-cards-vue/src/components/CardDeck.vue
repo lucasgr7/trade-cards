@@ -203,11 +203,11 @@ const recarregarPilha = () => {
 
 .card {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 280px; /* Reduzido para dar espaçamento */
+  height: 380px; /* Reduzido para dar espaçamento */
   background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 20px; /* Bordas arredondadas */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidade */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -217,19 +217,28 @@ const recarregarPilha = () => {
   cursor: grab;
   user-select: none;
   touch-action: none; /* Evita comportamentos padrões de swipe */
+  top: 10px; /* Espaçamento superior */
+  left: 10px; /* Espaçamento lateral */
 }
 
+/* Carta atual com maior z-index */
 .current-card {
-  /* Estilo adicional para a carta atual, se necessário */
+  z-index: 2;
 }
 
+/* Carta próxima com menor z-index */
 .next-card {
-  /* Estilo adicional para a próxima carta, se necessário */
+  z-index: 1;
 }
 
+/* Cartas durante a reempilhamento */
 .stacked-card {
-  /* Estilos para as cartas durante a re-stack */
-  transform: translateY(-50px);
-  opacity: 0;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 380px;
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  margin: 0;
 }
 </style>
