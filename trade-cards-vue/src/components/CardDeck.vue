@@ -1,58 +1,19 @@
-<template>
-  <div class="card-deck">
-    <!-- Re-stack Animation: render all cards stacked vertically when re-stacking -->
-    <div v-if="isReStacking">
-      <div
-        v-for="(card, index) in cards"
-        :key="card.id"
-        class="card stacked-card"
-        :style="{ zIndex: cards.length - index }"
-        ref="el => stackedCardRefs.value[index] = el"
-      >
-        {{ card.content }}
-      </div>
-    </div>
-    
-    <!-- Render current and next cards when not re-stacking -->
-    <div v-else>
-      <!-- Carta Próxima (Atrás) -->
-      <div
-        v-if="cards.length > 1"
-        class="card next-card"
-        :style="{ zIndex: 1 }"
-      >
-        {{ cards[cards.length - 2].content }}
-      </div>
-      
-      <!-- Carta Atual (Topo) -->
-      <div
-        v-if="cards.length > 0"
-        class="card current-card"
-        :style="{ zIndex: 2 }"
-        ref="currentCardRef"
-        @touchstart="startSwipe"
-        @touchmove="moveSwipe"
-        @touchend="endSwipe"
-      >
-        {{ cards[cards.length - 1].content }}
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, computed, nextTick } from 'vue';
 import { gsap } from 'gsap';
+import Card from './Card.vue';
 
-// Lista inicial de cartas com IDs únicos
+// Lista inicial de cartas com IDs únicos e propriedades
 const initialCards = [
-  { id: 1, content: "Card 1" },
-  { id: 2, content: "Card 2" },
-  { id: 3, content: "Card 3" },
-  { id: 4, content: "Card 4" },
-  { id: 5, content: "Card 5" },
+  { id: 1, image: 'public/exchange.gif', 
+    title: 'Troca', 
+    description: '1', 
+    type: 'blue' },
+    { id: 2, image: 'public/open-gift.gif', title: 'Revelar', description: '2', type: 'blue' },
+    { id: 3, image: 'public/open-gift.gif', title: 'Revelar', description: '3', type: 'blue' },
+    { id: 4, image: 'public/exchange.gif', title: 'Troca', description: '4', type: 'blue' },
+    { id: 5, image: 'public/exchange.gif', title: 'Troca', description: '5', type: 'blue' },
 ];
-
 // Estado das cartas (stack)
 const cards = ref([...initialCards]);
 
@@ -119,7 +80,10 @@ const endSwipe = () => {
       ease: "power2.out",
       onComplete: () => {
         // Remove a carta do topo
+        // log details of event
+        console.log('Card removed right:', cards.value[cards.value.length - 1]);
         cards.value.pop();
+        console.log('Cards:', cards.value);
         remainingCards.value--;
 
         // Resetar a carta
@@ -141,7 +105,9 @@ const endSwipe = () => {
       ease: "power2.out",
       onComplete: () => {
         // Remove a carta do topo
+        console.log('Card removed left:', cards.value[cards.value.length - 1]);
         cards.value.pop();
+        console.log('Cards:', cards.value);
         remainingCards.value--;
 
         // Resetar a carta
@@ -190,6 +156,72 @@ const recarregarPilha = () => {
   });
 };
 </script>
+<template>
+  <div class="card-deck">
+    <!-- Re-stack Animation: render all cards stacked vertically when re-stacking -->
+    <div v-if="isReStacking">
+      <div
+        v-if="cards.length > 0"
+        class="card current-card"
+        :class="[cards[cards.length - 1].type]"
+        :style="{ zIndex: 2 }"
+        ref="currentCardRef"
+        @touchstart="startSwipe"
+        @touchmove="moveSwipe"
+        @touchend="endSwipe"
+      >
+        <Card
+          :image="cards[cards.length].image"
+          :title="cards[cards.length].title"
+          :description="cards[cards.length].description"
+          :type="cards[cards.length].type"
+          @touchstart="startSwipe"
+          @touchmove="moveSwipe"
+          @touchend="endSwipe"
+        />
+      </div>
+    </div>
+    
+    <!-- Render current and next cards when not re-stacking -->
+    <div v-else>
+      <!-- Carta Próxima (Atrás) -->
+      <div
+        v-if="cards.length > 1"
+        class="card next-card"
+        :style="{ zIndex: 1 }"
+      >
+        <Card
+          :image="cards[cards.length - 2].image"
+          :title="cards[cards.length - 2].title"
+          :description="cards[cards.length - 2].description"
+          :type="cards[cards.length - 2].type"
+        />
+      </div>
+      
+      <!-- Carta Atual (Topo) -->
+      <div
+        v-if="cards.length > 0"
+        class="card current-card"
+        :class="[cards[cards.length - 2].type] && [cards[cards.length - 1].id]"
+        :style="{ zIndex: 2 }"
+        ref="currentCardRef"
+        @touchstart="startSwipe"
+        @touchmove="moveSwipe"
+        @touchend="endSwipe"
+      >
+        <Card
+          :image="cards[cards.length - 1].image"
+          :title="cards[cards.length - 1].title"
+          :description="cards[cards.length - 1].description"
+          :type="cards[cards.length - 1].type"
+          @touchstart="startSwipe"
+          @touchmove="moveSwipe"
+          @touchend="endSwipe"
+        />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .card-deck {
@@ -224,6 +256,16 @@ const recarregarPilha = () => {
 /* Carta atual com maior z-index */
 .current-card {
   z-index: 2;
+}
+.blue{
+  border: 6px solid #61c5ff;
+}
+
+.yellow{
+  border: 6px solid #fff9a3;
+}
+.green{
+  border: 6px solid #a3ffab;
 }
 
 /* Carta próxima com menor z-index */
