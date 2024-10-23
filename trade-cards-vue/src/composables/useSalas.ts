@@ -1,18 +1,14 @@
 import { useSupaTable } from "../util/useSupaTable";
 
 export interface Salas {
-  id: number;
-  created_at: string;
+  id?: number;
+  created_at?: string;
   jogadores: any[];
   estado: number;
   name: string;
 }
 
 const columns = {
-  "id": {
-    "type": "key",
-    "nullable": false
-  },
   "created_at": {
     "type": "string",
     "nullable": true
@@ -42,6 +38,25 @@ export function useSalas() {
     return records.value?.length ?? 0;
   }
 
+  async function deleteOldRecords() {
+    await getRecords();
+
+    const now = new Date();
+    const cutoffDate = new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString(); // 48 hours ago
+    const oldRecords = records.value?.filter((record) => record.created_at && record.created_at < cutoffDate) ?? [];
+    
+    for (const record of oldRecords) {
+      try {
+        await deleteRecord(record.id as number);
+      } catch (error) {
+        console.error(`Failed to delete record with id ${record.id}:`, error);
+        throw new Error(`Failed to delete record with id ${record.id}: ${error}`);
+      }
+    }
+
+    await getRecords();
+  }
+
   return {
     records,
     error,
@@ -53,6 +68,7 @@ export function useSalas() {
     search,
     createId,
     getPlayersCount,
-    getSessionsCount
+    getSessionsCount,
+    deleteOldRecords
   };
 }

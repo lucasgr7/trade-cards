@@ -48,10 +48,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-start gap-y-10 p-4
+  <div class="flex flex-col items-center justify-between p-4
   border border-white rounded-xl bg-trade-blue-100
   w-screen h-screen">
-    <h2 class="text-xl text-white font-bold">Criação de personagem</h2>
+    <h2 class="text-3xl font-black text-white text-outline-blue mt-5">Criação de personagem</h2>
     <UserPicture :src="avatarUrl"/>
     <h2 class="text-lg text-trade-blue-900 font-bold">Avatar</h2>
     <div class="flex flex-col items-start w-full gap-y-2 px-4">
@@ -71,5 +71,12 @@ onMounted(() => {
 </template>
 
 <style scoped lang='scss'>
-    
+.text-outline-blue {
+  @apply text-white;
+  text-shadow:
+    -1px -1px 0 #0a2c77,
+    1px -1px 0 #0a2c77,
+    -1px 1px 0 #0a2c77,
+    1px 1px 0 #0a2c77;
+}    
 </style>

@@ -1,8 +1,6 @@
 // src/composables/usePartidas.ts
-import { ref } from 'vue';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { useSupaTable } from "../util/useSupaTable";
-import Card from '../components/Card.vue';
 
 // TypeScript interfaces
 export interface Cartas {
@@ -13,7 +11,7 @@ export interface Cartas {
 }
 
 export interface Jogador {
-  id: number;
+  id?: number;
   nome: string;
   avatar_url: string;
 }
