@@ -22,99 +22,6 @@ const {image, title, description, type} = defineProps({
   },
 });
 
-
-// Função para iniciar o swipe
-const startSwipe = (event) => {
-  touchStartX = event.touches[0].clientX;
-};
-
-// Função para mover o swipe e dar o efeito de curva
-const moveSwipe = (event) => {
-  touchMoveX = event.touches[0].clientX;
-  const deltaX = touchMoveX - touchStartX;
-
-  const currentCard = currentCardRef.value;
-
-  if (currentCard) {
-    gsap.to(currentCard, {
-      x: deltaX,
-      rotation: deltaX / 10,
-      duration: 0,
-      overwrite: 'auto',
-    });
-  }
-};
-
-// Função para finalizar o swipe e decidir se avança ou retorna
-const endSwipe = () => {
-  const deltaX = touchMoveX - touchStartX;
-  const threshold = 50; // Limite para considerar o swipe
-
-  const currentCard = currentCardRef.value;
-
-  if (!currentCard) return;
-
-  if (deltaX > threshold) {
-    // Swipe Right
-    gsap.to(currentCard, {
-      x: 300,
-      opacity: 0,
-      rotation: 15,
-      duration: 0.5,
-      ease: "power2.out",
-      onComplete: () => {
-        // Remove a carta do topo
-        // log details of event
-        console.log('Card removed right:', cards.value[cards.value.length - 1]);
-        cards.value.pop();
-        console.log('Cards:', cards.value);
-        remainingCards.value--;
-
-        // Resetar a carta
-        gsap.set(currentCard, { x: 0, opacity: 1, rotation: 0 });
-
-        // Verificar se todas as cartas foram removidas
-        if (cards.value.length === 0) {
-          recarregarPilha();
-        }
-      },
-    });
-  } else if (deltaX < -threshold) {
-    // Swipe Left
-    gsap.to(currentCard, {
-      x: -300,
-      opacity: 0,
-      rotation: -15,
-      duration: 0.5,
-      ease: "power2.out",
-      onComplete: () => {
-        // Remove a carta do topo
-        console.log('Card removed left:', cards.value[cards.value.length - 1]);
-        cards.value.pop();
-        console.log('Cards:', cards.value);
-        remainingCards.value--;
-
-        // Resetar a carta
-        gsap.set(currentCard, { x: 0, opacity: 1, rotation: 0 });
-
-        // Verificar se todas as cartas foram removidas
-        if (cards.value.length === 0) {
-          recarregarPilha();
-        }
-      },
-    });
-  } else {
-    // Cancel Swipe
-    gsap.to(currentCard, {
-      x: 0,
-      rotation: 0,
-      duration: 0.5,
-      ease: "power2.out",
-    });
-  }
-};
-
-
 // Mapeamento de tipos para classes de cor e ícones
 const typeMappings = {
   blue: {
@@ -138,18 +45,23 @@ const icon = computed(() => typeMappings[type].icon);
 </script>
 
 <template>
-  <div :class="['game-card', cardTypeClass]">
+  <div :class="['card', cardTypeClass]">
     <!-- Cabeçalho: Ícone e Título -->
-    <div class="flex items-center p-4 bg-blue">
+    <div class="flex items-center p-4 bg-blue" :class="['header', cardTypeClass]">
       <img :src="icon" alt="Icon" class="w-6 h-6 mr-2" />
       <h3 class="text-lg font-semibold">{{ title }}</h3>
+      <div class="flex-grow right text-base bg-white w-4">
+        3/2
+      </div>
     </div>
     
     <!-- Imagem Principal -->
-    <img :src="image" alt="Card Image" class="w-full h-48 object-cover" />
+    <img :src="image" alt="Card Image" class="w-full h-48 object-contain" />
     
     <!-- Descrição -->
-    <p class="p-4 text-gray-700">{{ description }}</p>
+     <!-- q: tailwind border radius 20px 
+      a: border-radius- -->
+    <p class="p-4 text-black border-t-zinc-300">{{ description }}</p>
   </div>
 </template>
 
@@ -159,28 +71,33 @@ const icon = computed(() => typeMappings[type].icon);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+
 .card {
   position: absolute;
   width: 280px; /* Reduzido para dar espaçamento */
   height: 380px; /* Reduzido para dar espaçamento */
-  background-color: #ffffff;
   border-radius: 20px; /* Bordas arredondadas */
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidade */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  cursor: grab;
-  user-select: none;
-  touch-action: none; /* Evita comportamentos padrões de swipe */
-  top: 10px; /* Espaçamento superior */
-  left: 10px; /* Espaçamento lateral */
 }
+
 
 /* Carta atual com maior z-index */
 .current-card {
   z-index: 2;
+}
+
+
+.blue-card{
+  border: 6px solid #61c5ff;
+}
+.header.blue-card{
+  background-color: #61c5ff;
+  padding: 8px;
+}
+
+.yellow{
+  border: 6px solid #fff9a3;
+}
+.green{
+  border: 6px solid #a3ffab;
 }
 </style>

@@ -5,14 +5,14 @@ import Card from './Card.vue';
 
 // Lista inicial de cartas com IDs únicos e propriedades
 const initialCards = [
-  { id: 1, image: 'public/exchange.gif', 
+  { id: 1, image: 'exchange.gif', 
     title: 'Troca', 
     description: '1', 
     type: 'blue' },
-    { id: 2, image: 'public/open-gift.gif', title: 'Revelar', description: '2', type: 'blue' },
-    { id: 3, image: 'public/open-gift.gif', title: 'Revelar', description: '3', type: 'blue' },
-    { id: 4, image: 'public/exchange.gif', title: 'Troca', description: '4', type: 'blue' },
-    { id: 5, image: 'public/exchange.gif', title: 'Troca', description: '5', type: 'blue' },
+    { id: 2, image: 'open-gift.gif', title: 'Revelar', description: '2', type: 'blue' },
+    { id: 3, image: 'open-gift.gif', title: 'Revelar', description: '3', type: 'blue' },
+    { id: 4, image: 'exchange.gif', title: 'Troca', description: '4', type: 'blue' },
+    { id: 5, image: 'exchange.gif', title: 'Troca', description: '5', type: 'blue' },
 ];
 // Estado das cartas (stack)
 const cards = ref([...initialCards]);
@@ -162,8 +162,8 @@ const recarregarPilha = () => {
     <div v-if="isReStacking">
       <div
         v-if="cards.length > 0"
-        class="card current-card"
-        :class="[cards[cards.length - 1].type]"
+        class="card-container current-card"
+        :class="[cards[cards.length].type]"
         :style="{ zIndex: 2 }"
         ref="currentCardRef"
         @touchstart="startSwipe"
@@ -175,9 +175,6 @@ const recarregarPilha = () => {
           :title="cards[cards.length].title"
           :description="cards[cards.length].description"
           :type="cards[cards.length].type"
-          @touchstart="startSwipe"
-          @touchmove="moveSwipe"
-          @touchend="endSwipe"
         />
       </div>
     </div>
@@ -187,7 +184,7 @@ const recarregarPilha = () => {
       <!-- Carta Próxima (Atrás) -->
       <div
         v-if="cards.length > 1"
-        class="card next-card"
+        class="card-container next-card"
         :style="{ zIndex: 1 }"
       >
         <Card
@@ -201,8 +198,8 @@ const recarregarPilha = () => {
       <!-- Carta Atual (Topo) -->
       <div
         v-if="cards.length > 0"
-        class="card current-card"
-        :class="[cards[cards.length - 2].type] && [cards[cards.length - 1].id]"
+        class="card-container current-card"
+        :class="[cards[cards.length - 1].type] && [cards[cards.length - 1].id]"
         :style="{ zIndex: 2 }"
         ref="currentCardRef"
         @touchstart="startSwipe"
@@ -214,9 +211,6 @@ const recarregarPilha = () => {
           :title="cards[cards.length - 1].title"
           :description="cards[cards.length - 1].description"
           :type="cards[cards.length - 1].type"
-          @touchstart="startSwipe"
-          @touchmove="moveSwipe"
-          @touchend="endSwipe"
         />
       </div>
     </div>
@@ -233,7 +227,7 @@ const recarregarPilha = () => {
   margin: auto;
 }
 
-.card {
+.card-container {
   position: absolute;
   width: 280px; /* Reduzido para dar espaçamento */
   height: 380px; /* Reduzido para dar espaçamento */
@@ -256,16 +250,6 @@ const recarregarPilha = () => {
 /* Carta atual com maior z-index */
 .current-card {
   z-index: 2;
-}
-.blue{
-  border: 6px solid #61c5ff;
-}
-
-.yellow{
-  border: 6px solid #fff9a3;
-}
-.green{
-  border: 6px solid #a3ffab;
 }
 
 /* Carta próxima com menor z-index */
