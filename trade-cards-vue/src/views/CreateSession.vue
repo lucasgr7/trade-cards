@@ -4,7 +4,7 @@ import { Salas, useSalas } from '../composables/useSalas';
 import { ref } from 'vue';
 
 const router = useRouter();
-const { insertRecord } = useSalas();
+const { insertRecord, getRecords, records } = useSalas();
 
 const sessionName = ref('');
 const sessionNameError = ref('');
@@ -25,7 +25,15 @@ async function createSession(event: Event) {
 
   try {
     await insertRecord(newSession);
-    router.push('/sessions');
+    await getRecords();
+    var sala = records.value?.filter((sala: Salas) => sala.name === sessionName.value)[0];
+
+    if(!sala) {
+      alert('Erro ao criar a sala.');
+      return;
+    }
+
+    router.push(`/waiting-room/${sala.id}`);
   } catch (error: any) {
     alert('Erro ao criar a sala: ' + error.message);
     return;
