@@ -71,12 +71,4 @@ onMounted(() => {
 </template>
 
 <style scoped lang='scss'>
-.text-outline-blue {
-  @apply text-white;
-  text-shadow:
-    -1px -1px 0 #0a2c77,
-    1px -1px 0 #0a2c77,
-    -1px 1px 0 #0a2c77,
-    1px 1px 0 #0a2c77;
-}    
 </style>

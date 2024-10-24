@@ -54,6 +54,14 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.text-outline-blue {
+  @apply text-white;
+  text-shadow:
+    -1px -1px 0 #0a2c77,
+    1px -1px 0 #0a2c77,
+    -1px 1px 0 #0a2c77,
+    1px 1px 0 #0a2c77;
+}
 
 #app {
   max-width: 1280px;
