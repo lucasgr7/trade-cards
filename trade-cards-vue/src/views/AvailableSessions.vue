@@ -4,9 +4,10 @@ import { Salas, useSalas } from '../composables/useSalas';
 import onlineIcon from '../assets/icons/online_session.png';
 import offlineIcon from '../assets/icons/offline_session.png';
 import { useRouter } from 'vue-router';
-import { Jogador } from '../composables/usePartidas';
+import { usePlayer } from '../composables/usePlayer';
 
 const { records, getPlayersCount, getSessionsCount, deleteOldRecords, updateRecord } = useSalas();
+const { getMyself } = usePlayer();
 const router = useRouter();
 
 const selectedSession = ref<Salas | null>(null);
@@ -22,23 +23,14 @@ function selectSession(session: Salas) {
 async function joinSession() {
   if (!selectedSession.value) return;
 
-  const player: Jogador = {
-    nome: localStorage.getItem('nickname') ?? '',
-    avatar_url: localStorage.getItem('avatarUrl') ?? '',
-  };
+  const player = getMyself.value
 
-  if (!player.avatar_url || !player.nome) {
+  if (!player.avatarUrl || !player.nickname) {
     alert('Dados do jogador não encontrados.');
     return;
   }
 
   // TODO: Check if player is already in the room
-  // const playerExists = selectedSession.value.jogadores.some(jogador => jogador.id === player.id);
-
-  // if (playerExists) {
-  //   alert('Você já está na sala.');
-  //   return;
-  // }
 
   selectedSession.value.jogadores.push(player);
 

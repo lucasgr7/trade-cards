@@ -1,47 +1,22 @@
 <script lang='ts' setup>
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import UserPicture from '../components/UserPicture.vue';
-import { useRouter } from 'vue-router';
+import { usePlayer } from '../composables/usePlayer';
+import router from '../util/router';
 
-const seed = ref('');
-const avatarUrl = ref('');
-const nickname = ref('');
-const router = useRouter();
+// Utilizando a composable usePlayer
+const {
+  avatarUrl,
+  nickname,
+  generateAvatar,
+  saveUserData,
+  seed
+} = usePlayer();
 
-function generateRandomSeed() {
-  return Math.random().toString(36).substring(7);
-}
-
-function getAvatarUrl(seed: string) {
-  return `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${seed}`;
-}
-
-function generateAvatar() {
-  seed.value = generateRandomSeed();
-  avatarUrl.value = getAvatarUrl(seed.value);
-}
-
-// Local storage functions
-function saveUserData(seed: string, avatarUrl: string, nickname: string) {
-  localStorage.setItem('userSeed', seed);
-  localStorage.setItem('avatarUrl', avatarUrl);
-  localStorage.setItem('nickname', nickname);
-  router.push('/sessions');
-}
-
-function loadUserData() {
-  const seed = localStorage.getItem('userSeed');
-  const avatarUrl = localStorage.getItem('avatarUrl');
-  return { seed, avatarUrl };
-}
-
+// Opcional: Atualizar avatar ao montar o componente se necessário
 onMounted(() => {
-  const userData = loadUserData();
-  if (userData.seed && userData.avatarUrl) {
-    seed.value = userData.seed;
-    avatarUrl.value = userData.avatarUrl;
-  } else {
-    generateAvatar();
+  if (seed.value === '') {
+    router.push('/sessions');
   }
 });
 
@@ -62,7 +37,7 @@ onMounted(() => {
       <div class="border border-trade-blue-700 rounded-xl py-10 px-10 mt-4 bg-trade-blue-700 font-bold">
         <button @click="generateAvatar">Gerar Avatar</button>
       </div>
-      <button :disabled="!nickname" @click="saveUserData(seed, avatarUrl, nickname)"
+      <button :disabled="!nickname" @click="saveUserData(nickname)"
       class="border border-trade-blue-700 rounded-xl py-10 px-4 mt-4 bg-trade-blue-700 font-bold
       disabled:opacity-50 disabled:bg-opacity-50">Salvar</button>
     </div>

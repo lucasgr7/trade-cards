@@ -4,6 +4,7 @@ import { onMounted } from 'vue';
 import CardDeck from '../components/CardDeck.vue';
 
 onMounted(() => {
+  // TODO subscribe para as mudanças na tabela partidas do ID do registro da sala
   supabase
     .channel('room1')
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'partidas' }, payload => {

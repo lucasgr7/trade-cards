@@ -53,7 +53,7 @@ export function useSupaTable<T>(tableName: string, columns: TableColumns) {
     }
   }
 
-  async function getRecordById(id: number) {
+  async function getRecordById(id: number): Promise<T | null> {
     try {
       const { data, error: selectError } = await supabase
         .from(tableName)

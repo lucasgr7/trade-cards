@@ -2,9 +2,11 @@
 import { useRouter } from 'vue-router';
 import { Salas, useSalas } from '../composables/useSalas';
 import { ref } from 'vue';
+import { usePlayer } from '../composables/usePlayer';
 
 const router = useRouter();
 const { insertRecord, getRecords, records } = useSalas();
+const { getMyself } = usePlayer();
 
 const sessionName = ref('');
 const sessionNameError = ref('');
@@ -17,22 +19,25 @@ async function createSession(event: Event) {
     return;
   }
 
-  const newSession: Salas = {
-    name: sessionName.value,
-    jogadores: [],
-    estado: 1,
-  };
+
 
   try {
+    var myself = await getMyself.value;
+    myself.creator = true;
+    const newSession: Salas = {
+      name: sessionName.value,
+      jogadores: [myself],
+      estado: 1,
+    };
+
     await insertRecord(newSession);
     await getRecords();
     var sala = records.value?.filter((sala: Salas) => sala.name === sessionName.value)[0];
 
-    if(!sala) {
+    if (!sala) {
       alert('Erro ao criar a sala.');
       return;
     }
-
     router.push(`/waiting-room/${sala.id}`);
   } catch (error: any) {
     alert('Erro ao criar a sala: ' + error.message);
@@ -75,5 +80,4 @@ function cancel() {
   </div>
 </template>
 
-<style scoped lang='scss'>
-</style>
+<style scoped lang='scss'></style>

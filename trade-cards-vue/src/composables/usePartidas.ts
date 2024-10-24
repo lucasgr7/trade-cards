@@ -1,6 +1,7 @@
 // src/composables/usePartidas.ts
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { useSupaTable } from "../util/useSupaTable";
+import { Jogador } from './usePlayer';
 
 // TypeScript interfaces
 export interface Cartas {
@@ -10,14 +11,9 @@ export interface Cartas {
   tipo: 'blue' | 'green' | 'yellow';
 }
 
-export interface Jogador {
-  id?: number;
-  nome: string;
-  avatar_url: string;
-}
 
 export interface Partidas {
-  id: number;
+  id?: number;
   created_at?: string;
   sala_id: number;
   cartas_disponiveis: Cartas[];
@@ -25,6 +21,7 @@ export interface Partidas {
   rodada_atual: number;
   acoes: any[];
   atualizado_em?: string;
+  estado: string;
 }
 
 const columns = {
@@ -109,6 +106,44 @@ export function usePartidas() {
         }
       )
       .subscribe();
+  };
+
+  const criarPartida = async (salaId: number, players: Jogador[]): Promise<void> => {
+    const partida = {
+      created_at: new Date().toISOString(),
+      sala_id: salaId,
+      estado: "inicial",
+      cartas_disponiveis: [],
+      rodada_atual: 0,
+      acoes: [],
+      jogadores: players,
+    };
+
+    try{
+      const novaPartida = await insertRecord(partida);
+      return novaPartida;
+    }
+    catch(error){
+      console.error('Erro ao criar partida:', error);
+    }
+    // TODO - redirecionar para a Partida
+  };
+
+  const gerarDeck = async (partidaId: number) => {
+    // TODO
+  };
+
+  const moverJogadoresParaPartida = (partidaId: number) => {
+    // TODO - precisa colocar os jogadores na sala de espera em um websocket usando supabase.channel('room1')
+    // depois que receberem um sinal de que o estado da partida mudou
+    // para "iniciada", redirecionar para a página da partida
+  };
+
+  return {
+    // ... outras funções
+    criarPartida,
+    gerarDeck,
+    moverJogadoresParaPartida,
   };
 
   return {
