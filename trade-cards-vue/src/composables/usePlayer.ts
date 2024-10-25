@@ -9,6 +9,7 @@ export interface Jogador {
   avatarUrl: string;
   nickname: string;
   creator?: boolean;
+  color?: string;
 }
 
 export function usePlayer() {

@@ -11,7 +11,6 @@ export interface Cartas {
   tipo: 'blue' | 'green' | 'yellow';
 }
 
-
 export interface Partidas {
   id?: number;
   created_at?: string;
@@ -68,7 +67,9 @@ export function usePartidas() {
     if (!partida) return;
 
     const updatedCartas = partida.cartas_disponiveis.filter((card: Cartas) => card.id !== cardId);
-    await updateRecord(partida.id, { cartas_disponiveis: updatedCartas });
+    if (partida.id !== undefined) {
+      await updateRecord(partida.id, { cartas_disponiveis: updatedCartas });
+    }
   };
 
   // Função para reembaralhar o deck
@@ -77,7 +78,13 @@ export function usePartidas() {
     if (!partida) return;
 
     const shuffledCartas = shuffleArray<Cartas>(partida.cartas_disponiveis);
-    await updateRecord(partida.id, { cartas_disponiveis: shuffledCartas });
+    
+    if (partida.id !== undefined) {
+      await updateRecord(partida.id, { cartas_disponiveis: shuffledCartas });
+    }
+    if (partida.id !== undefined){
+      await updateRecord(partida.id, { cartas_disponiveis: shuffledCartas });
+    }
   };
 
   // Função para embaralhar um array
@@ -140,13 +147,6 @@ export function usePartidas() {
   };
 
   return {
-    // ... outras funções
-    criarPartida,
-    gerarDeck,
-    moverJogadoresParaPartida,
-  };
-
-  return {
     records,
     error,
     insertRecord,
@@ -159,5 +159,8 @@ export function usePartidas() {
     removeCardFromDeck,
     reshuffleDeck,
     subscribeToChanges,
+    criarPartida,
+    gerarDeck,
+    moverJogadoresParaPartida,
   };
 }

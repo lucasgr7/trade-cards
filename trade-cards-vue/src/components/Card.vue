@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 
 // Definição das props
-const {image, title, description, type} = defineProps({
+const {image, title, description, type, choseCard} = defineProps({
   image: {
     type: String,
     required: true,
@@ -19,6 +19,9 @@ const {image, title, description, type} = defineProps({
     type: String,
     required: true,
     validator: (value) => ['blue', 'yellow', 'green'].includes(value),
+  },
+  choseCard: {
+    type: Function,
   },
 });
 
@@ -42,13 +45,19 @@ const typeMappings = {
 const cardTypeClass = computed(() => typeMappings[type].class);
 const icon = computed(() => typeMappings[type].icon);
 
+function handleCardClick() {
+  if (choseCard) {
+    choseCard(title);
+  }
+}
+
 </script>
 
 <template>
   <div :class="['card', cardTypeClass]">
     <!-- Cabeçalho: Ícone e Título -->
-    <div class="flex items-center p-4 bg-blue" :class="['header', cardTypeClass]">
-      <img :src="icon" alt="Icon" class="w-6 h-6 mr-2" />
+    <div class="flex items-center gap-x-2 p-4 bg-blue" :class="['header', cardTypeClass]">
+      <img :src="icon" alt="Icon" class="w-6 h-6 mr-2" @click="handleCardClick"/>
       <h3 class="text-lg font-semibold">{{ title }}</h3>
       <div class="flex-grow right text-base bg-white w-4">
         3/2

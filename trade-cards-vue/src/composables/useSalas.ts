@@ -75,7 +75,7 @@ export function useSalas(myself?: Ref<Jogador>) {
 
     sala.value = salaData;
     players.value = salaData.jogadores
-      .filter((jogador: Jogador) => jogador.nickname !== myself.value.nickname)
+      .filter((jogador: Jogador) => jogador.nickname !== myself?.value.nickname)
       .map((jogador: Jogador) => ({
         ...jogador,
         color: generateRandomColor()
@@ -83,11 +83,15 @@ export function useSalas(myself?: Ref<Jogador>) {
   }
   
   const isMyselfCreatorSession = computed(() => {
-    return sala.value?.jogadores[0].nickname === myself.value.nickname;
+    return sala.value?.jogadores[0].nickname === myself?.value.nickname;
   })
   
   function generateRandomColor() {
-    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    let color;
+    do {
+      color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+    } while (color.toUpperCase() === '#FFFFFF'); // Evita cores brancas
+    return color;
   }
 
   return {

@@ -12,9 +12,10 @@ const routes: Array<RouteRecordRaw> = [
     component: UserRegister,
   },
   {
-    path: "/partida",
+    path: "/partida/:id",
     name: "Partida",
     component: Partida,
+    props: true,
   },
   {
     path: "/sessions",
