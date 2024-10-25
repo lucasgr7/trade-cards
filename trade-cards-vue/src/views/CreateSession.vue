@@ -1,8 +1,8 @@
 <script lang='ts' setup>
 import { useRouter } from 'vue-router';
-import { Salas, useSalas } from '../composables/useSalas';
+import { Salas, useSalas } from '@/composables/useSalas';
 import { ref } from 'vue';
-import { usePlayer } from '../composables/usePlayer';
+import { usePlayer } from '@/composables/usePlayer';
 
 const router = useRouter();
 const { insertRecord, getRecords, records } = useSalas();
@@ -56,7 +56,7 @@ function cancel() {
     border border-white rounded-xl bg-trade-blue-100
     w-screen h-screen">
     <h1 class="text-4xl font-black text-outline-blue mt-10">Criar Sala</h1>
-    <img src="../assets/icons/world.png" alt="Logo" class="w-3/4 h-60 mx-auto">
+    <img src="@/assets/icons/world.png" alt="Logo" class="w-3/4 h-60 mx-auto">
     <form @submit="createSession($event)">
       <div class="flex flex-col gap-y-4">
         <input type="text" placeholder="Nome da sala" v-model="sessionName"

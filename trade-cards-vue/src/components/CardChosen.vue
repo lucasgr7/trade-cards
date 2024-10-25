@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { computed } from 'vue';
-import { CardType } from '../enums/cardType';
+import { CardType } from '@/enums/cardType';
 import PlusCircleIcon from './vue-icons/PlusCircleIcon.vue';
 
 const props = defineProps<{
@@ -9,7 +9,7 @@ const props = defineProps<{
 
 const bgClass = computed(() => {
   if (props.cardType === CardType.Action) {
-    return 'bg-trade-yellow-500';
+    return 'bg-trade-red-500';
   } else if (props.cardType === CardType.Object) {
     return 'bg-trade-blue-700';
   } else if (props.cardType === CardType.Condition) {

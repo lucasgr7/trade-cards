@@ -18,31 +18,37 @@ const {image, title, description, type, choseCard} = defineProps({
   type: {
     type: String,
     required: true,
-    validator: (value) => ['blue', 'yellow', 'green'].includes(value),
+    validator: (value: string) => ['blue', 'red', 'green'].includes(value),
   },
   choseCard: {
     type: Function,
   },
+  id: {
+    type: Number,
+    required: false,
+  }
 });
 
 // Mapeamento de tipos para classes de cor e ícones
 const typeMappings = {
-  blue: {
+  action: {
     class: 'blue-card',
     icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828817.png', // Exemplo de ícone azul
   },
-  yellow: {
-    class: 'yellow-card',
+  object: {
+    class: 'red-card',
     icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828919.png', // Exemplo de ícone amarelo
   },
-  green: {
+  condition: {
     class: 'green-card',
     icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', // Exemplo de ícone verde
   },
 };
 
 // Computed para obter a classe e o ícone com base no tipo
-const cardTypeClass = computed(() => typeMappings[type].class);
+const cardTypeClass = computed(() => {
+  return typeMappings[type].class
+});
 const icon = computed(() => typeMappings[type].icon);
 
 function handleCardClick() {
@@ -56,11 +62,16 @@ function handleCardClick() {
 <template>
   <div :class="['card', cardTypeClass]">
     <!-- Cabeçalho: Ícone e Título -->
-    <div class="flex items-center gap-x-2 p-4 bg-blue" :class="['header', cardTypeClass]">
+    <div class="flex items-center gap-x-2 p-4" :class="['header', cardTypeClass]">
       <img :src="icon" alt="Icon" class="w-6 h-6 mr-2" @click="handleCardClick"/>
-      <h3 class="text-lg font-semibold">{{ title }}</h3>
-      <div class="flex-grow right text-base bg-white w-4">
-        3/2
+      <h3 class="text-sm font-semibold">{{ title }}</h3>
+      <!-- create a right circle on the right with tailwind -->
+      <div class="flex-grow">
+        <div class="flex justify-end">
+          <div class="w-6 h-6 rounded-full font-semibold text-sm bg-white">
+            🌌
+          </div>
+        </div>
       </div>
     </div>
     
@@ -102,11 +113,20 @@ function handleCardClick() {
   background-color: #61c5ff;
   padding: 8px;
 }
-
-.yellow{
-  border: 6px solid #fff9a3;
+.red-card{
+  border: 6px solid #ffb1a3;
 }
-.green{
+
+.header.red-card{
+  background-color: #ffb1a3;
+  padding: 8px;
+}
+.green-card{
   border: 6px solid #a3ffab;
+}
+
+.header.green-card{
+  background-color: #a3ffab;
+  padding: 8px;
 }
 </style>

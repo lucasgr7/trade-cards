@@ -1,10 +1,10 @@
 <script lang='ts' setup>
 import { onMounted, ref } from 'vue';
-import { Salas, useSalas } from '../composables/useSalas';
-import onlineIcon from '../assets/icons/online_session.png';
-import offlineIcon from '../assets/icons/offline_session.png';
+import { Salas, useSalas } from '@/composables/useSalas';
+import onlineIcon from '@/assets/icons/online_session.png';
+import offlineIcon from '@/assets/icons/offline_session.png';
 import { useRouter } from 'vue-router';
-import { usePlayer } from '../composables/usePlayer';
+import { usePlayer } from '@/composables/usePlayer';
 
 const { records, getPlayersCount, getSessionsCount, deleteOldRecords, updateRecord } = useSalas();
 const { getMyself } = usePlayer();

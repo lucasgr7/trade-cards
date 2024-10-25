@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import UserRegister from "../views/UserRegister.vue";
-import Partida from "../views/Partida.vue";
-import AvailableSessions from "../views/AvailableSessions.vue";
-import CreateSession from "../views/CreateSession.vue";
-import WaitingRoom from "../views/WaitingRoom.vue";
+import UserRegister from "@/views/UserRegister.vue";
+import Partida from "@/views/Partida.vue";
+import AvailableSessions from "@/views/AvailableSessions.vue";
+import CreateSession from "@/views/CreateSession.vue";
+import WaitingRoom from "@/views/WaitingRoom.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -12,7 +12,7 @@ const routes: Array<RouteRecordRaw> = [
     component: UserRegister,
   },
   {
-    path: "/partida/:id",
+    path: "/match/:id",
     name: "Partida",
     component: Partida,
     props: true,

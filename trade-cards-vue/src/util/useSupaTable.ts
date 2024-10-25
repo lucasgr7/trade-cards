@@ -1,4 +1,4 @@
-import { supabase } from '../util/supabase';
+import { supabase } from '@/util/supabase';
 import { ref } from 'vue';
 
 type TableColumns = {

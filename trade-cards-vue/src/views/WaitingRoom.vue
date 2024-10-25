@@ -1,19 +1,24 @@
 <script lang='ts' setup>
 import { onMounted, ref } from 'vue';
-import UserPicture from '../components/UserPicture.vue';
-import { useSalas } from '../composables/useSalas';
+import UserPicture from '@/components/UserPicture.vue';
+import { Salas, useSalas } from '@/composables/useSalas';
 import { useRoute } from 'vue-router';
-import router from '../util/router';
-import { usePlayer } from '../composables/usePlayer';
-import { usePartidas } from '../composables/usePartidas';
+import router from '@/util/router';
+import { usePlayer } from '@/composables/usePlayer';
+import { Partidas, usePartidas } from '@/composables/usePartidas';
+import { useDeck } from '@/composables/useDeck';
+
+const INIT_MATCH = 1;
 
 const { getMyself } = usePlayer();
 const { updateRecord,
   getPlayersFromSession,
   sala,
   players,
-  isMyselfCreatorSession } = useSalas(getMyself);
-const { } = usePartidas();
+  isMyselfCreatorSession,
+  subscribeToChanges } = useSalas(getMyself);
+const { generateDeck } = useDeck();
+const { insertRecord } = usePartidas();
 const route = useRoute();
 
 const sentences = [
@@ -27,10 +32,23 @@ const sentences = [
 ];
 const randomSentence = ref('');
 
-function startGame() {
-  if (sala.value) {
-    router.push({ name: 'Partida', params: { id: sala.value.id } });
-  }
+async function startGame() {
+  // what data do we need to start the game?
+  if(!sala.value) return;
+  const totalPartidas = import.meta.env.VITE_DEFAULT_RODADAS ?? 9;
+
+  const match: Partidas = {
+    sala_id: sala.value?.id as number,
+    jogadores: sala.value?.jogadores || [],
+    estado: 'start',
+    acoes: [],
+    cartas_disponiveis: generateDeck(sala.value, totalPartidas),
+    rodada_atual: 0,
+  };
+
+  // insert the match in the database
+  await updateRecord(sala.value.id as number, { ...sala.value, estado: INIT_MATCH });
+  await insertRecord(match);
 }
 
 function leave() {
@@ -56,6 +74,13 @@ function getRandomSentence() {
 onMounted(() => {
   getRandomSentence();
   getPlayersFromSession(route.params.id);
+  const roomId = Number(route.params.id ?? 0);
+  subscribeToChanges(roomId, (payload: Salas) => {
+    // filter partida by sala_id
+    if (payload.id === roomId && payload.estado === INIT_MATCH) {
+      router.push(`/match/${roomId}`);
+    }
+  });
 });
 
 </script>
@@ -96,7 +121,7 @@ onMounted(() => {
         class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl">
         Jogar
       </button>
-      <button @click="startGame" v-else class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl">
+      <button v-else class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl">
         Acelerar o ínicio
       </button>
     </div>

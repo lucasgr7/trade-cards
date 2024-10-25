@@ -1,21 +1,26 @@
 // src/composables/usePartidas.ts
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { useSupaTable } from "../util/useSupaTable";
+import { useSupaTable } from "@/util/useSupaTable";
 import { Jogador } from './usePlayer';
+import { Deck } from './useDeck';
+import { supabase } from '@/util/supabase';
 
 // TypeScript interfaces
 export interface Cartas {
-  id: number;
   nome: string;
   descricao: string;
-  tipo: 'blue' | 'green' | 'yellow';
+  tipo: 'action' | 'object' | 'condition';
+  isGenerative: boolean;
+  image?: string;
+  specificType?: string; // Para condições específicas
+  id?: number;
 }
 
 export interface Partidas {
   id?: number;
   created_at?: string;
   sala_id: number;
-  cartas_disponiveis: Cartas[];
+  cartas_disponiveis: Deck;
   jogadores: Jogador[];
   rodada_atual: number;
   acoes: any[];
@@ -61,30 +66,11 @@ const columns = {
 export function usePartidas() {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Partidas>("partidas", columns);
   
-  // Função para remover uma carta do deck
-  const removeCardFromDeck = async (salaId: number, cardId: number) => {
-    const partida = await getRecordById(salaId);
-    if (!partida) return;
-
-    const updatedCartas = partida.cartas_disponiveis.filter((card: Cartas) => card.id !== cardId);
-    if (partida.id !== undefined) {
-      await updateRecord(partida.id, { cartas_disponiveis: updatedCartas });
-    }
-  };
 
   // Função para reembaralhar o deck
   const reshuffleDeck = async (salaId: number) => {
     const partida = await getRecordById(salaId);
     if (!partida) return;
-
-    const shuffledCartas = shuffleArray<Cartas>(partida.cartas_disponiveis);
-    
-    if (partida.id !== undefined) {
-      await updateRecord(partida.id, { cartas_disponiveis: shuffledCartas });
-    }
-    if (partida.id !== undefined){
-      await updateRecord(partida.id, { cartas_disponiveis: shuffledCartas });
-    }
   };
 
   // Função para embaralhar um array
@@ -115,30 +101,14 @@ export function usePartidas() {
       .subscribe();
   };
 
-  const criarPartida = async (salaId: number, players: Jogador[]): Promise<void> => {
-    const partida = {
-      created_at: new Date().toISOString(),
-      sala_id: salaId,
-      estado: "inicial",
-      cartas_disponiveis: [],
-      rodada_atual: 0,
-      acoes: [],
-      jogadores: players,
-    };
-
-    try{
-      const novaPartida = await insertRecord(partida);
-      return novaPartida;
+  const getPartidaBySalaId = async (salaId: number) => {
+    const { data, error } = await supabase.from('partidas').select().eq('sala_id', salaId).single();
+    if (error) {
+      console.error('Erro ao buscar partida:', error);
+      return;
     }
-    catch(error){
-      console.error('Erro ao criar partida:', error);
-    }
-    // TODO - redirecionar para a Partida
-  };
-
-  const gerarDeck = async (partidaId: number) => {
-    // TODO
-  };
+    return data;
+  }
 
   const moverJogadoresParaPartida = (partidaId: number) => {
     // TODO - precisa colocar os jogadores na sala de espera em um websocket usando supabase.channel('room1')
@@ -156,11 +126,9 @@ export function usePartidas() {
     getRecordById,
     search,
     createId,
-    removeCardFromDeck,
     reshuffleDeck,
     subscribeToChanges,
-    criarPartida,
-    gerarDeck,
+    getPartidaBySalaId,
     moverJogadoresParaPartida,
   };
 }

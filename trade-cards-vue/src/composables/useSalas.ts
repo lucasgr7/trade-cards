@@ -1,6 +1,7 @@
 import { computed, ref, Ref } from "vue";
-import { useSupaTable } from "../util/useSupaTable";
+import { useSupaTable } from "@/util/useSupaTable";
 import { Jogador } from "./usePlayer";
+import { supabase } from "@/util/supabase";
 
 export interface Salas {
   id?: number;
@@ -34,6 +35,7 @@ export function useSalas(myself?: Ref<Jogador>) {
 
   const sala = ref<Salas | null>(null);
   const players = ref<Jogador[]>([]);
+
   function getPlayersCount(sala: Salas): number {
     return sala.jogadores ? sala.jogadores.length : 0;
   }
@@ -94,6 +96,18 @@ export function useSalas(myself?: Ref<Jogador>) {
     return color;
   }
 
+
+  const subscribeToChanges = (salaId: number, callback: (payload: any) => void) => {
+    supabase
+    .channel('room' + salaId)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'salas' }, payload => {
+      console.log('Change received!', payload.new)
+      const playersExceptMyself = payload.new.jogadores.filter((jogador: Jogador) => jogador.nickname !== myself?.value.nickname);
+      players.value = playersExceptMyself;
+      callback(payload.new)
+    })
+    .subscribe()
+  }
   return {
     records,
     error,
@@ -110,6 +124,7 @@ export function useSalas(myself?: Ref<Jogador>) {
     getPlayersFromSession,
     sala,
     players,
-    isMyselfCreatorSession
+    isMyselfCreatorSession,
+    subscribeToChanges
   };
 }

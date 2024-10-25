@@ -1,8 +1,8 @@
 <script lang='ts' setup>
 import { onMounted } from 'vue';
-import UserPicture from '../components/UserPicture.vue';
-import { usePlayer } from '../composables/usePlayer';
-import router from '../util/router';
+import UserPicture from '@/components/UserPicture.vue';
+import { usePlayer } from '@/composables/usePlayer';
+import router from '@/util/router';
 
 // Utilizando a composable usePlayer
 const {
