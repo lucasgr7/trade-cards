@@ -1,14 +1,5 @@
+import { CartasType, Deck } from "../type";
 import { Salas } from "./useSalas";
-
-
-export interface CartasType{
-  nome: string;
-  descricao: string;
-  tipo: 'action' | 'object' | 'condition';
-  // define se a carta tem uma condição generativa como gerar uma carta que afeta um jogador específico
-  isGenerative: boolean;
-  specificType?: string; // Add optional specificType property
-}
 
 export const DictCartaType = {
   actions: {
@@ -97,13 +88,6 @@ export const DictCartaType = {
   }
 }
 
-export interface Deck {
-  [cardName: string]: {
-    count: number;
-    tipo: 'action' | 'object' | 'condition';
-    descricao: string;
-  };
-}
 export const useDeck = () => {
 
   // Função para embaralhar um array (Fisher-Yates)

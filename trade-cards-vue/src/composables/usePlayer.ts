@@ -1,24 +1,15 @@
 // src/composables/usePlayer.ts
 import { ref, computed } from 'vue';
 import { useStorage } from '@vueuse/core';
-import { useRouter } from 'vue-router';
+import { Jogador } from '../type';
 
-// Interface para o jogador
-export interface Jogador {
-  seed: string;
-  avatarUrl: string;
-  nickname: string;
-  creator?: boolean;
-  color?: string;
-}
 
 export function usePlayer() {
-  const router = useRouter();
 
   // Utilizando useStorage para persistir os dados no localStorage
   const seed = useStorage<string>('userSeed', generateRandomSeed());
   const avatarUrl = useStorage<string>('avatarUrl', getAvatarUrl(seed.value));
-  const nickname = useStorage<string>('nickname', '');
+  const nickname = useStorage<string>('nickname', null);
 
   // Computed para determinar se o usuário é o criador
   const isCreator = ref(false);
@@ -40,10 +31,18 @@ export function usePlayer() {
   }
 
   // Função para salvar os dados do usuário e redirecionar
-  function saveUserData(nicknameInput: string, isCreatorFlag: boolean = false) {
+  function saveUserData(nicknameInput: string, isCreatorFlag: boolean = false): boolean {
     nickname.value = nicknameInput;
     isCreator.value = isCreatorFlag;
-    router.push('/sessions');
+    return true;
+  }
+
+  // delete user data
+  function deleteUserData() {
+    seed.value = generateRandomSeed();
+    avatarUrl.value = getAvatarUrl(seed.value);
+    nickname.value = null;
+    isCreator.value = false;
   }
 
   // Função para obter os dados do usuário
@@ -52,6 +51,7 @@ export function usePlayer() {
     avatarUrl: avatarUrl.value,
     nickname: nickname.value,
     creator: isCreator.value,
+    isValid: !!nickname.value,
   }));
 
   return {
@@ -62,5 +62,6 @@ export function usePlayer() {
     generateAvatar,
     saveUserData,
     getMyself,
+    deleteUserData,
   };
 }

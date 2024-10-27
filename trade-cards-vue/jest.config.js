@@ -9,4 +9,9 @@ export default {
   transform: {
     "^.+.tsx?$": ["ts-jest",{}],
   },
+  // ignore folder /fixtures
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "/fixtures/"
+  ],
 };

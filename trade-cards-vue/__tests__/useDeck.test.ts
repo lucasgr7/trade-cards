@@ -1,8 +1,8 @@
 // __tests__/useDeck.test.ts
-import { useDeck, Deck } from "../src/composables/useDeck";
+import { useDeck } from "../src/composables/useDeck";
 import { Salas } from "../src/composables/useSalas";
-import { Jogador } from "../src/composables/usePlayer";
-import { DictCartaType, CartasType } from "../src/composables/useDeck";
+import { DictCartaType  } from "../src/composables/useDeck";
+import { Deck, Jogador } from "../src/type";
 
 describe("useDeck - Função generateDeck", () => {
   const { generateDeck } = useDeck();

@@ -1,32 +1,14 @@
 // src/composables/usePartidas.ts
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { useSupaTable } from "@/util/useSupaTable";
-import { Jogador } from './usePlayer';
-import { Deck } from './useDeck';
-import { supabase } from '@/util/supabase';
+import { ref, computed } from 'vue';
+import { useSupaTable } from "../util/useSupaTable";
+import { usePlayer } from './usePlayer';
+import { supabase } from '../util/supabase';
+import { Exceptions } from "../util/enum.exceptions";
+import { useStorage } from '@vueuse/core';
+import { Partidas, Cartas, Jogador } from "../type";
+import { useRouter } from 'vue-router'; // Não usaremos para manter consistência nos testes
 
-// TypeScript interfaces
-export interface Cartas {
-  nome: string;
-  descricao: string;
-  tipo: 'action' | 'object' | 'condition';
-  isGenerative: boolean;
-  image?: string;
-  specificType?: string; // Para condições específicas
-  id?: number;
-}
 
-export interface Partidas {
-  id?: number;
-  created_at?: string;
-  sala_id: number;
-  cartas_disponiveis: Deck;
-  jogadores: Jogador[];
-  rodada_atual: number;
-  acoes: any[];
-  atualizado_em?: string;
-  estado: string;
-}
 
 const columns = {
   "created_at": {
@@ -65,41 +47,33 @@ const columns = {
 
 export function usePartidas() {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Partidas>("partidas", columns);
-  
+  const { getMyself } = usePlayer();
+  // storage partida
+  const partida = useStorage<Partidas | null>('partida', null);
+  const cartaVisivel = ref<Cartas | null>(null);
+  const partidaAtualizada = ref(false);
+  const redirecionarPara = ref<string | null>(null);
 
-  // Função para reembaralhar o deck
-  const reshuffleDeck = async (salaId: number) => {
-    const partida = await getRecordById(salaId);
-    if (!partida) return;
-  };
-
-  // Função para embaralhar um array
-  const shuffleArray = <T>(array: T[]): T[] => {
-    const shuffled = [...array];
-    for(let i = shuffled.length -1; i >0; i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  const verificarEstadoPartida = () => {
+    if (partida.value && partida.value.estado !== 'iniciado') {
+      redirecionarPara.value = 'wait-room';
     }
-    return shuffled;
   };
-
-  // Função para assinar mudanças no Supabase
-  const subscribeToChanges = (salaId: number, callback: (payload: any) => void) => {
-    const supabaseUrl = 'https://your-supabase-url.supabase.co'; // Substitua pela sua URL do Supabase
-    const supabaseKey = 'your-anon-key'; // Substitua pela sua chave anônima do Supabase
-    const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
-
-    supabase
-      .channel(`room-${salaId}`)
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'partidas', filter: `sala_id=eq.${salaId}` },
-        payload => {
-          callback(payload);
-        }
-      )
-      .subscribe();
+  const esconderCarta = () => {
+    cartaVisivel.value = null;
   };
+  
+  const initialize = async (matchId: number) => {
+    // should check if matchId is valid
+    if(!matchId){
+      throw Exceptions.MATCH_INVALID_ID;
+    }
+    if(!getMyself.value.isValid){
+      throw Exceptions.USER_SESSION_NOT_FOUND;
+    }
+    // should make a request to the api
+    partida.value = await getPartidaBySalaId(matchId);
+  }
 
   const getPartidaBySalaId = async (salaId: number) => {
     const { data, error } = await supabase.from('partidas').select().eq('sala_id', salaId).single();
@@ -109,6 +83,51 @@ export function usePartidas() {
     }
     return data;
   }
+  const usarCarta = (carta: Cartas) => {
+    // Lógica para usar a carta
+    // Por exemplo, remover a carta do deck e adicionar às ações
+    if (partida.value) {
+      partida.value.acoes.push({
+        jogadorId: getMyself.value.seed,
+        cartaId: carta.id,
+        acao: 'usar_carta',
+        timestamp: new Date().toISOString()
+      });
+      // Atualizar a partida no servidor
+      updatePartida(partida.value);
+    }
+  };
+  const updatePartida = async (novaPartida: Partidas) => {
+    const { data, error } = await supabase.from('partidas').update(novaPartida).eq('id', novaPartida.id);
+    if (error) {
+      console.error('Erro ao atualizar partida:', error);
+      return;
+    }
+    if(!data){
+      console.error('Erro ao atualizar partida:', 'data is null');
+      return;
+    }
+    partida.value = data[0];
+  };
+  const possuiDeck = computed(() => {
+    // check deck differs from empty object
+    return partida.value && Object.keys(partida.value.cartas_disponiveis).length > 0;
+  });
+  
+  
+   
+  const subscribeToChanges = (salaId: number, callback: (payload: any) => void) => {
+    supabase
+      .channel('room' + salaId)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'partidas' }, payload => {
+        console.log('Change received!', payload.new);
+        partida.value = payload.new as Partidas;
+        partidaAtualizada.value = true;
+        callback(payload.new);
+      })
+      .subscribe();
+  };
+  
 
   const moverJogadoresParaPartida = (partidaId: number) => {
     // TODO - precisa colocar os jogadores na sala de espera em um websocket usando supabase.channel('room1')
@@ -126,9 +145,10 @@ export function usePartidas() {
     getRecordById,
     search,
     createId,
-    reshuffleDeck,
-    subscribeToChanges,
     getPartidaBySalaId,
     moverJogadoresParaPartida,
+    initialize,
+    subscribeToChanges,
+    partida
   };
 }

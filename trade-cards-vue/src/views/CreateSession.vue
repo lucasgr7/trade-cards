@@ -19,8 +19,6 @@ async function createSession(event: Event) {
     return;
   }
 
-
-
   try {
     var myself = await getMyself.value;
     myself.creator = true;

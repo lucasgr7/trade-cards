@@ -20,6 +20,11 @@ onMounted(() => {
   }
 });
 
+const handleSave = () => {
+  saveUserData(nickname.value);
+  router.push('/sessions');
+}
+
 </script>
 
 <template>
@@ -37,7 +42,7 @@ onMounted(() => {
       <div class="border border-trade-blue-700 rounded-xl py-10 px-10 mt-4 bg-trade-blue-700 font-bold">
         <button @click="generateAvatar">Gerar Avatar</button>
       </div>
-      <button :disabled="!nickname" @click="saveUserData(nickname)"
+      <button :disabled="!nickname" @click="handleSave"
       class="border border-trade-blue-700 rounded-xl py-10 px-4 mt-4 bg-trade-blue-700 font-bold
       disabled:opacity-50 disabled:bg-opacity-50">Salvar</button>
     </div>
