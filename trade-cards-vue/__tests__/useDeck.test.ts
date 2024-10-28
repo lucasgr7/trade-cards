@@ -3,6 +3,7 @@ import { useDeck } from "../src/composables/useDeck";
 import { Salas } from "../src/composables/useSalas";
 import { DictCartaType  } from "../src/composables/useDeck";
 import { Deck, Jogador } from "../src/type";
+import { describe, expect, test } from "vitest";
 
 describe("useDeck - Função generateDeck", () => {
   const { generateDeck } = useDeck();
