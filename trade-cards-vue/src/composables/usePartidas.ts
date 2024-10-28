@@ -1,5 +1,5 @@
 // src/composables/usePartidas.ts
-import { ref, computed, ComputedRef } from 'vue';
+import { ref, computed, ComputedRef, Ref } from 'vue';
 import { useSupaTable } from "../util/useSupaTable";
 import { supabase } from '../util/supabase';
 import { Exceptions } from "../util/enum.exceptions";
@@ -42,7 +42,7 @@ const columns = {
     "nullable": true
   }
 }
-const partida = useStorage<Partidas | null>('partida', null);;
+const partida: Ref<Partidas | null> = useStorage<Partidas | null>('partida', null);;
 
 export function usePartidas(getMyself: ComputedRef<Jogador>) {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Partidas>("partidas", columns);
@@ -63,6 +63,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     // should make a request to the api
     partida.value = await getPartidaBySalaId(matchId);
   }
+  const isInitialized = computed(() => partida.value !== null);
 
   const getPartidaBySalaId = async (salaId: number) => {
     const { data, error } = await supabase.from('partidas').select().eq('sala_id', salaId).single();
@@ -125,6 +126,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     getPartidaBySalaId,
     initialize,
     subscribeToChanges,
-    partida
+    partida,
+    isInitialized
   };
 }

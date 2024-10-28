@@ -6,6 +6,7 @@ import { useCardSwipe } from '@/composables/useCardSwipe';
 import { Cartas } from '@/composables/usePartidas';
 
 // Define as props recebidas
+// TODO: Remove this props and insert usePartida
 const props = defineProps<{
   cards: Array<Cartas>;
   onChoseCard: (title: string) => void;
@@ -32,14 +33,6 @@ const remainingCards = ref(cards.value.length);
 // Posições de toque
 let touchStartX = 0;
 let touchMoveX = 0;
-
-// Computed para obter as duas cartas visíveis
-const visibleCards = computed(() => {
-  if (cards.value.length === 0) return [];
-  const current = cards.value[cards.value.length - 1];
-  const next = cards.value.length > 1 ? cards.value[cards.value.length - 2] : null;
-  return [current, next];
-});
 
 // Importar e utilizar composable de swipe (presumivelmente)
 const { startSwipe, moveSwipe, endSwipe, recarregarPilha } = useCardSwipe(
@@ -79,7 +72,8 @@ watch(() => props.cards, (newCards) => {
     <!-- Render current and next cards when not re-stacking -->
     <div v-else>
       <!-- Carta Próxima (Atrás) -->
-      <div v-if="cards.length > 1" class="card-container next-card" :style="{ zIndex: 1 }">
+
+      <div v-if="cards.length > 1" class="card-container next-card" :style="{ zIndex: 2 }">
         <Card 
           :image="cards[cards.length - 2].image" 
           :title="cards[cards.length - 2].nome"
