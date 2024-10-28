@@ -18,5 +18,14 @@
     "titleBar.inactiveBackground": "#42b88399",
     "titleBar.inactiveForeground": "#15202b99"
   },
+  "terminal.integrated.env.osx": {
+    "PATH": "/Users/lucas.ribeiro.br/.nvm/versions/node/v18.x.x/bin:${env:PATH}"
+  },  
+  "vitest.commandLine": "npx vitest",
+  "testExplorer.codeLens": true,
+  "testExplorer.gutterDecoration": true,
+  "testExplorer.onStart": "start",
+  "testExplorer.onReload": "reload",
+  "vitest.defaultTestTimeout": 5000,
   "peacock.color": "#42b883"
 }

@@ -1,134 +1,191 @@
+import { fixturePartida } from './fixtures/usePartida.fixture';
 // __tests__/usePartida.test.ts
-import { computed, nextTick, ref } from "vue";
-import { expect, describe, it } from "@jest/globals";
-import { usePlayer } from '../src/composables/usePlayer';
-import { Exceptions } from './../src/util/enum.exceptions';
-import { fixturePartida } from "./fixtures/usePartida.fixture";
-// Mock para supabase
+import { describe, it, expect, vi, beforeEach, VitestUtils } from 'vitest';
+import { computed, nextTick, ref } from 'vue';
+import { usePartidas } from '../src/composables/usePartidas';
+import { Exceptions } from '../src/util/enum.exceptions';
+import { supabase } from '../src/util/supabase';
+import { Jogador, Partidas } from '../src/type';
 
-jest.mock('../src/util/supabase', () => ({
+// Mock the supabase module
+vi.mock('../src/util/supabase', () => ({
   supabase: {
-    from: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    single: jest.fn().mockResolvedValue({ data: fixturePartida, error: null }),
-  }
-}
-));
-
-// Mock para useSupaTable
-jest.mock('../src/util/useSupaTable', () => ({
-  useSupaTable: jest.fn(() => ({
-    records: [],
-    error: null,
-    insertRecord: jest.fn(),
-    getRecords: jest.fn(),
-    updateRecord: jest.fn(),
-    deleteRecord: jest.fn(),
-    getRecordById: jest.fn(),
-    search: jest.fn(),
-    createId: jest.fn(),
-    single: jest.fn().mockResolvedValue({
-      data: fixturePartida,
-      error: null,
-    }),
-  }))
+    from: vi.fn(),
+  },
 }));
 
+// Mock the usePlayer module
+vi.mock('../src/composables/usePlayer', () => ({
+  usePlayer: vi.fn(() => ({
+    getMyself: ref({ isValid: true, seed: 'player1' }),
+  })),
+}));
 
-let supabaseMock: any;
-  
-// Mock para supabase
-jest.mock('../src/util/supabase', () => {
-  supabaseMock = {
-    from: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    single: jest.fn(),
-    channel: jest.fn().mockReturnThis(),
-    on: jest.fn().mockReturnThis(),
-    subscribe: jest.fn(),
-  };
-  return { supabase: supabaseMock };
-});;
-describe("usePartida", () => {
-  let initialize: any;
-  let partida: any;
-  let usePlayerMock: jest.Mock
+const seed = ref('seed');
+const getMyself = computed((): Jogador => ({
+  seed: seed.value,
+  avatarUrl: 'string',
+  nickname: 'player 1',
+  creator: false,
+  color: 'red',
+  isValid: !!seed.value
+}))
+
+describe('usePartidas', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    seed.value = 'seed';
+  });
+
+  describe('initialize', () => {
+    it('should throw MATCH_INVALID_ID when matchId is invalid', async () => {
+      const { initialize } = usePartidas(getMyself);
+
+      await expect(initialize(0)).rejects.toBe(Exceptions.MATCH_INVALID_ID);
+    });
+
+    it('should throw USER_SESSION_NOT_FOUND when user is not valid', async () => {
+      seed.value = '';
+      const { initialize } = usePartidas(getMyself);
+
+      await expect(initialize(1)).rejects.toBe(Exceptions.USER_SESSION_NOT_FOUND);
+    });
+
+    it('should set partida when supabase returns data', async () => {
+      const partidaData = fixturePartida;
+
+      // Mock the chain of methods for supabase.from().select().eq().single()
+      const singleMock = vi.fn().mockResolvedValue({ data: partidaData, error: null });
+      const eqMock = vi.fn().mockReturnValue({ single: singleMock });
+      const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
+      const fromMock = vi.fn().mockReturnValue({ select: selectMock });
+
+      // Replace supabase.from with our mock
+      (supabase as any).from = fromMock;
+
+      const { initialize, partida } = usePartidas(getMyself);
+
+      await initialize(1);
+
+      expect(partida.value).toEqual(partidaData);
+      expect(fromMock).toHaveBeenCalledWith('partidas');
+      expect(selectMock).toHaveBeenCalled();
+      expect(eqMock).toHaveBeenCalledWith('sala_id', 1);
+      expect(singleMock).toHaveBeenCalled();
+    });
+
+    it('should handle supabase error gracefully', async () => {
+      // Mock supabase to return an error
+      const singleMock = vi.fn().mockResolvedValue({ data: null, error: 'Some error' });
+      const eqMock = vi.fn().mockReturnValue({ single: singleMock });
+      const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
+      const fromMock = vi.fn().mockReturnValue({ select: selectMock });
+
+      // Replace supabase.from with our mock
+      (supabase as any).from = fromMock;
+
+      const { initialize, partida } = usePartidas(getMyself);
+
+      await initialize(1);
+
+      expect(partida.value).toBeNull();
+    });
+  });
+  describe('supabase events', () => {
+
+  let partidaData: Partidas
 
   beforeEach(() => {
-    jest.resetModules();
-
-    // Mock de usePlayer
-    jest.mock('../src/composables/usePlayer', () => ({
-      usePlayer: jest.fn(() => ({
-        getMyself: computed(() => ({
-          seed: 'default-seed',
-          avatarUrl: 'default-avatar-url',
-          nickname: 'default-nickname',
-          creator: true,
-          isValid: true,
-        })),
-        saveUserData: jest.fn(() => true),
-        deleteUserData: jest.fn(),
-      })),
-    }));
-
-    // Importar usePlayer e usePartidas após configurar o mock
-    const usePlayerModule = require('../src/composables/usePlayer');
-    usePlayerMock = usePlayerModule.usePlayer;
-  
-    const usePartidasModule = require('../src/composables/usePartidas');
-    ({ initialize, partida } = usePartidasModule.usePartidas());
+    vi.clearAllMocks();
+    partidaData = {
+      id: 1,
+      sala_id: 1,
+      estado: 'iniciado',
+      cartas_disponiveis: {},
+      jogadores: [],
+      rodada_atual: 1,
+      acoes: [],
+      created_at: new Date().toISOString(),
+    };
   });
 
-  it("Deve garantir que usePlayer esta mockado", () => {
-    expect(usePlayerMock).toBeDefined();
+  it('subscribes to Supabase changes and handles updates', async () => {
+    const mockCallback = vi.fn();
+
+    // Mock the channel and its methods
+    const onMock = vi.fn().mockReturnThis();
+    const subscribeMock = vi.fn();
+    const channelMock = vi.fn().mockReturnValue({
+      on: onMock,
+      subscribe: subscribeMock,
+    });
+    (supabase as any).channel = channelMock;
+
+    const { subscribeToChanges, partida } = usePartidas(getMyself);
+
+    // Call the function to subscribe to changes
+    subscribeToChanges(1, mockCallback);
+
+    // Expect channel to have been called with the correct channel name
+    expect(channelMock).toHaveBeenCalledWith('room1');
+    expect(onMock).toHaveBeenCalledWith(
+      'postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'partidas' },
+      expect.any(Function)
+    );
+    expect(subscribeMock).toHaveBeenCalled();
+
+    // update partidaData with relevant ID
+    partidaData.acoes.push({
+      id: 1
+    })
+
+    // Simulate receiving a Supabase event update
+    const payload = { new: { ...partidaData, estado: 'updated' } };
+    onMock.mock.calls[0][2](payload); // Trigger the event callback
+
+    // Verify that the composable updated `partida` and called the callback
+    expect(partida.value).toEqual(payload.new);
+    expect(partida.value?.acoes).toEqual(payload.new.acoes);
+    expect(mockCallback).toHaveBeenCalledWith(payload.new);
   });
-  it("Deve dar erro se não passar o Id da sala", async () => {
-    await expect(initialize(null)).rejects.toThrow(Exceptions.MATCH_INVALID_ID);
-  });
+  })
 
-  it("Deve dar erro se o ID for zero", async () => {
-    await expect(initialize(0)).rejects.toThrow(Exceptions.MATCH_INVALID_ID);
-  });
+  describe('updatePartida', () => {
 
-  it("O erro deve ser traduzido para string do valor da exception", async () => {
-    await expect(initialize(0)).rejects.toThrow(Exceptions.MATCH_INVALID_ID);
-  });
+    let partidaData: Partidas
+    partidaData = {
+      id: 1,
+      sala_id: 1,
+      estado: 'iniciado',
+      cartas_disponiveis: {},
+      jogadores: [],
+      rodada_atual: 1,
+      acoes: [],
+      created_at: new Date().toISOString(),
+    };
+    beforeEach(() => {
+      vi.clearAllMocks();
 
+    });
+    it('should update partida and set it to the new value', async () => {
+      // Mock the supabase update method
+      const updateMock = vi.fn().mockResolvedValue({ data: [partidaData], error: null });
+      (supabase as any).from = vi.fn().mockReturnValue({ update: updateMock });
 
-  it("O usuário deve fazer o request da API", async () => {
-    // Configurar o mock para retornar fixturePartida
-    supabaseMock.single.mockResolvedValueOnce({ data: fixturePartida, error: null });
-    await initialize(1);
-    await nextTick();
-    expect(partida.value).toEqual(fixturePartida);
-  });
+      const { updateRecord, partida } = usePartidas(getMyself);
 
+      partidaData.acoes.push({
+        jogadorId: getMyself.value.seed,
+        cartaId: 1,
+        acao: 'usar_carta',
+        timestamp: new Date().toISOString()
+      })
 
-  it("Caso o usuário não possua um ID, deve retornar um erro", async () => {
-    usePlayerMock.mockImplementation(() => ({
-      getMyself: computed(() => ({
-        isValid: false,
-      })),
-      saveUserData: jest.fn(),
-      deleteUserData: jest.fn(),
-    }));
+      await updateRecord(1, partidaData);
+      await nextTick();
 
-    // Reimportar usePartidas após alterar o mock
-    const usePartidasModule = require('../src/composables/usePartidas');
-    ({ initialize } = usePartidasModule.usePartidas());
-
-    await expect(initialize(1)).rejects.toThrow(Exceptions.USER_SESSION_NOT_FOUND);
-  });
-
-  it("Espera que a partida possua o estado de Iniciada", async () => {})
-
-  it("Caso o usuário entre em uma partida com estado não iniciado redirecione para wait-room", async () => {})
-  it("Espero que a partida possua um Deck", async () => {})
-  it("Deverá emitir evento de utilização de uma carta", async () => {})
-  it("Espero que recebe evento de atualização da partida", async () => {})
-  it("Deverá ter um signal de esconder a carta que estou vendo", async () => {})
-
+      expect(updateMock).toHaveBeenCalledWith(partidaData);
+    })
+  })
 });
