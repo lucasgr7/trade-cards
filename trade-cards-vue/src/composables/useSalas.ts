@@ -53,10 +53,21 @@ export function useSalas(myself?: Ref<Jogador>) {
     
     for (const record of oldRecords) {
       try {
+        // Deletar registros dependentes na tabela `partidas`
+        const { error: deletePartidasError } = await supabase
+          .from('partidas')
+          .delete()
+          .eq('sala_id', record.id);
+  
+        if (deletePartidasError) {
+          console.error(`Failed to delete partidas for sala_id ${record.id}:`, deletePartidasError);
+          continue;
+        }
+  
+        // Deletar o registro na tabela `salas`
         await deleteRecord(record.id as number);
       } catch (error) {
         console.error(`Failed to delete record with id ${record.id}:`, error);
-        throw new Error(`Failed to delete record with id ${record.id}: ${error}`);
       }
     }
 

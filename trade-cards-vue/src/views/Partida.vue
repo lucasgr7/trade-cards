@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { supabase } from '@/util/supabase';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import CardDeck from '@/components/CardDeck.vue';
 import CardChosen from '@/components/CardChosen.vue';
 import { CardType } from '@/enums/cardType';
@@ -9,8 +8,6 @@ import { usePartidas } from '../composables/usePartidas';
 import { useDeckImages } from '@/composables/useImage';
 import { Exceptions } from '@/util/enum.exceptions';
 import { usePlayer } from '@/composables/usePlayer';
-import { Partidas } from 'type';
-
 
 const route = useRoute();
 const router = useRouter();
@@ -30,22 +27,20 @@ const cartasDeck = computed(() => {
   }
 }); // Ajuste o tipo conforme necessário
 
-
 onMounted( async () => {
   try{
     if(!route.params.id){
-      // router push lasst page
-      router.push({name: 'Home'})  
+      router.push({name: 'UserRegister'})  
     }
     await initialize(Number(route.params.id));
   }
   catch(error: any)
   {
     if(error.message === Exceptions.MATCH_INVALID_ID){
-      router.push({name: 'Home'})
+      router.push({name: 'UserRegister'})
     }
     else if(error.message === Exceptions.PARTIDA_NOT_FOUND){
-      router.push({name: 'Home'})
+      router.push({name: 'UserRegister'})
     }
   }
 })
@@ -78,13 +73,25 @@ function choseCard(title: string) {
  alert(`Card chosen: ${title}`);
 }
 
+function leave() {
+  const roomId = Number(route.params.id ?? 0);
+  router.push(`/waiting-room/${roomId}`);
+}
+
 </script>
 <template>
   <div class="flex flex-col items-center justify-between p-4
     border border-white rounded-xl bg-trade-blue-50
     w-screen h-screen">
+    <div class="flex flex-col w-full items-center justify-center mt-4 gap-y-4">
+      <button @click="leave" class="absolute top-1 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
     <h1 class="text-4xl font-black text-outline-blue mt-2">Trade-Cards {{ partida?.sala_id }}</h1>
-    <p class="text-blue-900 mt-2">Escolha as cartas do deck para montar uma ação.</p>
+    <p class="text-blue-900 mt-2 mb-4">Escolha as cartas do deck para montar uma ação.</p>
     <div class="flex gap-x-2">
       <CardChosen :card-type="CardType.Action"/>
       <CardChosen :card-type="CardType.Object"/>

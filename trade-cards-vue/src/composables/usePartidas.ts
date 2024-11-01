@@ -50,7 +50,6 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
   const cartaVisivel = ref<Cartas | null>(null);
   const partidaAtualizada = ref(false);
   const redirecionarPara = ref<string | null>(null);
-
   
   const initialize = async (matchId: number) => {
     // should check if matchId is valid
@@ -64,14 +63,22 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     partida.value = await getPartidaBySalaId(matchId);
   }
   const isInitialized = computed(() => partida.value !== null);
-
+  
   const getPartidaBySalaId = async (salaId: number) => {
-    const { data, error } = await supabase.from('partidas').select().eq('sala_id', salaId).single();
+    const { data, error } = await supabase
+    .from('partidas')
+    .select('*', { count: 'exact' })
+    .eq('sala_id', salaId);
+
     if (error) {
       console.error('Erro ao buscar partida:', error);
       return;
     }
-    return data;
+
+    if (data.length > 1) {
+      console.warn('Múltiplas partidas encontradas para o sala_id:', salaId + ' Qntd: ' + data.length);
+    }
+    return data[0];
   }
 
   const usarCarta = (carta: Cartas) => {
