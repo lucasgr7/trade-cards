@@ -7,6 +7,7 @@ import router from '@/util/router';
 import { usePlayer } from '@/composables/usePlayer';
 import { Partidas, usePartidas } from '@/composables/usePartidas';
 import { useDeck } from '@/composables/useDeck';
+import { Jogador } from 'type';
 
 const INIT_MATCH = 1;
 
@@ -51,10 +52,10 @@ async function startGame() {
   await insertRecord(match);
 }
 
-function leave() {
+async function leave() {
   if (!sala.value) return;
 
-  const playerIndex = sala.value.jogadores.findIndex(jogador => jogador.nickname === getMyself.value.nickname);
+  const playerIndex = sala.value.jogadores.findIndex((jogador: Jogador) => jogador.nickname === getMyself.value.nickname);
   if (playerIndex === -1) {
     alert('Jogador não encontrado na sala.');
     return;
@@ -62,7 +63,7 @@ function leave() {
 
   sala.value.jogadores.splice(playerIndex, 1);
 
-  updateRecord(sala.value.id as number, sala.value);
+  await updateRecord(sala.value.id as number, sala.value);
   router.push('/sessions');
 }
 

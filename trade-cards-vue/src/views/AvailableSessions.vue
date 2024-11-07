@@ -5,6 +5,7 @@ import onlineIcon from '@/assets/icons/online_session.png';
 import offlineIcon from '@/assets/icons/offline_session.png';
 import { useRouter } from 'vue-router';
 import { usePlayer } from '@/composables/usePlayer';
+import { Jogador } from 'type';
 
 const { records, getPlayersCount, getSessionsCount, deleteOldRecords, updateRecord } = useSalas();
 const { getMyself } = usePlayer();
@@ -30,7 +31,10 @@ async function joinSession() {
     return;
   }
 
-  // TODO: Check if player is already in the room
+  if (selectedSession.value.jogadores.find((jogador: Jogador) => jogador.nickname === player.nickname)) {
+    alert('Jogador já está na sala.');
+    return;
+  }
 
   selectedSession.value.jogadores.push(player);
 
