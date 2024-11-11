@@ -6,8 +6,6 @@ import { Exceptions } from "../util/enum.exceptions";
 import { useStorage } from '@vueuse/core';
 import { Partidas, Cartas, Jogador } from "../type";
 
-
-
 const columns = {
   "created_at": {
     "type": "string",
@@ -51,17 +49,27 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
   const partidaAtualizada = ref(false);
   const redirecionarPara = ref<string | null>(null);
   
-  const initialize = async (matchId: number) => {
-    // should check if matchId is valid
-    if(!matchId){
-      throw Exceptions.MATCH_INVALID_ID;
+  const initialize = async (route: any, router: any) => {
+    try {
+      const matchId = Number(route.params.id);
+      // should check if matchId is valid
+      if (!matchId) {
+        throw Exceptions.MATCH_INVALID_ID;
+      }
+      if (!getMyself?.value.isValid) {
+        throw Exceptions.USER_SESSION_NOT_FOUND;
+      }
+      // should make a request to the api
+      partida.value = await getPartidaBySalaId(matchId);
+    } catch (error: any) {
+      if (error.message === Exceptions.MATCH_INVALID_ID || error.message === Exceptions.PARTIDA_NOT_FOUND) {
+        router.push({ name: 'UserRegister' });
+      } else {
+        console.error(error);
+      }
     }
-    if(!getMyself.value.isValid){
-      throw Exceptions.USER_SESSION_NOT_FOUND;
-    }
-    // should make a request to the api
-    partida.value = await getPartidaBySalaId(matchId);
-  }
+  };
+
   const isInitialized = computed(() => partida.value !== null);
   
   const getPartidaBySalaId = async (salaId: number) => {
@@ -75,9 +83,6 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
       return;
     }
 
-    if (data.length > 1) {
-      console.warn('Múltiplas partidas encontradas para o sala_id:', salaId + ' Qntd: ' + data.length);
-    }
     return data[0];
   }
 
@@ -134,6 +139,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     initialize,
     subscribeToChanges,
     partida,
-    isInitialized
+    isInitialized,
+    usarCarta
   };
 }

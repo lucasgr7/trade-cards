@@ -129,10 +129,22 @@ export const useCardSwipe = (
 		});
 	};
 
+	const removeCard = (carta: Cartas) => {
+		const index = cards.value.indexOf(carta);
+		if (index !== -1) {
+			cards.value.pop();
+			remainingCards.value--;
+			if (cards.value.length === 0) {
+				recarregarPilha();
+			}
+		}
+  };
+
 	return {
 		startSwipe,
 		moveSwipe,
 		endSwipe,
-		recarregarPilha
+		recarregarPilha,
+		removeCard,
 	};
 }
