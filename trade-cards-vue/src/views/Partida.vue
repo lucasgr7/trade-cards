@@ -1,82 +1,77 @@
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import CardDeck from '@/components/CardDeck.vue';
 import CardChosen from '@/components/CardChosen.vue';
 import { CardType } from '@/enums/cardType';
 import { useRoute, useRouter } from 'vue-router';
 import { usePartidas } from '../composables/usePartidas';
-import { useDeckImages } from '@/composables/useImage';
-import { Exceptions } from '@/util/enum.exceptions';
 import { usePlayer } from '@/composables/usePlayer';
+import { useCardsInGame } from '@/composables/useCardsInGame';
+import { Cartas } from 'type';
 
 const route = useRoute();
 const router = useRouter();
-const { getMyself} = usePlayer();
-const {partida, initialize} = usePartidas(getMyself);
-const { getImage } = useDeckImages();
+const { getMyself } = usePlayer();
+const { partida, initialize, usarCarta } = usePartidas(getMyself);
+const { cartasDeck } = useCardsInGame();
 
-// Lista de cartas para o CardDeck
-const cartasDeck = computed(() => {
-  if(!partida?.value){
-    return [];
-  }
-  if(partida.value.cartas_disponiveis){
-    return convertDeckToList(partida.value.cartas_disponiveis);
-  }else{
-    return [];
-  }
-}); // Ajuste o tipo conforme necessário
+const selectedActionCard = ref<Cartas>();
+const selectedObjectCard = ref<Cartas>();
+const selectedConditionCard = ref<Cartas>();
 
-onMounted( async () => {
-  try{
-    if(!route.params.id){
-      router.push({name: 'UserRegister'})  
-    }
-    await initialize(Number(route.params.id));
-  }
-  catch(error: any)
-  {
-    if(error.message === Exceptions.MATCH_INVALID_ID){
-      router.push({name: 'UserRegister'})
-    }
-    else if(error.message === Exceptions.PARTIDA_NOT_FOUND){
-      router.push({name: 'UserRegister'})
-    }
-  }
-})
+const cardPiles = [
+  { type: CardType.Action, card: selectedActionCard },
+  { type: CardType.Object, card: selectedObjectCard },
+  { type: CardType.Condition, card: selectedConditionCard }
+];
 
-// Função para converter o Deck em uma lista de cartas
-function convertDeckToList(deck: Record<string, { descricao: string; tipo: CardType; count: number }>): Array<any> {
-  const lista: Array<any> = [];
-  let count = 1;
-  for (const [cardName, cardInfo] of Object.entries(deck)) {
-    for (let i = 0; i < cardInfo.count; i++) {
-      lista.push({
-        nome: cardName,
-        descricao: cardInfo.descricao,
-        tipo: cardInfo.tipo,
-        image: getImage(cardName),
-        id: count
-        // Adicione outras propriedades necessárias aqui
-      });
-      count++;
-    }
-  }
-  // shuffle
-  lista.sort(() => Math.random() - 0.5);
-
-  return lista;
-}
-
-// TODO: Implementar a função choseCard
-function choseCard(title: string) {
- alert(`Card chosen: ${title}`);
-}
+onMounted(async () => {
+  await initialize(route, router);
+});
 
 function leave() {
   const roomId = Number(route.params.id ?? 0);
   router.push(`/waiting-room/${roomId}`);
 }
+
+const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
+
+function handleUsarCarta() {
+  cardDeckRef.value?.handleUsarCarta();
+}
+
+function onUsarCarta(carta: any) {
+  usarCarta(carta);
+  const cartaTipo = carta.tipo.toLowerCase();
+
+  const cardMap = {
+    [CardType.Action.toLowerCase()]: selectedActionCard,
+    [CardType.Object.toLowerCase()]: selectedObjectCard,
+    [CardType.Condition.toLowerCase()]: selectedConditionCard,
+  };
+
+  const selectedCard = cardMap[cartaTipo];
+
+  if (!selectedCard || selectedCard.value) {
+    alert('Você já escolheu uma carta desse tipo.');
+    return;
+  }
+
+  selectedCard.value = carta;
+  //atualiza o deck mostrado na tela
+  cardDeckRef.value?.removeCard(selectedCard.value);
+}
+
+const allPilesFilled = computed(() => {
+  return cardPiles.every(pile => pile.card.value);
+});
+
+const displayFinalAction = computed(() => {
+  if (getMyself) {
+    return "Trocar!";
+  }
+  return "Esperando Troca!";
+});
 
 </script>
 <template>
@@ -93,11 +88,23 @@ function leave() {
     <h1 class="text-4xl font-black text-outline-blue mt-2">Trade-Cards {{ partida?.sala_id }}</h1>
     <p class="text-blue-900 mt-2 mb-4">Escolha as cartas do deck para montar uma ação.</p>
     <div class="flex gap-x-2">
-      <CardChosen :card-type="CardType.Action"/>
-      <CardChosen :card-type="CardType.Object"/>
-      <CardChosen :card-type="CardType.Condition"/>
-     </div>
-    <CardDeck :cards="cartasDeck" :onChoseCard="choseCard" />
+      <CardChosen
+        v-for="(pile, index) in cardPiles"
+        :key="index"
+        :cardType="pile.type"
+        :noCard="!pile.card.value"
+        :nome="pile.card?.value?.nome"
+        :descricao="pile.card?.value?.descricao"
+        :image="pile.card?.value?.image"
+        :tipo="pile.card?.value?.tipo"
+      />
+    </div>
+    <CardDeck ref="cardDeckRef" :cards="cartasDeck" @usarCarta="onUsarCarta"/>
+    <button @click="handleUsarCarta"
+        :disabled="allPilesFilled"
+        :class="['border border-white rounded-full py-6 px-20 font-bold text-xl', allPilesFilled ? 'bg-yellow-400' : 'bg-trade-green-400']">
+        {{ allPilesFilled ? displayFinalAction : 'Jogar' }}
+    </button>
   </div>
 </template>
 

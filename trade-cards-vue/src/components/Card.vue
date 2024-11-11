@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 
 // Definição das props
-const {image, title, description, type, choseCard} = defineProps({
+const { image, title, description, type } = defineProps({
   image: {
     type: String,
     required: true,
@@ -18,10 +18,7 @@ const {image, title, description, type, choseCard} = defineProps({
   type: {
     type: String,
     required: true,
-    validator: (value: string) => ['blue', 'red', 'green'].includes(value),
-  },
-  choseCard: {
-    type: Function,
+    validator: (value: string) => ['action', 'object', 'condition'].includes(value),
   },
   id: {
     type: Number,
@@ -30,7 +27,7 @@ const {image, title, description, type, choseCard} = defineProps({
 });
 
 // Mapeamento de tipos para classes de cor e ícones
-const typeMappings = {
+const typeMappings: Record<string, { class: string; icon: string }> = {
   action: {
     class: 'blue-card',
     icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828817.png', // Exemplo de ícone azul
@@ -50,12 +47,6 @@ const cardTypeClass = computed(() => {
   return typeMappings[type].class
 });
 const icon = computed(() => typeMappings[type].icon);
-
-function handleCardClick() {
-  if (choseCard) {
-    choseCard(title);
-  }
-}
 
 </script>
 
