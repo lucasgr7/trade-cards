@@ -31,17 +31,15 @@ const handleSave = () => {
   <div class="flex flex-col items-center justify-between p-4
   border border-white rounded-xl bg-trade-blue-100
   w-screen h-screen">
-    <h2 class="text-3xl font-black text-white text-outline-blue mt-5">Criação de personagem</h2>
+    <h2 class="text-2xl font-black text-white text-outline-blue mt-2 mb-2">Criação de personagem</h2>
     <UserPicture :src="avatarUrl"/>
-    <h2 class="text-lg text-trade-blue-900 font-bold">Avatar</h2>
     <div class="flex flex-col items-start w-full gap-y-2 px-4">
       <p class="text-trade-blue-900">Nome</p>
       <input type="text" v-model="nickname" class="bg-white rounded-xl p-4 w-full text-trade-blue-900" placeholder="Insira um apelido">
     </div>
     <div class="flex flex-col">
-      <div class="border border-trade-blue-700 rounded-xl py-10 px-10 mt-4 bg-trade-blue-700 font-bold">
-        <button @click="generateAvatar">Gerar Avatar</button>
-      </div>
+      <button @click="generateAvatar" class="border border-trade-blue-700 rounded-xl py-10 px-10 mt-4 bg-trade-blue-700 font-bold
+      active:bg-trade-blue-800">Gerar Avatar</button>
       <button :disabled="!nickname" @click="handleSave"
       class="border border-trade-blue-700 rounded-xl py-10 px-4 mt-4 bg-trade-blue-700 font-bold
       disabled:opacity-50 disabled:bg-opacity-50">Salvar</button>

@@ -15,6 +15,8 @@ const { partida, initialize } = usePartidas(getMyself);
 const route = useRoute();
 const router = useRouter();
 const cards = ref<Array<Cartas>>([]);
+const props = defineProps<{ isSubscribedUpdate: boolean }>();
+const isSubscribed = ref(props.isSubscribedUpdate);
 
 // Referências das cartas
 const currentCardRef = ref<HTMLElement | null>(null);
@@ -25,7 +27,6 @@ const isReStacking = ref(false);
 
 // Contador de cartas restantes
 const remainingCards = ref(cards.value.length);
-
 
 // Importar e utilizar composable de swipe (presumivelmente)
 const { startSwipe, moveSwipe, endSwipe, recarregarPilha, removeCard } = useCardSwipe(
@@ -39,10 +40,11 @@ const { startSwipe, moveSwipe, endSwipe, recarregarPilha, removeCard } = useCard
 );
 
 watch(partida, (newPartida) => {
-  if (newPartida) {
+  if (newPartida && !props.isSubscribedUpdate) {
     cards.value = cartasDeck.value;
     remainingCards.value = cards.value.length;
   }
+  isSubscribed.value = false;
 });
 
 onMounted(async () => {
@@ -114,7 +116,7 @@ defineExpose({
 <style scoped>
 .card-deck {
   position: relative;
-  width: 300px;
+  width: 225px;
   height: 400px;
   perspective: 1000px;
   overflow: hidden;
@@ -123,8 +125,8 @@ defineExpose({
 
 .card-container {
   position: absolute;
-  width: 280px;
-  height: 380px;
+  width: 210px;
+  height: 300px;
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);

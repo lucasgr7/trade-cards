@@ -86,9 +86,19 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     return data[0];
   }
 
+  const removerCartaDoDeck = async (partida: Partidas, carta: Cartas) => {
+    const cartaDisponivel = partida.cartas_disponiveis[carta.nome];
+    if (cartaDisponivel && cartaDisponivel.count > 0) {
+      partida.cartas_disponiveis[carta.nome].count--;
+    } else {
+      throw new Error(`Carta ${carta.nome} não disponível ou count já é zero.`);
+    }
+  
+    // Atualizar a partida
+    await updateRecord(partida.id, partida);
+  };
+
   const usarCarta = (carta: Cartas) => {
-    // Lógica para usar a carta
-    // Por exemplo, remover a carta do deck e adicionar às ações
     if(!partida.value || !partida.value.id){
       throw Exceptions.PARTIDA_NOT_FOUND;
     }
@@ -99,8 +109,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
         acao: 'usar_carta',
         timestamp: new Date().toISOString()
       });
-      // Atualizar a partida no servidor
-      updateRecord(partida.value.id, partida.value);
+      removerCartaDoDeck(partida.value, carta);
     }
   };
 
@@ -140,6 +149,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     subscribeToChanges,
     partida,
     isInitialized,
-    usarCarta
+    usarCarta,
+    removerCartaDoDeck,
   };
 }

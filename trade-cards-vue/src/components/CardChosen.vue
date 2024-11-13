@@ -34,7 +34,7 @@ function displayInfo(text: string | undefined) {
 </script>
 
 <template>
-   <div v-if="noCard" :class="['flex flex-col justify-between p-4 border-4 rounded-xl h-[12.5rem] w-[7.5rem]', bgClass]">
+   <div v-if="noCard" :class="['flex flex-col justify-between items-center p-4 border-4 rounded-xl h-[12.5rem] w-[6.5rem]', bgClass]">
     <p class="text-black">{{ props.cardType }}</p>
     <PlusCircleIcon />
   </div>

@@ -54,7 +54,7 @@ const icon = computed(() => typeMappings[type].icon);
   <div :class="['card', cardTypeClass]">
     <!-- Cabeçalho: Ícone e Título -->
     <div class="flex items-center gap-x-2 p-4" :class="['header', cardTypeClass]">
-      <img :src="icon" alt="Icon" class="w-6 h-6 mr-2" @click="handleCardClick"/>
+      <img :src="icon" alt="Icon" class="w-6 h-6 mr-2"/>
       <h3 class="text-sm font-semibold">{{ title }}</h3>
       <!-- create a right circle on the right with tailwind -->
       <div class="flex-grow">
@@ -67,12 +67,12 @@ const icon = computed(() => typeMappings[type].icon);
     </div>
     
     <!-- Imagem Principal -->
-    <img :src="image" alt="Card Image" class="w-full h-48 object-contain" />
+    <img :src="image" alt="Card Image" class="w-full h-40 object-contain" />
     
     <!-- Descrição -->
      <!-- q: tailwind border radius 20px 
       a: border-radius- -->
-    <p class="p-4 text-black border-t-zinc-300">{{ description }}</p>
+    <p class="p-4 text-black text-sm border-t-zinc-300">{{ description }}</p>
   </div>
 </template>
 
@@ -82,20 +82,17 @@ const icon = computed(() => typeMappings[type].icon);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-
 .card {
   position: absolute;
-  width: 280px; /* Reduzido para dar espaçamento */
-  height: 380px; /* Reduzido para dar espaçamento */
+  width: 210px; /* Reduzido para dar espaçamento */
+  height: 300px; /* Reduzido para dar espaçamento */
   border-radius: 20px; /* Bordas arredondadas */
 }
-
 
 /* Carta atual com maior z-index */
 .current-card {
   z-index: 2;
 }
-
 
 .blue-card{
   border: 6px solid #61c5ff;
