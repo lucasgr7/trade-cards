@@ -68,10 +68,6 @@ export const useCardSwipe = (
                     console.log('Swipe Up Detected:', cards.value[cards.value.length - 1]);
                     onSwipeUp();
 
-                    // Remove a carta do topo
-                    cards.value.pop();
-                    remainingCards.value--;
-
                     // Resetar a carta
                     gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: 0 });
 
