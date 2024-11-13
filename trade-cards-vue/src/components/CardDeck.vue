@@ -26,20 +26,16 @@ const isReStacking = ref(false);
 // Contador de cartas restantes
 const remainingCards = ref(cards.value.length);
 
-// Posições de toque
-let touchStartX = 0;
-let touchMoveX = 0;
 
 // Importar e utilizar composable de swipe (presumivelmente)
 const { startSwipe, moveSwipe, endSwipe, recarregarPilha, removeCard } = useCardSwipe(
-  touchStartX,
-  touchMoveX,
   currentCardRef,
   cards,
   remainingCards,
   isReStacking,
   stackedCardRefs,
-  []
+  [],
+  handleUsarCarta
 );
 
 watch(partida, (newPartida) => {
