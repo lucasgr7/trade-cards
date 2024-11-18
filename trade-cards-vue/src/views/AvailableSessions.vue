@@ -61,23 +61,23 @@ function leave() {
   <div class="flex flex-col items-center justify-between p-4
     border border-white rounded-xl bg-trade-blue-100
     w-screen h-screen">
-    <div class="flex flex-col w-full items-center justify-center mt-4 gap-y-4">
-      <button @click="leave" class="absolute top-1 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+    <div class="flex w-full items-center ">
+      <button @click="leave" class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-      <h1 class="text-4xl font-black text-outline-blue mt-4">Salas disponíveis</h1>
-      <span class="text-trade-blue-900 text-4xl">{{ getSessionsCount() }}</span>
+      <h1 class="text-3xl font-black text-outline-blue">Salas disponíveis</h1>
     </div>
+    <span class="text-trade-blue-900 text-3xl border bg-white rounded-full p-2 w-14">{{ getSessionsCount() }}</span>
     <div class="text-trade-blue-900 bg-trade-blue-100 border-4 rounded-2xl border-trade-blue-900 border-b-0">
-      <div class="max-h-96 overflow-y-auto">
+      <div class="max-h-96 overflow-y-auto max-w-80">
         <table class="w-20">
           <thead class="bg-trade-blue-100 sticky top-0 z-10">
             <tr>
-              <th class="py-5 px-7 border-b-2 border-trade-blue-900">Sala</th>
-              <th class="py-5 px-7 border-b-2 border-trade-blue-900">Jogadores</th>
-              <th class="py-5 px-7 border-b-2 border-trade-blue-900">Status</th>
+              <th class="py-5 px-6 border-b-2 border-trade-blue-900">Sala</th>
+              <th class="py-5 px-6 border-b-2 border-trade-blue-900">Jogadores</th>
+              <th class="py-5 px-6 border-b-2 border-trade-blue-900">Status</th>
             </tr>
           </thead>
           <tbody>

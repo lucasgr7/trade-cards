@@ -8,7 +8,7 @@ const props = defineProps<{
 
 <template>
   <div class="picture-frame">
-    <img :src="src" class="round-image" />
+    <img :src="props.src" class="round-image" />
   </div>
 </template>
 
@@ -17,7 +17,7 @@ const props = defineProps<{
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 150px;
+  width: 155px;
   height: 150px;
   border: 2px solid #ccc;
   border-radius: 50%;
