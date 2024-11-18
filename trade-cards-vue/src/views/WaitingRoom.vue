@@ -90,8 +90,8 @@ onMounted(() => {
   <div class="flex flex-col items-center justify-between p-4
     border border-white rounded-xl bg-trade-blue-600
     w-screen h-screen">
-    <div class="flex justify-between items-center w-full bg-trade-red-500 h-28 rounded-xl px-5 border border-white">
-      <UserPicture :src="getMyself.avatarUrl" />
+    <div class="flex justify-between items-center w-[20rem] bg-trade-red-500 h-24 rounded-xl px-5 border border-white mt-12">
+      <UserPicture :src="getMyself.avatarUrl"/>
       <div class="flex flex-col">
         <h1 class="text-3xl truncate w-full">{{ getMyself.nickname }}</h1>
         <p>{{ randomSentence }}</p>
@@ -122,7 +122,7 @@ onMounted(() => {
         class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl">
         Jogar
       </button>
-      <button v-else class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl">
+      <button v-else class="border border-white rounded-full py-4 px-10 bg-trade-red-500 font-bold text-xl">
         Acelerar o ínicio
       </button>
     </div>
