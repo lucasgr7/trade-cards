@@ -6,14 +6,14 @@ import { CardType } from '@/enums/cardType';
 import { useRoute, useRouter } from 'vue-router';
 import { usePartidas } from '../composables/usePartidas';
 import { usePlayer } from '@/composables/usePlayer';
-import { useCardsInGame } from '@/composables/useCardsInGame';
+import { usePlayerCardTracker } from '@/composables/useCardsInGame';
 import { Cartas } from 'type';
 
 const route = useRoute();
 const router = useRouter();
 const { getMyself } = usePlayer();
 const { partida, initialize, usarCarta, subscribeToChanges } = usePartidas(getMyself);
-const { cartasDeck } = useCardsInGame();
+const { cartasDeck } = usePlayerCardTracker();
 const selectedActionCard = ref<Cartas>();
 const selectedObjectCard = ref<Cartas>();
 const selectedConditionCard = ref<Cartas>();
@@ -29,7 +29,6 @@ onMounted(async () => {
   await initialize(route, router);
   isSubscribed.value = true;
   subscribeToChanges(Number(route.params.id), (payload) => {
-    cartasDeck.value = payload.cartas_disponiveis;
     isSubscribed.value = true;
   });
 });
@@ -57,7 +56,6 @@ function onUsarCarta(carta: any) {
   }
 
   selectedCard.value = carta;
-  //atualiza o deck mostrado na tela
   cardDeckRef.value?.removeCard(selectedCard.value);
 }
 
@@ -67,7 +65,7 @@ function onUsarCarta(carta: any) {
     border border-white rounded-xl bg-trade-blue-50
     w-screen h-screen">
     <div class="flex w-full items-center justify-between">
-      <h1 class="text-4xl font-black text-outline-blue mt-4 mb-4 pl-6">Trade-Cards {{ partida?.sala_id }}</h1> 
+      <h1 class="text-4xl font-black text-outline-blue mt-4 mb-4 pl-6">Trade-Cards {{ partida?.id }}</h1> 
       <button @click="leave" class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -88,7 +86,7 @@ function onUsarCarta(carta: any) {
       />
     </div>
     <CardDeck ref="cardDeckRef" 
-      :cards="cartasDeck" @usarCarta="onUsarCarta"
+      @usarCarta="onUsarCarta"
       :isSubscribedUpdate="isSubscribed"/>
   </div>
 </template>
