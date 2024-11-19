@@ -8,15 +8,16 @@ import { usePartidas } from '../composables/usePartidas';
 import { usePlayer } from '@/composables/usePlayer';
 import { usePlayerCardTracker } from '@/composables/useCardsInGame';
 import { Cartas } from 'type';
+import { useSerializedStorage } from '@/util/storage';
 
 const route = useRoute();
 const router = useRouter();
 const { getMyself } = usePlayer();
 const { partida, initialize, usarCarta, subscribeToChanges } = usePartidas(getMyself);
 const { cartasDeck } = usePlayerCardTracker();
-const selectedActionCard = ref<Cartas>();
-const selectedObjectCard = ref<Cartas>();
-const selectedConditionCard = ref<Cartas>();
+const selectedActionCard = useSerializedStorage<Cartas | null>('selectedActionCard', null);
+const selectedObjectCard = useSerializedStorage<Cartas | null>('selectedObjectCard', null);
+const selectedConditionCard = useSerializedStorage<Cartas | null>('selectedConditionCard', null);
 const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
 const cardPiles = [
   { type: CardType.Action, card: selectedActionCard },
@@ -31,6 +32,7 @@ onMounted(async () => {
   subscribeToChanges(Number(route.params.id), (payload) => {
     isSubscribed.value = true;
   });
+  checkUsedCards();
 });
 
 function leave() {
@@ -38,7 +40,7 @@ function leave() {
   router.push(`/waiting-room/${roomId}`);
 }
 
-function onUsarCarta(carta: any) {
+function onUsarCarta(carta: Cartas) {
   usarCarta(carta);
   const cartaTipo = carta.tipo.toLowerCase();
 
@@ -57,6 +59,14 @@ function onUsarCarta(carta: any) {
 
   selectedCard.value = carta;
   cardDeckRef.value?.removeCard(selectedCard.value);
+}
+
+function checkUsedCards() {
+  cardPiles.forEach((pile, index) => {
+    if (pile.card.value) {
+      cardPiles[index].card = pile.card;
+    }
+  });
 }
 
 </script>

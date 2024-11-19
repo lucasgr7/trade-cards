@@ -3,8 +3,8 @@ import { ref, computed, ComputedRef, Ref } from 'vue';
 import { useSupaTable } from "../util/useSupaTable";
 import { supabase } from '../util/supabase';
 import { Exceptions } from "../util/enum.exceptions";
-import { useStorage } from '@vueuse/core';
 import { Partidas, Cartas, Jogador } from "../type";
+import { useSerializedStorage } from '@/util/storage';
 
 const columns = {
   "created_at": {
@@ -40,7 +40,7 @@ const columns = {
     "nullable": true
   }
 }
-const partida: Ref<Partidas | null> = useStorage<Partidas | null>('partida', null);;
+const partida: Ref<Partidas | null> = useSerializedStorage<Partidas | null>('partida', null);;
 
 export function usePartidas(getMyself: ComputedRef<Jogador>) {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Partidas>("partidas", columns);
