@@ -93,9 +93,10 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     } else {
       throw new Error(`Carta ${carta.nome} não disponível ou count já é zero.`);
     }
+    
   
     // Atualizar a partida
-    await updateRecord(partida.id, partida);
+    await updateRecord(partida?.id, partida);
   };
 
   const usarCarta = (carta: Cartas) => {

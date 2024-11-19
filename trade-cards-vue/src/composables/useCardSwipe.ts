@@ -4,12 +4,13 @@ import { gsap } from 'gsap';
 
 export const useCardSwipe = (
     currentCardRef: Ref,
-    cards: Ref<Cartas[]>,
+    cardsInHand: Ref<Cartas[]>,
     remainingCards: Ref<number>,
     isReStacking: Ref<boolean>,
     stackedCardRefs: any,
     initialCards: any[],
-    onSwipeUp: () => void // 1. Recebe a função de callback para swipe para cima
+    onSwipeUp: () => void, // 1. Recebe a função de callback para swipe para cima
+    onDiscard: () => void, // 2. Recebe a função de callback para descartar a carta
 ) => {
     let touchStartX = 0;
     let touchMoveX = 0;
@@ -64,17 +65,8 @@ export const useCardSwipe = (
                 duration: 0.5,
                 ease: "power2.out",
                 onComplete: () => {
-                    // Invoca a função de callback passada
-                    console.log('Swipe Up Detected:', cards.value[cards.value.length - 1]);
                     onSwipeUp();
-
-                    // Resetar a carta
-                    gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: 0 });
-
-                    // Verificar se todas as cartas foram removidas
-                    if (cards.value.length === 0) {
-                        recarregarPilha();
-                    }
+                    resetCardPosition(currentCard);
                 },
             });
         } else if (deltaX > thresholdX) {
@@ -86,18 +78,9 @@ export const useCardSwipe = (
                 duration: 0.5,
                 ease: "power2.out",
                 onComplete: () => {
-                    // Remove a carta do topo
-                    console.log('Card removed right:', cards.value[cards.value.length - 1]);
-                    cards.value.pop();
-                    remainingCards.value--;
-
-                    // Resetar a carta
-                    gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: 0 });
-
-                    // Verificar se todas as cartas foram removidas
-                    if (cards.value.length === 0) {
-                        recarregarPilha();
-                    }
+                    popCard();
+                    onDiscard();
+                    resetCardPosition(currentCard);
                 },
             });
         } else if (deltaX < -thresholdX) {
@@ -109,18 +92,9 @@ export const useCardSwipe = (
                 duration: 0.5,
                 ease: "power2.out",
                 onComplete: () => {
-                    // Remove a carta do topo
-                    console.log('Card removed left:', cards.value[cards.value.length - 1]);
-                    cards.value.pop();
-                    remainingCards.value--;
-
-                    // Resetar a carta
-                    gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: 0 });
-
-                    // Verificar se todas as cartas foram removidas
-                    if (cards.value.length === 0) {
-                        recarregarPilha();
-                    }
+                    popCard();
+                    onDiscard();
+                    resetCardPosition(currentCard);
                 },
             });
         } else {
@@ -155,8 +129,8 @@ export const useCardSwipe = (
                 ease: "power2.out",
                 onComplete: () => {
                     // Resetar as cartas para o estado inicial
-                    cards.value = [...initialCards];
-                    remainingCards.value = cards.value.length;
+                    cardsInHand.value = [...initialCards];
+                    remainingCards.value = cardsInHand.value.length;
                     isReStacking.value = false;
                     stackedCardRefs.value = [];
                 },
@@ -164,16 +138,29 @@ export const useCardSwipe = (
         });
     };
 
-    const removeCard = (carta: Cartas) => {
-        const index = cards.value.indexOf(carta);
+    const removeCard = (carta?: Cartas) => {
+        const index = cardsInHand.value.indexOf(carta);
         if (index !== -1) {
-            cards.value.pop();
-            remainingCards.value--;
-            if (cards.value.length === 0) {
-                recarregarPilha();
-            }
+            popCard();
         }
     };
+
+    function popCard(){
+        cardsInHand.value.pop();
+        remainingCards.value--;
+        if (cardsInHand.value.length === 0) {
+            recarregarPilha();
+        }
+    }
+    
+    function resetCardPosition(currentCard: Cartas) {
+        gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: 0 });
+
+        // Verificar se todas as cartas foram removidas
+        if (cardsInHand.value.length === 0) {
+            recarregarPilha();
+        }
+    }
 
     return {
         startSwipe,

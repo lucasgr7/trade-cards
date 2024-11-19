@@ -79,7 +79,7 @@ export const useDeck = () => {
 
     return deckBuilder.build();
   }
-  return { generateDeck };
+  return { generateDeck, generateSingleDeck };
 };
 export { DictCartaType };
 
