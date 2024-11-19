@@ -63,14 +63,14 @@ function cancel() {
           {{ sessionNameError }}
         </span>
         <div class="flex justify-between gap-x-4">
-          <button type="submit"
-            class="w-full p-6 bg-trade-blue-800 text-white border border-trade-blue-900 rounded-full text-center">
-            Criar Sala
-          </button>
           <button type="button" @click="cancel"
-            class="w-full p-2 bg-gray-500 text-white border border-trade-blue-900 rounded-full text-center">
-            Cancelar
-          </button>
+          class="w-full p-2 bg-gray-500 text-white border border-trade-blue-900 rounded-full text-center">
+          Cancelar
+        </button>
+        <button type="submit"
+          class="w-full p-6 bg-trade-blue-800 text-white border border-trade-blue-900 rounded-full text-center">
+          Criar Sala
+        </button>
         </div>
       </div>
     </form>
