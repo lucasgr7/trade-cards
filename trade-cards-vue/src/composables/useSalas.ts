@@ -96,7 +96,7 @@ export function useSalas(myself?: Ref<Jogador>) {
   }
   
   const isMyselfCreatorSession = computed(() => {
-    return sala.value?.jogadores[0].nickname === myself?.value.nickname;
+    return sala.value?.jogadores[0]?.nickname === myself?.value.nickname;
   })
   
   function generateRandomColor() {

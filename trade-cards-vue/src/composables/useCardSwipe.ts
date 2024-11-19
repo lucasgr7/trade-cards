@@ -118,6 +118,9 @@ export const useCardSwipe = (
             gsap.set(stackedCardRefs.value, { y: -50, opacity: 0 });
 
             // Animar todas as cartas empilhadas verticalmente com um efeito de deslizamento
+
+            // esta dando erro aqui: GSAP target  not found.
+            // o initialCards esta vazio e não esta sendo preenchido
             gsap.to(stackedCardRefs.value, {
                 y: 0,
                 opacity: 1,
