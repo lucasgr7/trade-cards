@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 
 // Definição das props
-const { image, title, description, type } = defineProps({
+const { image, title, description, type, isTopCard } = defineProps({
   image: {
     type: String,
     required: true,
@@ -23,6 +23,11 @@ const { image, title, description, type } = defineProps({
   id: {
     type: Number,
     required: false,
+  },  
+  isBottomCard: {
+    type: Boolean,
+    required: false,
+    default: false,
   }
 });
 
@@ -49,63 +54,130 @@ const cardTypeClass = computed(() => {
 const icon = computed(() => typeMappings[type].icon);
 
 </script>
-
 <template>
-  <div :class="['card', cardTypeClass]">
+  <div :class="['card', cardTypeClass, { 'top-card': isBottomCard }]">
     <!-- Cabeçalho: Ícone e Título -->
-    <div class="flex items-center gap-x-2 p-4" :class="['header', cardTypeClass]">
-      <img :src="icon" alt="Icon" class="w-6 h-6 mr-2"/>
-      <h3 class="text-sm font-semibold">{{ title }}</h3>
+    <div class="header flex items-center gap-x-2" :class="['header', cardTypeClass]">
+      <img :src="icon" alt="Icon" class="icon w-6 h-6 mr-2"/>
+      <h3 class="title text-sm font-semibold">{{ title }}</h3>
     </div>
     
     <!-- Imagem Principal -->
-    <img :src="image" alt="Card Image" class="w-full h-40 object-contain" />
+    <div class="image-container">
+      <img :src="image" alt="Card Image" class="card-image h-40 object-contain" />
+    </div>
     
     <!-- Descrição -->
-    <p class="p-4 text-black text-sm border-t-zinc-300">{{ description }}</p>
+    <p class="description">{{ description }}</p>
   </div>
 </template>
-
 <style scoped>
+/* Estilos padrão da carta */
 .card {
   width: 210px;
   height: 300px;
   border-radius: 20px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  touch-action: pan-x pan-y;
+  position: relative;
+  box-shadow: inset 0 1px rgba(255,255,255,0.5), 0 4px 8px rgba(0,0,0,0.2);
 }
 
+/* Efeito glossy padrão */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -30%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.4), transparent);
+  transform: rotate(25deg);
+}
+
+/* Estilos para cartas azuis */
+.card.blue-card {
+  border: 4px solid #61c5ff;
+  background: linear-gradient(135deg, #61c5ff, #a2d2ff);
+}
+
+.card.blue-card::before {
+  background: radial-gradient(circle at center, rgba(97,197,255,0.4), transparent);
+}
+
+/* Estilos para cartas vermelhas */
+.card.red-card {
+  border: 4px solid #ffb1a3;
+  background: linear-gradient(135deg, #ffb1a3, #ff6347);
+}
+
+.card.red-card::before {
+  background: radial-gradient(circle at center, rgba(255,177,163,0.4), transparent);
+}
+
+/* Estilos para cartas verdes */
+.card.green-card {
+  border: 4px solid #178520;
+  background: linear-gradient(135deg, #178520, #a0ffa0);
+}
+
+.card.green-card::before {
+  background: radial-gradient(circle at center, rgba(23,133,32,0.4), transparent);
+}
+
+/* Restante dos estilos */
 .header {
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
   padding: 8px;
+  width: 100%;
+  border: 0 !important;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
 }
 
-.blue-card {
-  border: 6px solid #61c5ff;
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background: rgba(255,255,255,0.7);
 }
 
-.header.blue-card {
-  background-color: #61c5ff;
+.icon {
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
 }
 
-.red-card {
-  border: 6px solid #ffb1a3;
+.title {
+  color: #000;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
 }
 
-.header.red-card {
-  background-color: #ffb1a3;
+.image-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  place-items: center;
+  margin-top: 6px;
 }
 
-.green-card {
-  border: 6px solid #a3ffab;
+.card-image {
+  border-radius: 20%;
 }
 
-.header.green-card {
-  background-color: #a3ffab;
+.description {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+  border-radius: 0 0 14px 14px;
+  padding: 16px;
+  color: #000;
+  font-size: 14px;
+}
+
+.top-card {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 </style>

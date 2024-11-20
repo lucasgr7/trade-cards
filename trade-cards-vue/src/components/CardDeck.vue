@@ -15,7 +15,8 @@ const { getMyself } = usePlayer();
 const { partida, initialize } = usePartidas(getMyself);
 const route = useRoute();
 const router = useRouter();
-const cardsInHand = ref<Array<Cartas>>([]);
+const cardsInHand = ref<Cartas[]>([]);
+const cardRefs = ref<HTMLElement[]>([]);
 const previousTopCardId = ref<number | undefined>(undefined);
 const cardUsedByPlayer = ref(false); // Flag to indicate if the local player used the card
 // multiple sound effects
@@ -34,18 +35,39 @@ const remainingCards = ref(cardsInHand.value.length);
 // Flag para reempilhamento
 const isReStacking = ref(false);
 
-// Importar e utilizar composable de swipe (presumivelmente)
-const { startSwipe, moveSwipe, endSwipe, recarregarPilha, removeCard } = useCardSwipe(
-  currentCardRef,
+const topCardIndex = computed(() => cardsInHand.value.length - 1);
+
+// Touch event handlers
+const { startSwipe, moveSwipe, endSwipe, removeCard } = useCardSwipe(
+  cardRefs,
   cardsInHand,
-  remainingCards,
-  isReStacking,
-  stackedCardRefs,
-  [],
-  handleUsarCarta,
-  handleUserDicardCard
+  topCardIndex,
+  handleUsarCarta
 );
 
+// Function to compute style for each card
+function getCardStyle(index: number) {
+  const offset = (cardsInHand.value.length - index - 1) * 3.75; // Adjust offset as needed
+  return {
+    zIndex: index,
+    transform: `translate(-50%, -${offset}px)`,
+  };
+}
+
+// Function to set refs for each card
+function setCardRef(el: HTMLElement | null, index: number) {
+  if (el) {
+    cardRefs.value[index] = el;
+  }
+}
+
+
+// Touch events for the top card
+const touchEvents = {
+  touchstart: startSwipe,
+  touchmove: moveSwipe,
+  touchend: endSwipe,
+};
 // Function to play the funny sound effect
 function playFunnySoundEffect() {
   soundEffect.play();
@@ -133,44 +155,24 @@ onMounted(async () => {
 
 <template>
   <div class="card-deck">
-    <!-- Re-stack Animation: render all cards stacked vertically when re-stacking -->
-    <div v-if="isReStacking">
-      <div v-if="cardsInHand.length > 0" class="card-container current-card" :class="[cardsInHand[cardsInHand.length - 1].tipo]"
-        :style="{ zIndex: 2 }" ref="currentCardRef" @touchstart.passive="startSwipe" @touchmove.passive="moveSwipe"
-        @touchend="endSwipe">
-        <Card 
-          :image="cardsInHand[cardsInHand.length - 1].image ?? ''" 
-          :title="cardsInHand[cardsInHand.length - 1].nome"
-          :description="cardsInHand[cardsInHand.length - 1].descricao" 
-          :type="cardsInHand[cardsInHand.length - 1].tipo"
-          :id="cardsInHand[cardsInHand.length - 1].id"
-           />
-      </div>
-    </div>
-
-    <!-- Render current and next cards when not re-stacking -->
-    <div v-else>
-      <!-- Carta Próxima (Atrás) -->
-      <div v-if="cardsInHand.length > 1" class="card-container next-card" :style="{ zIndex: 2 }">
-        <Card 
-          :image="cardsInHand[cardsInHand.length - 2].image ?? ''" 
-          :title="cardsInHand[cardsInHand.length - 2].nome"
-          :description="cardsInHand[cardsInHand.length - 2].descricao" 
-          :type="cardsInHand[cardsInHand.length - 2].tipo"
-          :id="cardsInHand[cardsInHand.length - 1].id" />
-      </div>
-
-      <!-- Carta Atual (Topo) -->
-      <div v-if="cardsInHand.length > 0" class="card-container current-card"
-        :class="[cardsInHand[cardsInHand.length - 1].tipo]" :style="{ zIndex: 2 }"
-        ref="currentCardRef" @touchstart.passive="startSwipe" @touchmove.passive="moveSwipe" @touchend="endSwipe">
-        <Card 
-          :image="cardsInHand[cardsInHand.length - 1].image ?? ''" 
-          :title="cardsInHand[cardsInHand.length - 1].nome"
-          :description="cardsInHand[cardsInHand.length - 1].descricao" 
-          :type="cardsInHand[cardsInHand.length - 1].tipo"
-          :id="cardsInHand[cardsInHand.length - 1].id"/>
-      </div>
+    <!-- Render all cards in the stack -->
+    <div
+      v-for="(card, index) in cardsInHand"
+      :key="card.id"
+      class="card-container"
+      :class="{ 'current-card': index === topCardIndex }"
+      :style="getCardStyle(index)"
+      :ref="el => setCardRef(el, index)"
+      v-on="index === topCardIndex ? touchEvents : {}"
+    >
+      <Card
+        :image="card.image ?? ''"
+        :title="card.nome"
+        :description="card.descricao"
+        :type="card.tipo"
+        :id="card.id"
+        :isBottomCard="index === 0"
+      />
     </div>
   </div>
 </template>
@@ -178,37 +180,15 @@ onMounted(async () => {
 <style scoped>
 .card-deck {
   position: relative;
-  width: 100%;
-  height: 100%;
-  perspective: 1000px;
-  overflow: hidden;
+  width: 210px;
+  height: 300px;
   margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .card-container {
   position: absolute;
-  width: 210px;
-  height: 300px;
-  margin-left: 16%;
-  margin-top: 20%;
-  /* align center elements in postiion absolute */
-  background-color: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  cursor: grab;
-  user-select: none;
-  touch-action: none;
-  top: 10px;
-  left: 10px;
+  transform: translateX(-50%);
+  transition: transform 0.2s ease, top 0.2s ease;
 }
 
 /* Carta atual com maior z-index */
@@ -225,8 +205,8 @@ onMounted(async () => {
 .stacked-card {
   top: 0;
   left: 0;
-  width: 280px;
-  height: 380px;
+  max-width: 180px;
+  height: 280px;
   border-radius: 20px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   margin: 0;

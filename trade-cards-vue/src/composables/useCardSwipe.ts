@@ -1,143 +1,116 @@
-import { Ref, nextTick } from "vue";
-import { Cartas } from "./usePartidas";
+// trade-cards-vue/src/composables/useCardSwipe.ts
+import { Ref } from 'vue';
+import { Cartas } from '@/types';
 import { gsap } from 'gsap';
-import { usePlayerCardTracker } from "./useCardsInGame";
 
-export const useCardSwipe = (
-    currentCardRef: Ref,
-    cardsInHand: Ref<Cartas[]>,
-    remainingCards: Ref<number>,
-    isReStacking: Ref<boolean>,
-    stackedCardRefs: any,
-    initialCards: any[],
-    onSwipeUp: () => void, // 1. Recebe a função de callback para swipe para cima
-    onDiscard: () => void, // 2. Recebe a função de callback para descartar a carta
-) => {
-    const { resetDeck } = usePlayerCardTracker();
-    let touchStartX = 0;
-    let touchMoveX = 0;
-    let touchStartY = 0;
-    let touchMoveY = 0;
+export function useCardSwipe(
+  cardRefs: Ref<HTMLElement[]>,
+  cardsInHand: Ref<Cartas[]>,
+  topCardIndex: Ref<number>,
+  onSwipeUp: () => void,
+) {
+  let touchStartX = 0;
+  let touchStartY = 0;
+  const animationDuration = 0.15;
 
-    // Função para iniciar o swipe
-    const startSwipe = (event: TouchEvent) => {
-        const touch = event.touches[0];
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY; // Armazena a posição inicial Y
-    };
+  function startSwipe(event: TouchEvent) {
+    const touch = event.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }
 
-    // Função para mover o swipe e dar o efeito de curva
-    const moveSwipe = (event: TouchEvent) => {
-        const touch = event.touches[0];
-        touchMoveX = touch.clientX;
-        touchMoveY = touch.clientY; // Atualiza a posição Y durante o movimento
+  function moveSwipe(event: TouchEvent) {
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
 
-        const deltaX = touchMoveX - touchStartX;
-        const deltaY = touchMoveY - touchStartY;
-
-        const currentCard = currentCardRef.value;
-
-        if (currentCard) {
-            gsap.to(currentCard, {
-                x: deltaX,
-                y: deltaY, // Aplica a movimentação vertical
-                rotation: deltaX / 10,
-                duration: 0,
-                overwrite: 'auto',
-            });
-        }
-    };
-
-    // Função para finalizar o swipe e decidir se avança ou retorna
-    const endSwipe = () => {
-        const deltaX = touchMoveX - touchStartX;
-        const deltaY = touchMoveY - touchStartY;
-        const thresholdX = 50; // Limite para considerar o swipe horizontal
-        const thresholdY = -100; // Limite para considerar o swipe para cima (negativo para subir)
-        const durationAnimation = 0.08
-
-        const currentCard = currentCardRef.value;
-
-        if (!currentCard) return;
-
-        if (deltaY < thresholdY) {
-            // Swipe Up
-            gsap.to(currentCard, {
-                y: -window.innerHeight, // Move o card para fora da tela para cima
-                opacity: 0,
-                duration: durationAnimation,
-                ease: "power2.out",
-                onComplete: () => {
-                    onSwipeUp();
-                    resetCardPosition(currentCard);
-                },
-            });
-        } else if (deltaX > thresholdX) {
-            // Swipe Right
-            gsap.to(currentCard, {
-                x: 300,
-                opacity: 0,
-                rotation: 15,
-                duration: durationAnimation,
-                ease: "power2.out",
-                onComplete: () => {
-                    popCard();
-                    onDiscard();
-                    resetCardPosition(currentCard);
-                },
-            });
-        } else if (deltaX < -thresholdX) {
-            // Swipe Left
-            gsap.to(currentCard, {
-                x: -300,
-                opacity: 0,
-                rotation: -15,
-                duration: durationAnimation,
-                ease: "power2.out",
-                onComplete: () => {
-                    popCard();
-                    onDiscard();
-                    resetCardPosition(currentCard);
-                },
-            });
-        } else {
-            // Cancel Swipe
-            gsap.to(currentCard, {
-                x: 0,
-                y: 0, // Reseta a posição vertical
-                rotation: 0,
-                duration: durationAnimation,
-                ease: "power2.out",
-            });
-        }
-    };
-
-    const removeCard = (carta?: Cartas) => {
-        const index = cardsInHand.value.indexOf(carta);
-        if (index !== -1) {
-            popCard();
-        }
-    };
-
-    function popCard(){
-        cardsInHand.value.pop();
-        remainingCards.value--;
-        if (cardsInHand.value.length === 0) {
-            resetDeck();
-        }
-    }
-    
-    function resetCardPosition(currentCard: Cartas) {
-        // generate random between -5 and 5
-        const randomX = Math.floor(Math.random() * 11) * (Math.random() < 0.5 ? -1 : 1);
-
-        gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: randomX });
+    const currentCard = cardRefs.value[topCardIndex.value];
+    if (currentCard) {
+      gsap.to(currentCard, {
+        x: deltaX,
+        y: deltaY,
+        rotation: deltaX / 10,
+        duration: 0,
+      });
     }
 
-    return {
-        startSwipe,
-        moveSwipe,
-        endSwipe,
-        removeCard,
-    };
-};
+    // Mover ligeiramente a carta abaixo
+    if (topCardIndex.value > 0) {
+      const nextCard = cardRefs.value[topCardIndex.value - 1];
+      if (nextCard) {
+        gsap.to(nextCard, {
+          x: deltaX * 0.1,
+          y:
+            -((cardsInHand.value.length - (topCardIndex.value - 1) - 1) * 5) +
+            deltaY * 0.1,
+          duration: 0,
+        });
+      }
+    }
+  }
+
+  function endSwipe() {
+    const currentCard = cardRefs.value[topCardIndex.value];
+    if (!currentCard) return;
+
+    const thresholdX = 100; // Limiar para swipe horizontal
+    const thresholdY = 100; // Limiar para swipe vertical
+    const currentX = gsap.getProperty(currentCard, 'x') as number;
+    const currentY = gsap.getProperty(currentCard, 'y') as number;
+
+    if (Math.abs(currentX) > thresholdX) {
+      // Swipe horizontal: remover carta da pilha
+      gsap.to(currentCard, {
+        x: currentX > 0 ? 500 : -500,
+        y: currentY,
+        rotation: currentX > 0 ? 45 : -45,
+        duration: animationDuration,
+        onComplete: () => {
+          cardsInHand.value.pop();
+        },
+      });
+    } else if (currentY < -thresholdY) {
+      // Swipe para cima: selecionar carta
+      gsap.to(currentCard, {
+        y: -500,
+        duration: animationDuration,
+        onComplete: () => {
+          // Lógica para seleção da carta
+          onSwipeUp();
+          cardsInHand.value.pop();
+          // Ação adicional ao selecionar a carta (se necessário)
+        },
+      });
+    } else {
+      // Resetar posição
+      gsap.to(currentCard, {
+        x: 0,
+        y: 0,
+        rotation: 0,
+        duration: animationDuration,
+      });
+
+      // Resetar a carta abaixo
+      if (topCardIndex.value > 0) {
+        const nextCard = cardRefs.value[topCardIndex.value - 1];
+        if (nextCard) {
+          gsap.to(nextCard, {
+            x: 0,
+            y: -((cardsInHand.value.length - (topCardIndex.value - 1) - 1) * 5),
+            duration: animationDuration,
+          });
+        }
+      }
+    }
+  }
+  function removeCard(){
+    cardsInHand.value.pop();
+  }
+
+  return {
+    startSwipe,
+    moveSwipe,
+    endSwipe,
+    removeCard
+  };
+}

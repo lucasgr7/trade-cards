@@ -55,7 +55,6 @@ function onUsarCarta(carta: Cartas) {
   }
 
   selectedCard.value = carta;
-  cardDeckRef.value?.removeCard(selectedCard.value);
 }
 
 function checkUsedCards() {
