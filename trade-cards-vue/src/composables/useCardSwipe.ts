@@ -54,6 +54,7 @@ export const useCardSwipe = (
         const deltaY = touchMoveY - touchStartY;
         const thresholdX = 50; // Limite para considerar o swipe horizontal
         const thresholdY = -100; // Limite para considerar o swipe para cima (negativo para subir)
+        const durationAnimation = 0.08
 
         const currentCard = currentCardRef.value;
 
@@ -64,7 +65,7 @@ export const useCardSwipe = (
             gsap.to(currentCard, {
                 y: -window.innerHeight, // Move o card para fora da tela para cima
                 opacity: 0,
-                duration: 0.25,
+                duration: durationAnimation,
                 ease: "power2.out",
                 onComplete: () => {
                     onSwipeUp();
@@ -77,7 +78,7 @@ export const useCardSwipe = (
                 x: 300,
                 opacity: 0,
                 rotation: 15,
-                duration: 0.25,
+                duration: durationAnimation,
                 ease: "power2.out",
                 onComplete: () => {
                     popCard();
@@ -91,7 +92,7 @@ export const useCardSwipe = (
                 x: -300,
                 opacity: 0,
                 rotation: -15,
-                duration: 0.25,
+                duration: durationAnimation,
                 ease: "power2.out",
                 onComplete: () => {
                     popCard();
@@ -105,7 +106,7 @@ export const useCardSwipe = (
                 x: 0,
                 y: 0, // Reseta a posição vertical
                 rotation: 0,
-                duration: 0.25,
+                duration: durationAnimation,
                 ease: "power2.out",
             });
         }

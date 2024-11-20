@@ -21,7 +21,8 @@ const cardUsedByPlayer = ref(false); // Flag to indicate if the local player use
 // multiple sound effects
 const soundEffect = new Howl({
   src: ['/mp3/card-sounds-35956.mp3'],
-  preload: true
+  preload: true,
+  volume: 0.25
 });
 
 // Referências das cartas
