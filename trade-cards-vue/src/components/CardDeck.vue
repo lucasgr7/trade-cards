@@ -30,7 +30,6 @@ const stackedCardRefs = ref<Array<HTMLElement | null>>([]);
 // Contador de cartas restantes
 const remainingCards = ref(cardsInHand.value.length);
 
-
 // Flag para reempilhamento
 const isReStacking = ref(false);
 
@@ -46,7 +45,6 @@ const { startSwipe, moveSwipe, endSwipe, recarregarPilha, removeCard } = useCard
   handleUserDicardCard
 );
 
-
 // Function to play the funny sound effect
 function playFunnySoundEffect() {
   soundEffect.play();
@@ -55,8 +53,6 @@ function playFunnySoundEffect() {
 function playCardSwipeSoundEffect(){
   soundEffect.play();
 }
-
-
 
 // update cards do servidor
 watch(
@@ -191,7 +187,7 @@ onMounted(async () => {
   position: absolute;
   width: 210px;
   height: 300px;
-  margin-left: 17%;
+  margin-left: 16%;
   margin-top: 20%;
   /* align center elements in postiion absolute */
   background-color: #ffffff;
@@ -229,5 +225,23 @@ onMounted(async () => {
   border-radius: 20px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   margin: 0;
+}
+
+@media screen and (min-height: 667px) {
+  .card-container {
+    margin-left: 4.5rem;
+  }
+}
+
+@media screen and (min-height: 812px) {
+  .card-container {
+    margin-left: 5.5rem;
+  }
+}
+
+@media screen and (min-height: 1080px) {
+  .card-container {
+    margin-left: 18rem;
+  }
 }
 </style>
