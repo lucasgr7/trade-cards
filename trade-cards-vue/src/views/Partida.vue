@@ -35,9 +35,8 @@ onMounted(async () => {
   checkUsedCards();
 });
 
-function leave() {
-  const roomId = Number(route.params.id ?? 0);
-  router.push(`/waiting-room/${roomId}`);
+async function leave() {
+  router.push('/sessions');
 }
 
 function onUsarCarta(carta: Cartas) {
@@ -62,10 +61,20 @@ function onUsarCarta(carta: Cartas) {
 }
 
 function checkUsedCards() {
-  cardPiles.forEach((pile, index) => {
-    if (pile.card.value) {
-      cardPiles[index].card = pile.card;
-    }
+  if (partida.value?.estado === 'start') {
+    resetCardPiles();
+  } else {
+    cardPiles.forEach((pile, index) => {
+      if (pile.card.value) {
+        cardPiles[index].card = pile.card;
+      }
+    });
+  }
+}
+
+function resetCardPiles() {
+  cardPiles.forEach((pile) => {
+    pile.card.value = null;
   });
 }
 

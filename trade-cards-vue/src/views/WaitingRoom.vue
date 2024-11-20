@@ -8,8 +8,7 @@ import { usePlayer } from '@/composables/usePlayer';
 import { Partidas, usePartidas } from '@/composables/usePartidas';
 import { useDeck } from '@/composables/useDeck';
 import { Jogador } from 'type';
-
-const INIT_MATCH = 1;
+import { StatusMatch } from '@/enums/statusMatch';
 
 const { getMyself } = usePlayer();
 const { updateRecord,
@@ -41,14 +40,14 @@ async function startGame() {
   const match: Partidas = {
     sala_id: sala.value?.id as number,
     jogadores: sala.value?.jogadores || [],
-    estado: 'start',
+    estado: StatusMatch.WAITINGSTATUS,
     acoes: [],
     cartas_disponiveis: generateSingleDeck(sala.value, totalPartidas),
     rodada_atual: 0,
   };
 
   // insert the match in the database
-  await updateRecord(sala.value.id as number, { ...sala.value, estado: INIT_MATCH });
+  await updateRecord(sala.value.id as number, { ...sala.value, estado: StatusMatch.INITSTATUS });
   await insertRecord(match);
 }
 
@@ -62,7 +61,6 @@ async function leave() {
   }
 
   sala.value.jogadores.splice(playerIndex, 1);
-
   await updateRecord(sala.value.id as number, sala.value);
   router.push('/sessions');
 }
@@ -77,8 +75,7 @@ onMounted(() => {
   getPlayersFromSession(route.params.id);
   const roomId = Number(route.params.id ?? 0);
   subscribeToChanges(roomId, (payload: Salas) => {
-    // filter partida by sala_id
-    if (payload.id === roomId && payload.estado === INIT_MATCH) {
+    if (payload.id === roomId && payload.estado === StatusMatch.INITSTATUS) {
       router.push(`/match/${roomId}`);
     }
   });

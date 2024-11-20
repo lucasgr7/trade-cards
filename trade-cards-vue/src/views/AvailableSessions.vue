@@ -6,6 +6,7 @@ import offlineIcon from '@/assets/icons/offline_session.png';
 import { useRouter } from 'vue-router';
 import { usePlayer } from '@/composables/usePlayer';
 import { Jogador } from 'type';
+import { StatusMatch } from '@/enums/statusMatch';
 
 const { records, getPlayersCount, getSessionsCount, deleteOldRecords, updateRecord } = useSalas();
 const { getMyself } = usePlayer();
@@ -33,6 +34,11 @@ async function joinSession() {
 
   if (selectedSession.value.jogadores.find((jogador: Jogador) => jogador.nickname === player.nickname)) {
     alert('Jogador já está na sala.');
+    return;
+  }
+
+  if (selectedSession.value.estado == StatusMatch.INITSTATUS) {
+    alert('Aqui não dá pra entrar, a partida já começou!');
     return;
   }
 
@@ -86,7 +92,7 @@ function leave() {
               <td class="py-5 px-7 border-b-2 border-trade-blue-900">{{ session.name }}</td>
               <td class="py-5 px-7 border-b-2 border-trade-blue-900">{{ getPlayersCount(session) }}</td>
               <td class="py-5 px-7 border-b-2 border-trade-blue-900 pl-10">
-                <img :src="session.estado === 1 ? onlineIcon : offlineIcon" alt="Status Icon" class="w-6 h-6" />
+                <img :src="session.estado === StatusMatch.WAITINGSTATUS ? onlineIcon : offlineIcon" alt="Status Icon" class="w-6 h-6" />
               </td>
             </tr>
           </tbody>
