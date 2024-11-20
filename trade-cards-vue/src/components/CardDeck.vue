@@ -10,7 +10,7 @@ import { usePlayer } from '@/composables/usePlayer';
 import { Cartas } from 'type';
 import { Howl } from 'howler'; // Library for handling sounds
 
-const { activeCardsTracking } = usePlayerCardTracker();
+const { activeCardsTracking, resetDeck } = usePlayerCardTracker();
 const { getMyself } = usePlayer();
 const { partida, initialize } = usePartidas(getMyself);
 const route = useRoute();
@@ -104,6 +104,9 @@ function handleUsarCarta() {
 }
 
 function handleUserDicardCard() {
+  if(cardsInHand.value.length === 0) {
+    return;
+  }
   const currentCard = cardsInHand.value[cardsInHand.value.length - 1];
   previousTopCardId.value = currentCard.id;
   playCardSwipeSoundEffect();
@@ -115,7 +118,8 @@ const visibleTopCard = computed(() => {
 
 defineExpose({
   handleUsarCarta,
-  removeCard
+  removeCard,
+  resetDeck
 });
 
 onMounted(async () => {

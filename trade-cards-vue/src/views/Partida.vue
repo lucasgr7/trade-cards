@@ -6,7 +6,6 @@ import { CardType } from '@/enums/cardType';
 import { useRoute, useRouter } from 'vue-router';
 import { usePartidas } from '../composables/usePartidas';
 import { usePlayer } from '@/composables/usePlayer';
-import { usePlayerCardTracker } from '@/composables/useCardsInGame';
 import { Cartas } from 'type';
 import { useSerializedStorage } from '@/util/storage';
 
@@ -14,7 +13,6 @@ const route = useRoute();
 const router = useRouter();
 const { getMyself } = usePlayer();
 const { partida, initialize, usarCarta, subscribeToChanges } = usePartidas(getMyself);
-const { cartasDeck } = usePlayerCardTracker();
 const selectedActionCard = useSerializedStorage<Cartas | null>('selectedActionCard', null);
 const selectedObjectCard = useSerializedStorage<Cartas | null>('selectedObjectCard', null);
 const selectedConditionCard = useSerializedStorage<Cartas | null>('selectedConditionCard', null);
@@ -78,6 +76,10 @@ function resetCardPiles() {
   });
 }
 
+function refresh() {
+  cardDeckRef.value?.resetDeck();
+}
+
 </script>
 <template>
   <div class="flex flex-col items-center justify-between
@@ -107,6 +109,15 @@ function resetCardPiles() {
     <CardDeck ref="cardDeckRef" 
       @usarCarta="onUsarCarta"
       :isSubscribedUpdate="isSubscribed"/>
+    <!-- div center middle tailwindcss -->
+     <div class="flex items-center justify-center">
+      <button @click="refresh" class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+        Reimpilhar
+      </button>
+      <button @click="leave" class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+        Sair
+      </button>
+      </div>
   </div>
 </template>
 

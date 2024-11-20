@@ -1,6 +1,7 @@
 import { Ref, nextTick } from "vue";
 import { Cartas } from "./usePartidas";
 import { gsap } from 'gsap';
+import { usePlayerCardTracker } from "./useCardsInGame";
 
 export const useCardSwipe = (
     currentCardRef: Ref,
@@ -12,6 +13,7 @@ export const useCardSwipe = (
     onSwipeUp: () => void, // 1. Recebe a função de callback para swipe para cima
     onDiscard: () => void, // 2. Recebe a função de callback para descartar a carta
 ) => {
+    const { resetDeck } = usePlayerCardTracker();
     let touchStartX = 0;
     let touchMoveX = 0;
     let touchStartY = 0;
@@ -62,7 +64,7 @@ export const useCardSwipe = (
             gsap.to(currentCard, {
                 y: -window.innerHeight, // Move o card para fora da tela para cima
                 opacity: 0,
-                duration: 0.5,
+                duration: 0.25,
                 ease: "power2.out",
                 onComplete: () => {
                     onSwipeUp();
@@ -75,7 +77,7 @@ export const useCardSwipe = (
                 x: 300,
                 opacity: 0,
                 rotation: 15,
-                duration: 0.5,
+                duration: 0.25,
                 ease: "power2.out",
                 onComplete: () => {
                     popCard();
@@ -89,7 +91,7 @@ export const useCardSwipe = (
                 x: -300,
                 opacity: 0,
                 rotation: -15,
-                duration: 0.5,
+                duration: 0.25,
                 ease: "power2.out",
                 onComplete: () => {
                     popCard();
@@ -103,39 +105,10 @@ export const useCardSwipe = (
                 x: 0,
                 y: 0, // Reseta a posição vertical
                 rotation: 0,
-                duration: 0.5,
+                duration: 0.25,
                 ease: "power2.out",
             });
         }
-    };
-
-    // Função para recarregar a pilha de cartas (reempilhamento)
-    const recarregarPilha = () => {
-        isReStacking.value = true;
-
-        nextTick(() => {
-            // Resetar as posições iniciais das cartas empilhadas
-            gsap.set(stackedCardRefs.value, { y: -50, opacity: 0 });
-
-            // Animar todas as cartas empilhadas verticalmente com um efeito de deslizamento
-
-            // esta dando erro aqui: GSAP target  not found.
-            // o initialCards esta vazio e não esta sendo preenchido
-            gsap.to(stackedCardRefs.value, {
-                y: 0,
-                opacity: 1,
-                stagger: 0.1,
-                duration: 0.5,
-                ease: "power2.out",
-                onComplete: () => {
-                    // Resetar as cartas para o estado inicial
-                    cardsInHand.value = [...initialCards];
-                    remainingCards.value = cardsInHand.value.length;
-                    isReStacking.value = false;
-                    stackedCardRefs.value = [];
-                },
-            });
-        });
     };
 
     const removeCard = (carta?: Cartas) => {
@@ -149,24 +122,18 @@ export const useCardSwipe = (
         cardsInHand.value.pop();
         remainingCards.value--;
         if (cardsInHand.value.length === 0) {
-            recarregarPilha();
+            resetDeck();
         }
     }
     
     function resetCardPosition(currentCard: Cartas) {
-        gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: 0 });
-
-        // Verificar se todas as cartas foram removidas
-        if (cardsInHand.value.length === 0) {
-            recarregarPilha();
-        }
+        gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: 5 });
     }
 
     return {
         startSwipe,
         moveSwipe,
         endSwipe,
-        recarregarPilha,
         removeCard,
     };
 };

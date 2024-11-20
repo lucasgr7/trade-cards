@@ -4,13 +4,15 @@ import { usePlayer } from "./usePlayer";
 import { useDeckImages } from '@/composables/useImage';
 import { CardType, Cartas } from '@/types';
 import { Deck } from '@/type';
+import { convertToObject } from 'typescript';
 
+const activeCardsTracking = ref([] as Cartas[]);
+const activeDeckCardsBase = ref([] as Cartas[]);
 // Reactive deck of cards
 export function usePlayerCardTracker() {
   const { getImage } = useDeckImages();
   const { getMyself } = usePlayer();
   const { partida } = usePartidas(getMyself);
-  const activeCardsTracking = ref([] as Cartas[]);
 
   // Function to convert the deck into a list of cards
   function convertDeckToList(deck: Record<string, { count: number, descricao: string, tipo: CardType }>) {
@@ -41,6 +43,7 @@ export function usePlayerCardTracker() {
       const newCartasDisponiveis = newPartida?.cartas_disponiveis;
       const oldCartasDisponiveis = oldPartida?.cartas_disponiveis;
       if (newCartasDisponiveis) {
+        activeDeckCardsBase.value = newCartasDisponiveis;
         if (activeCardsTracking.value.length === 0) {
           // Initialize the deck
           activeCardsTracking.value = convertDeckToList(newCartasDisponiveis);
@@ -51,6 +54,10 @@ export function usePlayerCardTracker() {
       }
     }
   );
+
+  function resetDeck() {
+    activeCardsTracking.value = convertDeckToList(activeDeckCardsBase.value);
+  }
 
   // Function to update the deck
   function updateCartasDeck(newDeck: Deck, oldDeck: Deck) {
@@ -85,5 +92,5 @@ export function usePlayerCardTracker() {
     }
   }
 
-  return { activeCardsTracking };
+  return { activeCardsTracking, resetDeck };
 }
