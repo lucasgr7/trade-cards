@@ -127,7 +127,10 @@ export const useCardSwipe = (
     }
     
     function resetCardPosition(currentCard: Cartas) {
-        gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: 5 });
+        // generate random between -5 and 5
+        const randomX = Math.floor(Math.random() * 11) * (Math.random() < 0.5 ? -1 : 1);
+
+        gsap.set(currentCard, { x: 0, y: 0, opacity: 1, rotation: randomX });
     }
 
     return {
