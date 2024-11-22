@@ -2,9 +2,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import Card from './Card.vue';
+import ProgressBar from './ProgressBar.vue';
 import { useCardSwipe } from '@/composables/utils/useCardSwipe';
 import { usePlayerCardTracker } from '@/composables/game/usePlayerCardTracker';
-import { Cartas, Jogador } from 'type';
+import { Cartas } from 'type';
 import { Howl } from 'howler'; // Library for handling sounds
 
 const { activeCardsTracking, resetDeck } = usePlayerCardTracker();
@@ -21,7 +22,8 @@ const soundEffect = new Howl({
 });
 
 // Contador de cartas restantes
-const remainingCards = ref(cardsInHand.value.length);
+const remainingCards = computed(() => cardsInHand.value.length);
+const totalCards = ref(0);
 
 const topCardIndex = computed(() => cardsInHand.value.length - 1);
 
@@ -69,8 +71,6 @@ function playCardSwipeSoundEffect(){
 watch(
   activeCardsTracking,
   (currentActiveCards: Cartas[]) => {
-    // Update the remaining cards count
-    remainingCards.value = currentActiveCards.length;
     // Get the IDs of the old and new top cards
     const oldTopCardId = previousTopCardId.value;
     const newTopCard = currentActiveCards[currentActiveCards.length - 1];
@@ -78,6 +78,9 @@ watch(
 
     if(!oldTopCardId) {
       return;
+    }
+    if (currentActiveCards.length !== cardsInHand.value.length) {
+      cardsInHand.value = [...currentActiveCards];
     }
 
     // Check if the top card has changed
@@ -99,10 +102,10 @@ watch(
     // Update previousTopCardId for next comparison
     previousTopCardId.value = newTopCardId;
   },
-  { immediate: true, deep: true }
+  { immediate: true}
 );
 // Função para emitir o evento com a carta atual
-const emit = defineEmits(['usarCarta']);
+const emit = defineEmits(['usarCarta', 'totalCartas']);
 
 function handleUsarCarta() {
   const currentCard = cardsInHand.value[cardsInHand.value.length - 1];
@@ -110,9 +113,11 @@ function handleUsarCarta() {
   if (currentCard) {
     emit('usarCarta', currentCard);
   }
-  previousTopCardId.value = currentCard.id;
+  // previousTopCardId.value = currentCard.id;
   playCardSwipeSoundEffect();
 }
+
+// Expose the functions and variables
 
 
 defineExpose({
@@ -122,8 +127,10 @@ defineExpose({
 });
 
 onMounted(async () => {
+  cardsInHand.value = [];
   cardsInHand.value = [...activeCardsTracking.value];
   previousTopCardId.value = activeCardsTracking.value[activeCardsTracking.value.length - 1]?.id;
+  totalCards.value = activeCardsTracking.value.length;
 });
 
 </script>
@@ -149,6 +156,7 @@ onMounted(async () => {
         :isBottomCard="index === 0"
       />
     </div>
+    <ProgressBar :remainingCards="remainingCards" :totalCards="totalCards" />
   </div>
 </template>
 

@@ -5,6 +5,7 @@ import { supabase } from '../../util/supabase';
 import { Exceptions } from '../../util/enum.exceptions';
 import { Partidas, Cartas, Jogador } from "@/type";
 import { useSerializedStorage } from "../../util/storage";
+import { PartidaAcoes } from '@/enums/partidas.actions';
 
 const columns = {
   "created_at": {
@@ -107,9 +108,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
       throw Exceptions.PARTIDA_NOT_FOUND;
     }
     partida.value.acoes.push({
-      jogadorId: getMyself!.value.seed,
-      acao: 'reset_deck',
-      timestamp: new Date().toISOString()
+      acao: PartidaAcoes.resetDeck,
     });
     
     await updateRecord(partida.value.id, partida.value);

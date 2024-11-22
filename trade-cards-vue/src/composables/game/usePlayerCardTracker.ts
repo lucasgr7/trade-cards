@@ -4,6 +4,7 @@ import { usePlayer } from "../state/usePlayer";
 import { useDeckImages } from '@/composables/utils/useImage';
 import { CardType  } from '@/enums/cardType';
 import { Deck, Cartas} from '@/type';
+import { PartidaAcoes } from '@/enums/partidas.actions';
 
 const activeCardsTracking = ref([] as Cartas[]);
 const activeDeckCardsBase = ref({} as Deck);
@@ -44,15 +45,19 @@ export function usePlayerCardTracker() {
       const oldCartasDisponiveis = oldPartida?.cartas_disponiveis;
       if (newCartasDisponiveis) {
         activeDeckCardsBase.value = newCartasDisponiveis;
-        if (activeCardsTracking.value.length === 0) {
-          // Initialize the deck
+  
+        // Verificar se a última ação é 'reset_deck'
+        const lastAction = newPartida.acoes[newPartida.acoes.length - 1];
+        if (lastAction?.acao === PartidaAcoes.resetDeck) {
+          // Resetar o deck apenas se for uma ação de reset
           activeCardsTracking.value = convertDeckToList(newCartasDisponiveis);
         } else {
-          // Update the deck based on the new counts
+          // Atualizar o deck sem reset completo
           updateCartasDeck(newCartasDisponiveis, oldCartasDisponiveis || {});
         }
       }
-    }
+    },
+    { immediate: true }
   );
 
   function resetDeck() {
@@ -64,9 +69,9 @@ export function usePlayerCardTracker() {
     for (const cardName in newDeck) {
       const newCount = newDeck[cardName].count;
       const oldCount = oldDeck[cardName]?.count || 0;
-
+  
       if (newCount < oldCount) {
-        // Remove excess cards from the top of the deck
+        // Número de cartas a serem removidas
         const numToRemove = oldCount - newCount;
         let removed = 0;
         for (let i = activeCardsTracking.value.length - 1; i >= 0 && removed < numToRemove; i--) {
@@ -76,7 +81,7 @@ export function usePlayerCardTracker() {
           }
         }
       } else if (newCount > oldCount) {
-        // Add new cards to the bottom of the deck
+        // Número de cartas a serem adicionadas
         const numToAdd = newCount - oldCount;
         for (let i = 0; i < numToAdd; i++) {
           activeCardsTracking.value.push({
@@ -85,10 +90,11 @@ export function usePlayerCardTracker() {
             tipo: newDeck[cardName].tipo,
             image: getImage(cardName),
             id: activeCardsTracking.value.length + 1,
-          });
+            isGenerative: false,
+          } as Cartas);
         }
       }
-      // No action needed if counts are equal
+      // Se a contagem for igual, nenhuma ação é necessária
     }
   }
 

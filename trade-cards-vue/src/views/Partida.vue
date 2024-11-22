@@ -21,10 +21,10 @@ const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
 // GAME EVENTS
 const {
   onLeaveGame,
-  onPlayCard, 
-  allCardsSelected, 
-  selectedActionCard, 
-  selectedConditionCard, 
+  onPlayCard,
+  allCardsSelected,
+  selectedActionCard,
+  selectedConditionCard,
   selectedObjectCard,
   clearSelectedCards
 
@@ -43,13 +43,12 @@ onMounted(async () => {
 });
 
 subscribeToChanges(Number(route.params.id), (payload: Partidas) => {
-    isSubscribed.value = true;
-    // check latest acoes is "reset_deck"
-    if (payload.acoes[payload.acoes.length - 1].acao === PartidaAcoes.resetDeck) {
-      refresh();
-      clearSelectedCards();
-    }
-  });
+  isSubscribed.value = true;
+  const lastAction = payload.acoes[payload.acoes.length - 1];
+  if (lastAction?.acao === PartidaAcoes.resetDeck) {
+    clearSelectedCards();
+  }
+});
 
 function checkUsedCards() {
   if (partida.value?.estado === StatusMatch.INITSTATUS) {
@@ -86,7 +85,8 @@ function refresh() {
         </svg>
       </button>
     </div>
-    <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " v-if="!allCardsSelected">
+    <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " 
+      v-if="!allCardsSelected">
       <div class="flex gap-x-1">
         <CardChosen v-for="(pile, index) in cardPiles" :key="index" :cardType="pile.type" :noCard="!pile.card.value"
           :nome="pile.card?.value?.nome" :descricao="pile.card?.value?.descricao" :image="pile.card?.value?.image"

@@ -35,9 +35,6 @@ export interface Cartas {
 
 export interface Acoes{
   acao: PartidaAcoes,
-  cartaId: number,
-  jogadorId: string,
-  timestamp: string
 }
 
 export interface Partidas {
