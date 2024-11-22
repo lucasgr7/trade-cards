@@ -1,5 +1,5 @@
 export enum CardType {
-  Action = 'Action',
-  Object = 'Object',
-  Condition = 'Condition'
+  Action = 'action',
+  Object = 'object',
+  Condition = 'condition'
 }

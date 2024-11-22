@@ -1,5 +1,5 @@
-import { DeckBuilder, DictCartaType } from "../util/deckbuilder.class";
-import { Salas } from "./useSalas";
+import { DeckBuilder, DictCartaType } from "../../util/deckbuilder.class";
+import { Salas } from "../apis/useSalas";
 import { Deck } from "type";
 
 export const useDeck = () => {

@@ -1,9 +1,10 @@
 // __tests__/useDeck.test.ts
-import { useDeck } from "../src/composables/useDeck";
-import { Salas } from "../src/composables/useSalas";
-import { DictCartaType  } from "../src/composables/useDeck";
+import { useDeck } from "../src/composables/game/useDeck";
+import { Salas } from "../src/composables/apis/useSalas";
+import { DictCartaType  } from "../src/composables/game/useDeck";
 import { Deck, Jogador } from "../src/type";
 import { describe, expect, test } from "vitest";
+import { CardType } from "../src/enums/cardType";
 
 describe("useDeck - Função generateDeck", () => {
   const { generateDeck } = useDeck();
@@ -39,13 +40,13 @@ describe("useDeck - Função generateDeck", () => {
 
     for(let deckCardIndex in Object.values(deck)){
       const deckCard = Object.values(deck)[deckCardIndex];
-      if (deckCard.tipo === "action") {
+      if (deckCard.tipo === CardType.Action) {
         countSizeActionDeck += deckCard.count;
       }
-      else if (deckCard.tipo === "object") {
+      else if (deckCard.tipo ===  CardType.Object) {
         countSizeObjectDeck += deckCard.count;
       }
-      else if (deckCard.tipo === "condition") {
+      else if (deckCard.tipo === CardType.Condition) {
         countSizeConditionDeck += deckCard.count;
       }
       countSizeDeck += deckCard.count;
@@ -88,7 +89,7 @@ describe("useDeck - Função generateDeck", () => {
     let count = 0;
     for(let deckCardIndex in Object.values(deck)){
       const deckCard = Object.values(deck)[deckCardIndex];
-      if (deckCard.tipo === "condition") {
+      if (deckCard.tipo === CardType.Condition) {
         count += deckCard.count;
       }
     }

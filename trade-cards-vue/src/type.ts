@@ -1,8 +1,9 @@
+import { CardType } from "./enums/cardType";
 
 export interface Deck {
   [cardName: string]: {
     count: number;
-    tipo: 'action' | 'object' | 'condition';
+    tipo: CardType;
     descricao: string;
   };
 }
@@ -10,9 +11,9 @@ export interface Deck {
 export interface CartasType{
   nome: string;
   descricao: string;
-  tipo: 'action' | 'object' | 'condition';
+  tipo: CardType;
   // define se a carta tem uma condição generativa como gerar uma carta que afeta um jogador específico
-  isGenerative: boolean;
+  isGenerative?: boolean;
   specificType?: string; // Add optional specificType property
 }
 
@@ -21,7 +22,7 @@ export interface CartasType{
 export interface Cartas {
   nome: string;
   descricao: string;
-  tipo: 'action' | 'object' | 'condition';
+  tipo: CardType;
   isGenerative: boolean;
   image?: string;
   specificType?: string; // Para condições específicas

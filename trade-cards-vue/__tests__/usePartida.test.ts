@@ -2,7 +2,7 @@ import { fixturePartida } from './fixtures/usePartida.fixture';
 // __tests__/usePartida.test.ts
 import { describe, it, expect, vi, beforeEach, VitestUtils } from 'vitest';
 import { computed, nextTick, ref } from 'vue';
-import { usePartidas } from '../src/composables/usePartidas';
+import { usePartidas } from '../src/composables/apis/usePartidas';
 import { Exceptions } from '../src/util/enum.exceptions';
 import { supabase } from '../src/util/supabase';
 import { Jogador, Partidas } from '../src/type';
@@ -32,6 +32,9 @@ const getMyself = computed((): Jogador => ({
 }))
 
 describe('usePartidas', () => {
+  // mock useRoute and useRouter
+  const route = { params: { id: 1 } };
+  const router = { push: vi.fn() };
   beforeEach(() => {
     vi.clearAllMocks();
     seed.value = 'seed';
@@ -40,23 +43,22 @@ describe('usePartidas', () => {
   describe('initialize', () => {
     it('should throw MATCH_INVALID_ID when matchId is invalid', async () => {
       const { initialize } = usePartidas(getMyself);
-
-      await expect(initialize(0)).rejects.toBe(Exceptions.MATCH_INVALID_ID);
+;
+      await expect(initialize({params: {id: '0'}}, router)).rejects.toBe(Exceptions.MATCH_INVALID_ID);
     });
 
     it('should throw USER_SESSION_NOT_FOUND when user is not valid', async () => {
       seed.value = '';
       const { initialize } = usePartidas(getMyself);
 
-      await expect(initialize(1)).rejects.toBe(Exceptions.USER_SESSION_NOT_FOUND);
+      await expect(initialize(route, router)).rejects.toBe(Exceptions.USER_SESSION_NOT_FOUND);
     });
 
     it('should set partida when supabase returns data', async () => {
       const partidaData = fixturePartida;
 
       // Mock the chain of methods for supabase.from().select().eq().single()
-      const singleMock = vi.fn().mockResolvedValue({ data: partidaData, error: null });
-      const eqMock = vi.fn().mockReturnValue({ single: singleMock });
+      const eqMock = vi.fn().mockReturnValue({ data: [partidaData], error: null })
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
       const fromMock = vi.fn().mockReturnValue({ select: selectMock });
 
@@ -65,19 +67,17 @@ describe('usePartidas', () => {
 
       const { initialize, partida } = usePartidas(getMyself);
 
-      await initialize(1);
+      await initialize(route, router);
 
-      expect(partida.value).toEqual(partidaData);
       expect(fromMock).toHaveBeenCalledWith('partidas');
       expect(selectMock).toHaveBeenCalled();
       expect(eqMock).toHaveBeenCalledWith('sala_id', 1);
-      expect(singleMock).toHaveBeenCalled();
+      expect(partida.value).toEqual(partidaData);
     });
 
     it('should handle supabase error gracefully', async () => {
       // Mock supabase to return an error
-      const singleMock = vi.fn().mockResolvedValue({ data: null, error: 'Some error' });
-      const eqMock = vi.fn().mockReturnValue({ single: singleMock });
+      const eqMock = vi.fn().mockResolvedValue({ data: null, error: 'Some error' });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
       const fromMock = vi.fn().mockReturnValue({ select: selectMock });
 
@@ -86,7 +86,7 @@ describe('usePartidas', () => {
 
       const { initialize, partida } = usePartidas(getMyself);
 
-      await initialize(1);
+      await initialize(route, router);
 
       expect(partida.value).toBeNull();
     });

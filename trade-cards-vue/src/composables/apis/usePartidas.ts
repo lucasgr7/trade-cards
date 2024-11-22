@@ -1,10 +1,10 @@
 // src/composables/usePartidas.ts
 import { ref, computed, ComputedRef, Ref } from 'vue';
-import { useSupaTable } from "../util/useSupaTable";
-import { supabase } from '../util/supabase';
-import { Exceptions } from "../util/enum.exceptions";
-import { Partidas, Cartas, Jogador } from "../type";
-import { useSerializedStorage } from '@/util/storage';
+import { useSupaTable } from '../../util/useSupaTable';
+import { supabase } from '../../util/supabase';
+import { Exceptions } from '../../util/enum.exceptions';
+import { Partidas, Cartas, Jogador } from "@/type";
+import { useSerializedStorage } from "../../util/storage";
 
 const columns = {
   "created_at": {
@@ -66,6 +66,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
         router.push({ name: 'UserRegister' });
       } else {
         console.error(error);
+        throw error;
       }
     }
   };
@@ -80,7 +81,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
 
     if (error) {
       console.error('Erro ao buscar partida:', error);
-      return;
+      return null;
     }
 
     return data[0];
@@ -93,8 +94,11 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     } else {
       throw new Error(`Carta ${carta.nome} não disponível ou count já é zero.`);
     }
+    if(partida == null || partida.id == null){
+      console.error('Partida não encontrada ou id não encontrado');
+      return;
+    }
     
-  
     // Atualizar a partida
     await updateRecord(partida?.id, partida);
   };
@@ -126,15 +130,6 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
       .subscribe();
   };
   
- const verificarEstadoPartida = () => {
-    if (partida.value && partida.value.estado !== 'iniciado') {
-      redirecionarPara.value = 'wait-room';
-    }
-  };
-  const esconderCarta = () => {
-    cartaVisivel.value = null;
-  };;
-
   return {
     records,
     error,

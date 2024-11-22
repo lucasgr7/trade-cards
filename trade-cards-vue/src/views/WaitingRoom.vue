@@ -1,13 +1,13 @@
 <script lang='ts' setup>
 import { onMounted, ref } from 'vue';
 import UserPicture from '@/components/UserPicture.vue';
-import { Salas, useSalas } from '@/composables/useSalas';
+import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { useRoute } from 'vue-router';
 import router from '@/util/router';
-import { usePlayer } from '@/composables/usePlayer';
-import { Partidas, usePartidas } from '@/composables/usePartidas';
-import { useDeck } from '@/composables/useDeck';
-import { Jogador } from 'type';
+import { usePlayer } from '@/composables/state/usePlayer';
+import { usePartidas } from '@/composables/apis/usePartidas';
+import { useDeck } from '@/composables/game/useDeck';
+import { Partidas, Jogador } from 'type';
 import { StatusMatch } from '@/enums/statusMatch';
 
 const { getMyself } = usePlayer();

@@ -1,6 +1,6 @@
 import { computed, ref, Ref } from "vue";
 import { useSupaTable } from "@/util/useSupaTable";
-import { Jogador } from "./usePlayer";
+import { Jogador } from "@/type";
 import { supabase } from "@/util/supabase";
 
 export interface Salas {

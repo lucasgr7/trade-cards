@@ -2,11 +2,11 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import Card from './Card.vue';
-import { useCardSwipe } from '@/composables/useCardSwipe';
-import { usePartidas } from '@/composables/usePartidas';
+import { useCardSwipe } from '@/composables/utils/useCardSwipe';
+import { usePartidas } from '@/composables/apis/usePartidas';
 import { useRoute, useRouter } from 'vue-router';
-import { usePlayerCardTracker } from '@/composables/useCardsInGame';
-import { usePlayer } from '@/composables/usePlayer';
+import { usePlayerCardTracker } from '@/composables/game/usePlayerCardTracker';
+import { usePlayer } from '@/composables/state/usePlayer';
 import { Cartas } from 'type';
 import { Howl } from 'howler'; // Library for handling sounds
 
