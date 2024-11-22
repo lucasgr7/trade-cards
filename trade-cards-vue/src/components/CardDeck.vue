@@ -2,23 +2,18 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import Card from './Card.vue';
+import ProgressBar from './ProgressBar.vue';
 import { useCardSwipe } from '@/composables/utils/useCardSwipe';
-import { usePartidas } from '@/composables/apis/usePartidas';
-import { useRoute, useRouter } from 'vue-router';
 import { usePlayerCardTracker } from '@/composables/game/usePlayerCardTracker';
-import { usePlayer } from '@/composables/state/usePlayer';
 import { Cartas } from 'type';
 import { Howl } from 'howler'; // Library for handling sounds
 
 const { activeCardsTracking, resetDeck } = usePlayerCardTracker();
-const { getMyself } = usePlayer();
-const { partida, initialize } = usePartidas(getMyself);
-const route = useRoute();
-const router = useRouter();
 const cardsInHand = ref<Cartas[]>([]);
 const cardRefs = ref<HTMLElement[]>([]);
 const previousTopCardId = ref<number | undefined>(undefined);
 const cardUsedByPlayer = ref(false); // Flag to indicate if the local player used the card
+
 // multiple sound effects
 const soundEffect = new Howl({
   src: ['/mp3/card-sounds-35956.mp3'],
@@ -26,14 +21,9 @@ const soundEffect = new Howl({
   volume: 0.25
 });
 
-// Referências das cartas
-const currentCardRef = ref<HTMLElement | null>(null);
-const stackedCardRefs = ref<Array<HTMLElement | null>>([]);
 // Contador de cartas restantes
-const remainingCards = ref(cardsInHand.value.length);
-
-// Flag para reempilhamento
-const isReStacking = ref(false);
+const remainingCards = computed(() => cardsInHand.value.length);
+const totalCards = ref(0);
 
 const topCardIndex = computed(() => cardsInHand.value.length - 1);
 
@@ -81,8 +71,6 @@ function playCardSwipeSoundEffect(){
 watch(
   activeCardsTracking,
   (currentActiveCards: Cartas[]) => {
-    // Update the remaining cards count
-    remainingCards.value = currentActiveCards.length;
     // Get the IDs of the old and new top cards
     const oldTopCardId = previousTopCardId.value;
     const newTopCard = currentActiveCards[currentActiveCards.length - 1];
@@ -90,6 +78,9 @@ watch(
 
     if(!oldTopCardId) {
       return;
+    }
+    if (currentActiveCards.length !== cardsInHand.value.length) {
+      cardsInHand.value = [...currentActiveCards];
     }
 
     // Check if the top card has changed
@@ -111,10 +102,10 @@ watch(
     // Update previousTopCardId for next comparison
     previousTopCardId.value = newTopCardId;
   },
-  { immediate: true, deep: true }
+  { immediate: true}
 );
 // Função para emitir o evento com a carta atual
-const emit = defineEmits(['usarCarta']);
+const emit = defineEmits(['usarCarta', 'totalCartas']);
 
 function handleUsarCarta() {
   const currentCard = cardsInHand.value[cardsInHand.value.length - 1];
@@ -122,22 +113,12 @@ function handleUsarCarta() {
   if (currentCard) {
     emit('usarCarta', currentCard);
   }
-  previousTopCardId.value = currentCard.id;
+  // previousTopCardId.value = currentCard.id;
   playCardSwipeSoundEffect();
 }
 
-function handleUserDicardCard() {
-  if(cardsInHand.value.length === 0) {
-    return;
-  }
-  const currentCard = cardsInHand.value[cardsInHand.value.length - 1];
-  previousTopCardId.value = currentCard.id;
-  playCardSwipeSoundEffect();
-}
+// Expose the functions and variables
 
-const visibleTopCard = computed(() => {
-  return cardsInHand.value[cardsInHand.value.length - 1];
-})
 
 defineExpose({
   handleUsarCarta,
@@ -146,9 +127,10 @@ defineExpose({
 });
 
 onMounted(async () => {
-  await initialize(route, router);
+  cardsInHand.value = [];
   cardsInHand.value = [...activeCardsTracking.value];
   previousTopCardId.value = activeCardsTracking.value[activeCardsTracking.value.length - 1]?.id;
+  totalCards.value = activeCardsTracking.value.length;
 });
 
 </script>
@@ -174,6 +156,7 @@ onMounted(async () => {
         :isBottomCard="index === 0"
       />
     </div>
+    <ProgressBar :remainingCards="remainingCards" :totalCards="totalCards" />
   </div>
 </template>
 

@@ -2,6 +2,7 @@ import { computed, ref, Ref } from "vue";
 import { useSupaTable } from "@/util/useSupaTable";
 import { Jogador } from "@/type";
 import { supabase } from "@/util/supabase";
+import { useSerializedStorage } from "@/util/storage";
 
 export interface Salas {
   id?: number;
@@ -29,11 +30,11 @@ const columns = {
     "nullable": true
   }
 };
+const sala = useSerializedStorage<Salas | null>(null);
 
 export function useSalas(myself?: Ref<Jogador>) {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Salas>("salas", columns);
 
-  const sala = ref<Salas | null>(null);
   const players = ref<Jogador[]>([]);
 
   function getPlayersCount(sala: Salas): number {
@@ -95,10 +96,6 @@ export function useSalas(myself?: Ref<Jogador>) {
       }));
   }
   
-  const isMyselfCreatorSession = computed(() => {
-    return sala.value?.jogadores[0]?.nickname === myself?.value.nickname;
-  })
-  
   function generateRandomColor() {
     let color;
     do {
@@ -119,6 +116,10 @@ export function useSalas(myself?: Ref<Jogador>) {
     })
     .subscribe()
   }
+    
+  const isMyselfCreatorSession = computed(() => {
+    return sala.value?.jogadores[0]?.userSeed === myself?.value.userSeed;
+  })
   return {
     records,
     error,

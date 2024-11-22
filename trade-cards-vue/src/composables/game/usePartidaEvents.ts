@@ -12,7 +12,7 @@ const selectedConditionCard = useSerializedStorage<Cartas | null>('selectedCondi
 export function usePartidaEvents() {
   const router = useRouter()
   const { getMyself } = usePlayer();
-  const {  usarCarta  } = usePartidas(getMyself);;
+  const {  usarCarta, resetDeckStateAddingActionResetDeck  } = usePartidas(getMyself);;
 
   const allCardsSelected = computed(() => {
     return (
@@ -49,13 +49,26 @@ export function usePartidaEvents() {
     selectedCard.value = carta;
   }
 
+  function clearSelectedCards() {
+    selectedActionCard.value = null;
+    selectedObjectCard.value = null;
+    selectedConditionCard.value = null;
+  }
+
+  function onResetDeckBuilding(){
+    clearSelectedCards();
+    resetDeckStateAddingActionResetDeck();
+  }
+
   return {
     onLeaveGame,
     onPlayCard,
     allCardsSelected,
     selectedActionCard,
     selectedObjectCard,
-    selectedConditionCard
+    selectedConditionCard,
+    clearSelectedCards,
+    onResetDeckBuilding
   }
   
 }

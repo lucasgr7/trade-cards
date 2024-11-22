@@ -9,6 +9,7 @@ import { usePartidas } from '@/composables/apis/usePartidas';
 import { useDeck } from '@/composables/game/useDeck';
 import { Partidas, Jogador } from 'type';
 import { StatusMatch } from '@/enums/statusMatch';
+import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
 
 const { getMyself } = usePlayer();
 const { updateRecord,
@@ -17,8 +18,8 @@ const { updateRecord,
   players,
   isMyselfCreatorSession,
   subscribeToChanges } = useSalas(getMyself);
-const { generateSingleDeck, generateDeck } = useDeck();
-const { insertRecord } = usePartidas();
+const { generateDeck } = useDeck();
+const { insertRecord } = usePartidas(getMyself);
 const route = useRoute();
 
 const sentences = [
@@ -31,6 +32,7 @@ const sentences = [
   "Quer trocar figurinhas"
 ];
 const randomSentence = ref('');
+const { clearSelectedCards } = usePartidaEvents();
 
 async function startGame() {
   // what data do we need to start the game?
@@ -76,6 +78,7 @@ onMounted(() => {
   const roomId = Number(route.params.id ?? 0);
   subscribeToChanges(roomId, (payload: Salas) => {
     if (payload.id === roomId && payload.estado === StatusMatch.INITSTATUS) {
+      clearSelectedCards();
       router.push(`/match/${roomId}`);
     }
   });
