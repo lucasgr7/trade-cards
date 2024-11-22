@@ -60,8 +60,7 @@ function refresh() {
 
 </script>
 <template>
-  <div class="
-    border border-white rounded-xl bg-trade-blue-50
+  <div class="deck-table
     w-screen h-screen">
     <div class="flex w-full items-center justify-between">
       <h1 class="text-3xl font-black text-outline-blue mt-4 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1> 
@@ -71,7 +70,7 @@ function refresh() {
         </svg>
       </button>
     </div>
-    <div class="fixed inset-0 flex flex-col items-center justify-center " v-if="!allCardsSelected">
+    <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " v-if="!allCardsSelected">
       <div class="flex gap-x-1">
         <CardChosen
           v-for="(pile, index) in cardPiles"
@@ -84,6 +83,9 @@ function refresh() {
           :tipo="pile.card?.value?.tipo"
           class="w-[6.8rem] md:w-1/2 lg:w-1/5 xl:w-1/6"
         />
+      </div>
+      <div id="end-square">
+        <p>Vazio</p>
       </div>
       <CardDeck ref="cardDeckRef" 
         @usarCarta="onPlayCard"
@@ -106,4 +108,64 @@ function refresh() {
 h1 {
   text-align: center;
 }
+
+.deck-table {
+
+  /* Fundo verde com um gradiente sutil para dar profundidade */
+
+  touch-action: none;
+  /* Textura simulada usando uma imagem padrão (opcional) */
+  background: radial-gradient(circle, #006400, #2e8b57);
+  border-radius: 15px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+
+  /* Bordas arredondadas para simular a mesa */
+  border-radius: 15px;
+
+  /* Sombra interna para dar um efeito de profundidade */
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Estilos para o quadrado branco */
+#end-square {
+  width: 202px;
+  height: 292px;
+  border: 4px solid white;
+  border-radius: 20px;
+
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  
+  /* Centralizar o quadrado dentro do #deck-table */
+  position: absolute;
+  top: 58%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  
+  /* Bordas arredondadas e sombra para destaque */
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  
+  display: block;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Estilo para o texto dentro do quadrado */
+#end-square p {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-size: 26px;
+  color: white;
+  line-height: 100px; /* Centraliza verticalmente o texto */
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 600px) {
+  #deck-table {
+    height: 80vh;
+    border-radius: 10px;
+  }
+}
+
 </style>
