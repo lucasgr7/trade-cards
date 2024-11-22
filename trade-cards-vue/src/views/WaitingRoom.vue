@@ -17,7 +17,7 @@ const { updateRecord,
   players,
   isMyselfCreatorSession,
   subscribeToChanges } = useSalas(getMyself);
-const { generateSingleDeck } = useDeck();
+const { generateSingleDeck, generateDeck } = useDeck();
 const { insertRecord } = usePartidas();
 const route = useRoute();
 
@@ -42,7 +42,7 @@ async function startGame() {
     jogadores: sala.value?.jogadores || [],
     estado: StatusMatch.WAITINGSTATUS,
     acoes: [],
-    cartas_disponiveis: generateSingleDeck(sala.value, totalPartidas),
+    cartas_disponiveis: generateDeck(sala.value, totalPartidas),
     rodada_atual: 0,
   };
 
