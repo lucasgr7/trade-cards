@@ -4,19 +4,21 @@ import CardDeck from '@/components/CardDeck.vue';
 import CardChosen from '@/components/CardChosen.vue';
 import { CardType } from '@/enums/cardType';
 import { useRoute, useRouter } from 'vue-router';
-import { usePartidas } from '../composables/usePartidas';
-import { usePlayer } from '@/composables/usePlayer';
+import { usePartidas } from '../composables/apis/usePartidas';
+import { usePlayer } from '@/composables/state/usePlayer';
 import { Cartas } from 'type';
 import { useSerializedStorage } from '@/util/storage';
+import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
+import ShowHand from '@/components/ShowHand.vue';
 
 const route = useRoute();
 const router = useRouter();
 const { getMyself } = usePlayer();
-const { partida, initialize, usarCarta, subscribeToChanges } = usePartidas(getMyself);
-const selectedActionCard = useSerializedStorage<Cartas | null>('selectedActionCard', null);
-const selectedObjectCard = useSerializedStorage<Cartas | null>('selectedObjectCard', null);
-const selectedConditionCard = useSerializedStorage<Cartas | null>('selectedConditionCard', null);
+const { partida, initialize, subscribeToChanges } = usePartidas(getMyself);
 const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
+
+// GAME EVENTS
+const { onLeaveGame, onPlayCard, allCardsSelected, selectedActionCard, selectedConditionCard, selectedObjectCard} = usePartidaEvents();
 const cardPiles = [
   { type: CardType.Action, card: selectedActionCard },
   { type: CardType.Object, card: selectedObjectCard },
@@ -33,29 +35,6 @@ onMounted(async () => {
   checkUsedCards();
 });
 
-async function leave() {
-  router.push('/sessions');
-}
-
-function onUsarCarta(carta: Cartas) {
-  usarCarta(carta);
-  const cartaTipo = carta.tipo.toLowerCase();
-
-  const cardMap = {
-    [CardType.Action.toLowerCase()]: selectedActionCard,
-    [CardType.Object.toLowerCase()]: selectedObjectCard,
-    [CardType.Condition.toLowerCase()]: selectedConditionCard,
-  };
-
-  const selectedCard = cardMap[cartaTipo];
-
-  if (!selectedCard || selectedCard.value) {
-    alert('Você já escolheu uma carta desse tipo.');
-    return;
-  }
-
-  selectedCard.value = carta;
-}
 
 function checkUsedCards() {
   if (partida.value?.estado === 'start') {
@@ -81,42 +60,45 @@ function refresh() {
 
 </script>
 <template>
-  <div class="flex flex-col items-center justify-between
+  <div class="
     border border-white rounded-xl bg-trade-blue-50
     w-screen h-screen">
     <div class="flex w-full items-center justify-between">
       <h1 class="text-3xl font-black text-outline-blue mt-4 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1> 
-      <button @click="leave" class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+      <button @click="onLeaveGame" class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
-    <div class="flex gap-x-1">
-      <CardChosen
-        v-for="(pile, index) in cardPiles"
-        :key="index"
-        :cardType="pile.type"
-        :noCard="!pile.card.value"
-        :nome="pile.card?.value?.nome"
-        :descricao="pile.card?.value?.descricao"
-        :image="pile.card?.value?.image"
-        :tipo="pile.card?.value?.tipo"
-        class="w-[6.8rem] md:w-1/2 lg:w-1/5 xl:w-1/6"
-      />
-    </div>
-    <CardDeck ref="cardDeckRef" 
-      @usarCarta="onUsarCarta"
-      :isSubscribedUpdate="isSubscribed"/>
-    <!-- div center middle tailwindcss -->
-     <div class="flex items-center justify-center">
-      <button @click="refresh" class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-        Reimpilhar
-      </button>
-      <button @click="leave" class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-        Sair
-      </button>
+    <div class="fixed inset-0 flex flex-col items-center justify-center " v-if="!allCardsSelected">
+      <div class="flex gap-x-1">
+        <CardChosen
+          v-for="(pile, index) in cardPiles"
+          :key="index"
+          :cardType="pile.type"
+          :noCard="!pile.card.value"
+          :nome="pile.card?.value?.nome"
+          :descricao="pile.card?.value?.descricao"
+          :image="pile.card?.value?.image"
+          :tipo="pile.card?.value?.tipo"
+          class="w-[6.8rem] md:w-1/2 lg:w-1/5 xl:w-1/6"
+        />
       </div>
+      <CardDeck ref="cardDeckRef" 
+        @usarCarta="onPlayCard"
+        :isSubscribedUpdate="isSubscribed"/>
+      <!-- div center middle tailwindcss -->
+       <div class="flex items-center justify-center">
+        <button @click="refresh" class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+          Reimpilhar
+        </button>
+        <button @click="onLeaveGame" class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+          Sair
+        </button>
+        </div>
+    </div>
+    <ShowHand v-else/> 
   </div>
 </template>
 

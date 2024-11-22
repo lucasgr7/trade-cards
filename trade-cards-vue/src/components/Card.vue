@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 
 // Definição das props
-const { image, title, description, type, isTopCard } = defineProps({
+const { image, title, description, type, isBottomCard } = defineProps({
   image: {
     type: String,
     required: true,

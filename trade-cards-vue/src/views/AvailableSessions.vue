@@ -1,10 +1,10 @@
 <script lang='ts' setup>
 import { onMounted, ref } from 'vue';
-import { Salas, useSalas } from '@/composables/useSalas';
+import { Salas, useSalas } from '@/composables/apis/useSalas';
 import onlineIcon from '@/assets/icons/online_session.png';
 import offlineIcon from '@/assets/icons/offline_session.png';
 import { useRouter } from 'vue-router';
-import { usePlayer } from '@/composables/usePlayer';
+import { usePlayer } from '@/composables/state/usePlayer';
 import { Jogador } from 'type';
 import { StatusMatch } from '@/enums/statusMatch';
 

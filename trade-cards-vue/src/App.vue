@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSalas } from './composables/useSalas';
+import { useSalas } from './composables/apis/useSalas';
 import { onMounted } from 'vue';
 
 const {records, getRecords} = useSalas();

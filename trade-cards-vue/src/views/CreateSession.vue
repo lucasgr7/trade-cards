@@ -1,8 +1,8 @@
 <script lang='ts' setup>
 import { useRouter } from 'vue-router';
-import { Salas, useSalas } from '@/composables/useSalas';
+import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { ref } from 'vue';
-import { usePlayer } from '@/composables/usePlayer';
+import { usePlayer } from '@/composables/state/usePlayer';
 
 const router = useRouter();
 const { insertRecord, getRecords, records } = useSalas();

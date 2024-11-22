@@ -1,5 +1,5 @@
 import { CartasType, Deck } from "../type";
-import { Salas } from "../composables/useSalas";
+import { Salas } from "../composables/apis/useSalas";
 
 // Existing DictCartaType remains unchanged
 export const DictCartaType = {
@@ -9,13 +9,13 @@ export const DictCartaType = {
       descricao: 'Troca',
       tipo: 'action',
       isGenerative: false
-    } as CartasType,
+    } as unknown as unknown as CartasType,
     revelar: {
       nome: 'Revelar',
       descricao: 'Revela',
       tipo: 'action',
       isGenerative: false
-    } as CartasType
+    } as unknown as CartasType
   },
   objects: {
     assento: {
@@ -23,13 +23,13 @@ export const DictCartaType = {
       descricao: 'Assento',
       tipo: 'object',
       isGenerative: false
-    } as CartasType,
+    } as unknown as CartasType,
     presente: {
       nome: 'Presente',
       descricao: 'Presente',
       tipo: 'object',
       isGenerative: false
-    } as CartasType
+    } as unknown as CartasType
   },
   conditions: {
     aSuaEsquerda: {
@@ -37,55 +37,55 @@ export const DictCartaType = {
       descricao: 'A sua esquerda',
       tipo: 'condition',
       isGenerative: false
-    } as CartasType,
+    } as unknown as CartasType,
     aSuaDireita: {
       nome: 'A sua direita',
       descricao: 'A sua direita',
       tipo: 'condition',
       isGenerative: false
-    } as CartasType,
+    } as unknown as CartasType,
     aSuaFrente: {
       nome: 'A sua frente',
       descricao: 'A sua frente',
       tipo: 'condition',
       isGenerative: false
-    } as CartasType,
+    } as unknown as CartasType,
     mulherMaisProxima: {
       nome: 'Mulher mais próxima',
       descricao: 'Mulher mais próxima',
       tipo: 'condition',
       isGenerative: false
-    } as CartasType,
+    } as unknown as CartasType,
     homemMaisProximo: {
       nome: 'Homem mais próximo',
       descricao: 'Homem mais próximo',
       tipo: 'condition',
       isGenerative: false
-    } as CartasType,
+    } as unknown as CartasType,
     jogadorEspecifico: {
       nome: 'Jogador específico',
       descricao: 'Jogador específico',
       tipo: 'condition',
       isGenerative: true
-    } as CartasType,
+    } as unknown as CartasType,
     familiarDeJogador: {
       nome: 'Familiar de jogador',
       descricao: 'Familiar de jogador',
       tipo: 'condition',
       isGenerative: true
-    } as CartasType,
+    } as unknown as CartasType,
     qualquerMulher: {
       nome: 'Qualquer mulher',
       descricao: 'Qualquer mulher',
       tipo: 'condition',
       isGenerative: false
-    } as CartasType,
+    } as unknown as CartasType,
     qualquerHomem: {
       nome: 'Qualquer homem',
       descricao: 'Qualquer homem',
       tipo: 'condition',
       isGenerative: false
-    } as CartasType
+    } as unknown as CartasType
   }
 };
 

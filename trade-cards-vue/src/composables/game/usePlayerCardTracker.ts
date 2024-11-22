@@ -1,13 +1,12 @@
 import { ref, watch } from 'vue';
-import { usePartidas } from "./usePartidas";
-import { usePlayer } from "./usePlayer";
-import { useDeckImages } from '@/composables/useImage';
-import { CardType, Cartas } from '@/types';
-import { Deck } from '@/type';
-import { convertToObject } from 'typescript';
+import { usePartidas } from "../apis/usePartidas";
+import { usePlayer } from "../state/usePlayer";
+import { useDeckImages } from '@/composables/utils/useImage';
+import { CardType  } from '@/enums/cardType';
+import { Deck, Cartas} from '@/type';
 
 const activeCardsTracking = ref([] as Cartas[]);
-const activeDeckCardsBase = ref([] as Cartas[]);
+const activeDeckCardsBase = ref({} as Deck);
 // Reactive deck of cards
 export function usePlayerCardTracker() {
   const { getImage } = useDeckImages();
@@ -15,7 +14,7 @@ export function usePlayerCardTracker() {
   const { partida } = usePartidas(getMyself);
 
   // Function to convert the deck into a list of cards
-  function convertDeckToList(deck: Record<string, { count: number, descricao: string, tipo: CardType }>) {
+  function convertDeckToList(deck: Deck): Cartas[] {
     const lista = [];
     let count = 1;
     for (const [cardName, cardInfo] of Object.entries(deck)) {
@@ -26,6 +25,7 @@ export function usePlayerCardTracker() {
           tipo: cardInfo.tipo,
           image: getImage(cardName),
           id: count,
+          isGenerative: false,
         } as Cartas);
         count++;
       }
