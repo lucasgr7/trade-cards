@@ -42,12 +42,10 @@ const columns = {
 }
 const partida: Ref<Partidas | null> = useSerializedStorage<Partidas | null>('partida', null);;
 
-export function usePartidas(getMyself: ComputedRef<Jogador>) {
+export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Partidas>("partidas", columns);
   // storage partida
-  const cartaVisivel = ref<Cartas | null>(null);
   const partidaAtualizada = ref(false);
-  const redirecionarPara = ref<string | null>(null);
   
   const initialize = async (route: any, router: any) => {
     try {
@@ -103,13 +101,28 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     await updateRecord(partida?.id, partida);
   };
 
+  const resetDeckStateAddingActionResetDeck = async () => {
+    // create new acao on partida.acoes 
+    if(!partida.value || !partida.value.id){
+      throw Exceptions.PARTIDA_NOT_FOUND;
+    }
+    partida.value.acoes.push({
+      jogadorId: getMyself!.value.seed,
+      acao: 'reset_deck',
+      timestamp: new Date().toISOString()
+    });
+    
+    await updateRecord(partida.value.id, partida.value);
+  }
+    
+
   const usarCarta = (carta: Cartas) => {
     if(!partida.value || !partida.value.id){
       throw Exceptions.PARTIDA_NOT_FOUND;
     }
     if (partida.value) {
       partida.value.acoes.push({
-        jogadorId: getMyself.value.seed,
+        jogadorId: getMyself!.value.seed,
         cartaId: carta.id,
         acao: 'usar_carta',
         timestamp: new Date().toISOString()
@@ -129,6 +142,13 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
       })
       .subscribe();
   };
+    
+  const isMyselfAdmin = computed((): boolean => {
+    if(!partida.value || !getMyself?.value){
+      return false;
+    }
+    return partida.value?.jogadores[0]?.seed === getMyself?.value.seed;
+  })
   
   return {
     records,
@@ -147,5 +167,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador>) {
     isInitialized,
     usarCarta,
     removerCartaDoDeck,
+    isMyselfAdmin,
+    resetDeckStateAddingActionResetDeck
   };
 }

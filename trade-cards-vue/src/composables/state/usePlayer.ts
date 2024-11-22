@@ -1,7 +1,8 @@
 // src/composables/usePlayer.ts
-import { ref, computed } from 'vue';
+import { ref, computed, Ref } from 'vue';
 import { useStorage } from '@vueuse/core';
 import { Jogador } from '../type';
+import { Partidas } from '@/type';
 
 
 export function usePlayer() {
@@ -53,6 +54,7 @@ export function usePlayer() {
     creator: isCreator.value,
     isValid: !!nickname.value,
   }));
+    
 
   return {
     seed,
@@ -62,6 +64,6 @@ export function usePlayer() {
     generateAvatar,
     saveUserData,
     getMyself,
-    deleteUserData,
+    deleteUserData
   };
 }

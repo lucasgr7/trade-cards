@@ -1,4 +1,6 @@
 import { CardType } from "./enums/cardType";
+import { PartidaAcoes } from "./enums/partidas.actions";
+import { StatusMatch } from "./enums/statusMatch";
 
 export interface Deck {
   [cardName: string]: {
@@ -15,6 +17,7 @@ export interface CartasType{
   // define se a carta tem uma condição generativa como gerar uma carta que afeta um jogador específico
   isGenerative?: boolean;
   specificType?: string; // Add optional specificType property
+  userSeed?: string;
 }
 
 
@@ -29,6 +32,14 @@ export interface Cartas {
   id?: number;
 }
 
+
+export interface Acoes{
+  acao: PartidaAcoes,
+  cartaId: number,
+  jogadorId: string,
+  timestamp: string
+}
+
 export interface Partidas {
   id?: number;
   created_at?: string;
@@ -36,9 +47,9 @@ export interface Partidas {
   cartas_disponiveis: Deck;
   jogadores: Jogador[];
   rodada_atual: number;
-  acoes: any[];
+  acoes: Acoes[];
   atualizado_em?: string;
-  estado: string;
+  estado: StatusMatch;
 }
 
 // Interface para o jogador
@@ -49,4 +60,5 @@ export interface Jogador {
   creator?: boolean;
   color?: string;
   isValid?: boolean;
+  userSeed?: string;
 }
