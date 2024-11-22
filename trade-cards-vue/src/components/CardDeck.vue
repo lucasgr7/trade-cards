@@ -196,20 +196,18 @@ onMounted(async () => {
 }
 
 @media screen and (min-height: 667px) {
-  .card-container {
-    margin-left: 4.5rem;
+  .card-deck {
+    height: 200px;
   }
-}
-
-@media screen and (min-height: 812px) {
   .card-container {
-    margin-left: 5.5rem;
+    margin-left: 6.8rem;
   }
 }
 
 @media screen and (min-height: 1080px) {
   .card-container {
-    margin-left: 18rem;
+    margin-left: 6.5rem;
   }
 }
+
 </style>

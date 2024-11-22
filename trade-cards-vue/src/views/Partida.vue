@@ -90,14 +90,14 @@ function refresh() {
       <div class="flex gap-x-1">
         <CardChosen v-for="(pile, index) in cardPiles" :key="index" :cardType="pile.type" :noCard="!pile.card.value"
           :nome="pile.card?.value?.nome" :descricao="pile.card?.value?.descricao" :image="pile.card?.value?.image"
-          :tipo="pile.card?.value?.tipo" class="w-[6.8rem] md:w-1/2 lg:w-1/5 xl:w-1/6" />
+          :tipo="pile.card?.value?.tipo" class="w-[6.8rem] md:w-1/2 lg:w-1/5 xl:w-1/3" />
       </div>
       <div id="end-square">
         <p>Vazio</p>
       </div>
       <CardDeck ref="cardDeckRef" @usarCarta="onPlayCard" :isSubscribedUpdate="isSubscribed" />
       <!-- div center middle tailwindcss -->
-      <div class="flex items-center justify-center">
+       <div class="flex items-center justify-center xl:mt-10">
         <button @click="refresh" class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
           Reimpilhar
         </button>
@@ -144,7 +144,7 @@ h1 {
 
   /* Centralizar o quadrado dentro do #deck-table */
   position: absolute;
-  top: 58%;
+  top: 62%;
   left: 45%;
   transform: translate(-50%, -50%);
 
@@ -173,6 +173,19 @@ h1 {
   #deck-table {
     height: 80vh;
     border-radius: 10px;
+  }
+}
+/* Ajustes para telas Tablet */
+@media (max-width: 912px) {
+  #end-square {
+    left: 50%;
+  }
+}
+
+/* Ajustes para telas grandes */
+@media (min-width: 1200px) {
+  #end-square {
+    left: 50%;
   }
 }
 </style>
