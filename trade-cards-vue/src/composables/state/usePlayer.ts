@@ -2,15 +2,14 @@
 import { ref, computed, Ref } from 'vue';
 import { useStorage } from '@vueuse/core';
 import { Jogador } from '../type';
-import { Partidas } from '@/type';
 
+const nickname = useStorage<string>('nickname', null);
 
 export function usePlayer() {
 
   // Utilizando useStorage para persistir os dados no localStorage
   const seed = useStorage<string>('userSeed', generateRandomSeed());
   const avatarUrl = useStorage<string>('avatarUrl', getAvatarUrl(seed.value));
-  const nickname = useStorage<string>('nickname', null);
 
   // Computed para determinar se o usuário é o criador
   const isCreator = ref(false);
