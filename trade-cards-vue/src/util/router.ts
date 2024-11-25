@@ -5,6 +5,7 @@ import AvailableSessions from "@/views/AvailableSessions.vue";
 import CreateSession from "@/views/CreateSession.vue";
 import WaitingRoom from "@/views/WaitingRoom.vue";
 import PickDeckView from "@/views/PickDeckView.vue";
+import JokerCardCreator from "@/views/JokerCardCreator.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -32,12 +33,17 @@ const routes: Array<RouteRecordRaw> = [
     path: "/waiting-room/:id",
     name: "WaitingRoom",
     component: WaitingRoom,
-    props: true,
+    props: true, 
   },
   {
     path: "/pick-deck/:id",
     name: "PickDeck",
     component: PickDeckView,
+  },
+  {
+    path: "/create-joker-card/:id/:deck",
+    name: "JokerCardCreator",
+    component: JokerCardCreator,
   },
 ];
 

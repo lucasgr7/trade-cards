@@ -28,7 +28,12 @@ const { image, title, description, type, isBottomCard } = defineProps({
     type: Boolean,
     required: false,
     default: false,
-  }
+  },
+  isJokerCard: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 // Mapeamento de tipos para classes de cor e ícones
@@ -62,23 +67,25 @@ const cardTypeClass = computed(() => {
 const icon = computed(() => typeMappings[type]?.icon ?? '');
 
 </script>
+
 <template>
   <div :class="['card', cardTypeClass, { 'top-card': isBottomCard }]">
     <!-- Cabeçalho: Ícone e Título -->
     <div class="header flex items-center gap-x-2" :class="['header', cardTypeClass]">
-      <img :src="icon" alt="Icon" class="icon w-6 h-6 mr-2"/>
+      <img v-if="!isJokerCard" :src="icon" alt="Icon" class="icon w-6 h-6 mr-2"/>
       <h3 class="title text-sm font-semibold">{{ title }}</h3>
     </div>
     
     <!-- Imagem Principal -->
     <div class="image-container">
-      <img :src="image" alt="Card Image" class="card-image h-40 object-contain" />
+      <img v-if="!isJokerCard" :src="image" alt="Card Image" class="card-image h-40 object-contain" />
     </div>
     
     <!-- Descrição -->
-    <p class="description">{{ description }}</p>
+    <p class="description break-words whitespace-pre-wrap">{{ description }}</p>
   </div>
 </template>
+
 <style scoped>
 /* Estilos padrão da carta */
 .card {
