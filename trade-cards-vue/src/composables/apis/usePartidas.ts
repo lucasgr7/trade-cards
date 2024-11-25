@@ -5,7 +5,7 @@ import { supabase } from '../../util/supabase';
 import { Exceptions } from '../../util/enum.exceptions';
 import { Partidas, Cartas, Jogador } from "@/type";
 import { useSerializedStorage } from "../../util/storage";
-import { PartidaAcoes } from '@/enums/partidas.actions';
+import { PartidaAcoes } from '../../enums/partidas.actions';
 
 const columns = {
   "created_at": {

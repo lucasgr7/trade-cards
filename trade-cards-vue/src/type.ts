@@ -10,14 +10,31 @@ export interface Deck {
   };
 }
 
+export enum DeckGameType {
+  Sun = 'sun',
+  Moon = 'moon',
+}
+
+export enum CardTypeV2 {
+  Action = 'action',
+  Object = 'object',
+  Condition = 'condition',
+  Conection = 'connection',
+  Color = 'color'
+}
+
+export enum Rarity{
+  common = 'common',
+  rare = 'rare',
+  epic = 'epic',
+  joker = 'joker'
+}
+
 export interface CartasType{
-  nome: string;
-  descricao: string;
-  tipo: CardType;
-  // define se a carta tem uma condição generativa como gerar uma carta que afeta um jogador específico
-  isGenerative?: boolean;
-  specificType?: string; // Add optional specificType property
-  userSeed?: string;
+  nome: string; // seria o nome da carta apresentando "Homem", "Mulher", "Verde", "Calça"
+  input: string; // seria o input que vai para o LLM gerar a palavra como "na cor Verde", "usando a calça"
+  type: CardTypeV2;
+  rarity: Rarity
 }
 
 

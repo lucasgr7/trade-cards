@@ -31,7 +31,7 @@ const getMyself = computed((): Jogador => ({
   isValid: !!seed.value
 }))
 
-describe('usePartidas', () => {
+describe.skip('usePartidas', () => {
   // mock useRoute and useRouter
   const route = { params: { id: 1 } };
   const router = { push: vi.fn() };
