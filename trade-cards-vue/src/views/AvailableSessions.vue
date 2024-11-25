@@ -75,7 +75,7 @@ function leave() {
       </button>
       <h1 class="text-3xl font-black text-outline-blue">Salas disponíveis</h1>
     </div>
-    <span class="text-trade-blue-900 text-3xl border bg-white rounded-full p-2 w-14">{{ getSessionsCount() }}</span>
+    <span class="text-trade-blue-900 text-3xl border bg-white rounded-full p-2 w-14 text-center">{{ getSessionsCount() }}</span>
     <div class="text-trade-blue-900 bg-trade-blue-100 border-4 rounded-2xl border-trade-blue-900 border-b-0">
       <div class="max-h-96 overflow-y-auto max-w-80">
         <table class="w-20">

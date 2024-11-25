@@ -1,14 +1,20 @@
 <script lang='ts' setup>
+import { useSalas } from '@/composables/apis/useSalas';
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
 const router = useRouter();
+const { sala } = useSalas();
+const selectedDeck = ref('');
 
 function leave() {
   router.push('/');
 }
 
-function selectDeck(deckName: string) {
-  console.log(`O baralho escolhido foi: ${deckName}`);
+function selectDeck(deck: string) {
+  selectedDeck.value = deck;
+  console.log(`O baralho escolhido foi: ${deck}`);
+  router.push({ name: 'JokerCardCreator', params: { id: sala.value?.id, deck } });
 }
 
 </script>
@@ -27,7 +33,7 @@ function selectDeck(deckName: string) {
     </div>
     <div class="flex flex-col">
       <div class="px-16">
-        <div class="h-[300px] w-[210px] mb-2" @click="selectDeck('Baralho-Sol')">
+        <div class="h-[300px] w-[210px] mb-2" @click="selectDeck('baralho-sol')">
           <img src="@/assets/baralho-sol.png" alt="Baralho-Sol">
         </div>
         <div class="flex justify-between pt-1 pb-8">
@@ -42,7 +48,7 @@ function selectDeck(deckName: string) {
         </div>
       </div>
       <div class="border-0 border-t-2 px-16 pt-12 border-black">
-        <div class="h-[300px] w-[210px] mb-2" @click="selectDeck('Baralho-Lua')">
+        <div class="h-[300px] w-[210px] mb-2" @click="selectDeck('baralho-lua')">
           <img src="@/assets/baralho-lua.png" alt="Baralho-Lua">
         </div>
         <div class="flex justify-between pt-2 pb-2">
