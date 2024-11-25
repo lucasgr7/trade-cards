@@ -37,7 +37,7 @@ function saveJokerCard() {
 watch(jokerCardsCount, async (newValue) => {
   if (newValue === 0) {
     console.log('Lista de cartas coringas:', jokerCardsList.value);
-    // await updateRecord(sala.value?.id as number, { ...sala.value, estado: StatusMatch.INITSTATUS });
+    await updateRecord(sala.value?.id as number, { ...sala.value, estado: StatusMatch.INITSTATUS });
   }
 });
 
