@@ -4,12 +4,12 @@ import { Salas, useSalas } from '@/composables/apis/useSalas';
 import onlineIcon from '@/assets/icons/online_session.png';
 import offlineIcon from '@/assets/icons/offline_session.png';
 import { useRouter } from 'vue-router';
-import { usePlayer } from '@/composables/state/usePlayer';
 import { Jogador } from 'type';
 import { StatusMatch } from '@/enums/statusMatch';
+import { usePlayerStore } from '@/state/usePlayerStore';
 
 const { records, getPlayersCount, getSessionsCount, deleteOldRecords, updateRecord } = useSalas();
-const { getMyself } = usePlayer();
+const { getMyself } = usePlayerStore();
 const router = useRouter();
 
 const selectedSession = ref<Salas | null>(null);
@@ -25,7 +25,7 @@ function selectSession(session: Salas) {
 async function joinSession() {
   if (!selectedSession.value) return;
 
-  const player = getMyself.value
+  const player = getMyself
 
   if (!player.avatarUrl || !player.nickname) {
     alert('Dados do jogador não encontrados.');

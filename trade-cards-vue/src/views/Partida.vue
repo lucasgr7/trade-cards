@@ -5,17 +5,17 @@ import CardChosen from '@/components/CardChosen.vue';
 import { CardType } from '@/enums/cardType';
 import { useRoute, useRouter } from 'vue-router';
 import { usePartidas } from '../composables/apis/usePartidas';
-import { usePlayer } from '@/composables/state/usePlayer';
 import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
 import ShowHand from '@/components/ShowHand.vue';
 import { StatusMatch } from '@/enums/statusMatch';
 import { Partidas } from '@/type';
 import { PartidaAcoes } from '@/enums/partidas.actions';
+import { usePlayerStore } from '@/state/usePlayerStore';
 
 const route = useRoute();
 const router = useRouter();
-const { getMyself } = usePlayer();
-const { partida, initialize, subscribeToChanges, isMyselfAdmin } = usePartidas(getMyself);
+const store = usePlayerStore();
+const { partida, initialize, subscribeToChanges, isMyselfAdmin } = usePartidas(store.getMyself);
 const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
 
 // GAME EVENTS
@@ -40,6 +40,7 @@ onMounted(async () => {
   await initialize(route, router);
   isSubscribed.value = true;
   checkUsedCards();
+  console.log(store.deck)
 });
 
 subscribeToChanges(Number(route.params.id), (payload: Partidas) => {
@@ -68,9 +69,6 @@ function resetCardPiles() {
   });
 }
 
-function refresh() {
-  cardDeckRef.value?.resetDeck();
-}
 
 </script>
 <template>
@@ -98,7 +96,7 @@ function refresh() {
       <CardDeck ref="cardDeckRef" @usarCarta="onPlayCard" :isSubscribedUpdate="isSubscribed" />
       <!-- div center middle tailwindcss -->
        <div class="flex items-center justify-center xl:mt-10">
-        <button @click="refresh" class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+        <button @click="store.shuffleDeck" class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
           Reimpilhar
         </button>
         <button @click="onLeaveGame"

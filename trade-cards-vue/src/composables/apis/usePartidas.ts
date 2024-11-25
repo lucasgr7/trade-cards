@@ -43,7 +43,7 @@ const columns = {
 }
 const partida: Ref<Partidas | null> = useSerializedStorage<Partidas | null>('partida', null);;
 
-export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
+export function usePartidas(getMyself: Jogador | null) {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Partidas>("partidas", columns);
   // storage partida
   const partidaAtualizada = ref(false);
@@ -55,7 +55,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
       if (!matchId) {
         throw Exceptions.MATCH_INVALID_ID;
       }
-      if (!getMyself?.value.isValid) {
+      if (!getMyself.isValid) {
         throw Exceptions.USER_SESSION_NOT_FOUND;
       }
       // should make a request to the api
@@ -121,7 +121,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
     }
     if (partida.value) {
       partida.value.acoes.push({
-        jogadorId: getMyself!.value.seed,
+        jogadorId: getMyself.seed,
         cartaId: carta.id,
         acao: 'usar_carta',
         timestamp: new Date().toISOString()
@@ -143,10 +143,10 @@ export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
   };
     
   const isMyselfAdmin = computed((): boolean => {
-    if(!partida.value || !getMyself?.value){
+    if(!partida.value || !getMyself){
       return false;
     }
-    return partida.value?.jogadores[0]?.seed === getMyself?.value.seed;
+    return partida.value?.jogadores[0]?.seed === getMyself.seed;
   })
   
   return {

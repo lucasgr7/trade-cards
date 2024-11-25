@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { CardTypeV2 } from '@/type';
+import { computed, PropType } from 'vue';
 
 // Definição das props
 const { image, title, description, type, isBottomCard } = defineProps({
   image: {
     type: String,
-    required: true,
+    required: false,
   },
   title: {
     type: String,
@@ -16,9 +17,8 @@ const { image, title, description, type, isBottomCard } = defineProps({
     required: true,
   },
   type: {
-    type: String,
-    required: true,
-    validator: (value: string) => ['action', 'object', 'condition'].includes(value),
+    type: String as PropType<CardTypeV2>,
+    required: true
   },
   id: {
     type: Number,
@@ -45,13 +45,21 @@ const typeMappings: Record<string, { class: string; icon: string }> = {
     class: 'green-card',
     icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', // Exemplo de ícone verde
   },
+  connection: {
+    class: 'yellow-card',
+    icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', // Exemplo de ícone verde
+  },
+  color: {
+    class: 'purple-card',
+    icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', // Exemplo de ícone verde
+  }
 };
 
 // Computed para obter a classe e o ícone com base no tipo
 const cardTypeClass = computed(() => {
-  return typeMappings[type].class
+  return typeMappings[type]?.class ?? 'default'
 });
-const icon = computed(() => typeMappings[type].icon);
+const icon = computed(() => typeMappings[type]?.icon ?? '');
 
 </script>
 <template>
@@ -126,6 +134,27 @@ const icon = computed(() => typeMappings[type].icon);
 .card.green-card::before {
   background: radial-gradient(circle at center, rgba(23,133,32,0.4), transparent);
 }
+
+/* Estilos para cartas amarelas */
+.card.yellow-card {
+  border: 4px solid #f7d154;
+  background: linear-gradient(135deg, #f7d154, #f7f754);
+}
+
+.card.yellow-card::before {
+  background: radial-gradient(circle at center, rgba(247,209,84,0.4), transparent);
+}
+
+/* Estilos para cartas roxas */
+.card.purple-card {
+  border: 4px solid #a35ff7;
+  background: linear-gradient(135deg, #a35ff7, #d2a2ff);
+}
+
+.card.purple-card::before {
+  background: radial-gradient(circle at center, rgba(163,95,247,0.4), transparent);
+}
+
 
 /* Restante dos estilos */
 .header {

@@ -5,11 +5,15 @@ import { Salas } from "../composables/apis/useSalas";
 export abstract class AbstractDeck {
   cards = Array<CartasType>();
   name = '';
-  percentualCommon = 0.75;
-  percentualRare = 0.2;
-  percentualEpic = 0.05;
+  percentualBasic = 40;
+  percentualCommon = 40;
+  percentualRare = 15;
+  percentualEpic = 5;
   constructor(name: string) {
     this.name = name;
+  }
+  setPercentualBasic(percentual: number){
+    this.percentualBasic = percentual;
   }
   setPercentualCommon(percentual: number){
     this.percentualCommon = percentual;
@@ -20,26 +24,39 @@ export abstract class AbstractDeck {
   setPercentualEpic(percentual: number){
     this.percentualEpic = percentual;
   }
+  validate(): boolean {
+    // the sum of all percentual  should be 1
+    return this.percentualBasic + this.percentualCommon + this.percentualRare + this.percentualEpic === 100;
+  }
   generateDeck(totalCards: number): CartasType[] {
+    if(!this.validate()){
+      throw new Error('Percentuals are not valid expected: 100, got: ' 
+        + (this.percentualBasic + this.percentualCommon + this.percentualRare + this.percentualEpic));
+    }
     // select only the common cards from the this.cards
+    const basicCards = this.cards.filter(card => card.rarity === Rarity.basic);
     const commonCards = this.cards.filter(card => card.rarity === Rarity.common);
     const rareCards = this.cards.filter(card => card.rarity === Rarity.rare);
     const epicCards = this.cards.filter(card => card.rarity === Rarity.epic);
 
     // randomly generate 75% of totalCards to be the common type
-    const commonCount = Math.floor(totalCards * this.percentualCommon);
-    const rareCount = Math.floor(totalCards * this.percentualRare);
-    const epicCount = Math.floor(totalCards * this.percentualEpic);
+    const basicCount = Math.floor(totalCards * (this.percentualBasic/100));
+    const commonCount = Math.floor(totalCards * (this.percentualCommon/100));
+    const rareCount = Math.floor(totalCards * (this.percentualRare/100));
+    const epicCount = Math.floor(totalCards * (this.percentualEpic/100));
 
     const deck = [];
+    for (let i = 0; i < basicCount; i++) {
+      deck.push(basicCards[Math.floor(Math.random() * basicCards.length -1)]);
+    }
     for (let i = 0; i < commonCount; i++) {
-      deck.push(commonCards[Math.floor(Math.random() * commonCards.length)]);
+      deck.push(commonCards[Math.floor(Math.random() * commonCards.length-1)]);
     }
     for (let i = 0; i < rareCount; i++) {
-      deck.push(rareCards[Math.floor(Math.random() * rareCards.length)]);
+      deck.push(rareCards[Math.floor(Math.random() * rareCards.length-1)]);
     }
     for (let i = 0; i < epicCount; i++) {
-      deck.push(epicCards[Math.floor(Math.random() * epicCards.length)]);
+      deck.push(epicCards[Math.floor(Math.random() * epicCards.length-1)]);
     }
     return deck;
   }
@@ -48,8 +65,8 @@ export abstract class AbstractDeck {
 export class SunDeck extends AbstractDeck {
   constructor(name: string){
     super(name);
-    this.cards.push({ nome: 'Troca', type: CardTypeV2.Action, input: 'troca', rarity: Rarity.common });
-    this.cards.push({ nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar', rarity: Rarity.common });
+    this.cards.push({ nome: 'Troca', type: CardTypeV2.Action, input: 'troca', rarity: Rarity.basic });
+    this.cards.push({ nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar', rarity: Rarity.basic });
 
     // Objeto
     this.cards.push({ nome: 'Assento', type: CardTypeV2.Object, input: 'o assento', rarity: Rarity.common });
@@ -83,8 +100,8 @@ export class SunDeck extends AbstractDeck {
 export class MoonDeck extends AbstractDeck {
   constructor(name: string){
     super(name);
-    this.cards.push({ nome: 'Troca', type: CardTypeV2.Action, input: 'troca', rarity: Rarity.common });
-    this.cards.push({ nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar', rarity: Rarity.common });
+    this.cards.push({ nome: 'Troca', type: CardTypeV2.Action, input: 'troca', rarity: Rarity.basic });
+    this.cards.push({ nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar', rarity: Rarity.basic });
 
     // Objeto
     this.cards.push({ nome: 'Assento', type: CardTypeV2.Object, input: 'o assento', rarity: Rarity.common });

@@ -32,7 +32,7 @@ const columns = {
 };
 const sala = useSerializedStorage<Salas | null>(null);
 
-export function useSalas(myself?: Ref<Jogador>) {
+export function useSalas(myself?: Jogador) {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Salas>("salas", columns);
 
   const players = ref<Jogador[]>([]);
@@ -89,12 +89,12 @@ export function useSalas(myself?: Ref<Jogador>) {
 
     sala.value = salaData;
     players.value = salaData.jogadores
-      .filter((jogador: Jogador) => jogador.nickname !== myself?.value.nickname)
+      .filter((jogador: Jogador) => jogador.nickname !== myself?.nickname)
       .map((jogador: Jogador) => ({
         ...jogador,
         color: generateRandomColor()
       }));
-  }
+  } 
   
   function generateRandomColor() {
     let color;
@@ -118,7 +118,7 @@ export function useSalas(myself?: Ref<Jogador>) {
   }
     
   const isMyselfCreatorSession = computed(() => {
-    return sala.value?.jogadores[0]?.userSeed === myself?.value.userSeed;
+    return sala.value?.jogadores[0]?.userSeed === myself?.userSeed;
   })
   return {
     records,

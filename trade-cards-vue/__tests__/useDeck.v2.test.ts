@@ -24,15 +24,24 @@ describe("useDeck - Função generateDeck", () => {
     };
   };
 
-  test("deve gerar o deck sun contendo 75% cartas comuns", () => {
+  test("deve gerar o deck sun contendo cartas comuns e básicas", () => {
     const deck: CartasType[] = generateDeck(DeckGameType.Sun);
 
     // assert 75% de cartas comuns
     const totalCartas = deck.length;
     const totalCartasComuns = deck.filter((carta) => carta.rarity === Rarity.common).length;
-    const percentualComum = totalCartasComuns / totalCartas;
-    //higher or equal .75
-    expect(percentualComum).toBeGreaterThanOrEqual(0.75);
+    const totalCartasBasicas = deck.filter((carta) => carta.rarity === Rarity.basic).length;
+    // expect 45% of basic cards to be or 'Trocar' or 'Revelar'
+    const totalCartasBasicasTrocar = deck.filter((carta) => carta.name === 'Trocar').length;
+    const totalCartasBasicasRevelar = deck.filter((carta) => carta.name === 'Revelar').length;
+
+    // should contain any quantity of these cards
+    expect(totalCartasBasicas).toBeGreaterThan(0);
+    expect(totalCartasBasicasTrocar).toBeGreaterThan(0);
+    expect(totalCartasBasicasRevelar).toBeGreaterThan(0);
+
+    // should be equal to 45% or more
+    expect(totalCartasBasicasTrocar + totalCartasBasicasRevelar).toBeGreaterThanOrEqual(totalCartasBasicas * 0.45);
   });
 
   test("deve gerar o deck sun conter cartas raras e épicas", () => {
@@ -54,9 +63,10 @@ describe("useDeck - Função generateDeck", () => {
     // assert 60% de cartas comuns
     const totalCartas = deck.length;
     const totalCartasComuns = deck.filter((carta) => carta.rarity === Rarity.common).length;
-    const percentualComum = totalCartasComuns / totalCartas;
-    //higher or equal .60
-    expect(percentualComum).toBeLessThanOrEqual(0.61);
+    const totalCartasBasicas = deck.filter((carta) => carta.rarity === Rarity.basic).length;
+    // should contain any quantity of these cards
+    expect(totalCartasBasicas).toBeGreaterThan(0);
+    expect(totalCartasComuns).toBeGreaterThan(0);
   })
 
   test('Deve gerar deck Moon contendo cartas raras e épicas', () => {

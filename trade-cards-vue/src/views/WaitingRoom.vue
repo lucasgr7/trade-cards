@@ -4,14 +4,15 @@ import UserPicture from '@/components/UserPicture.vue';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { useRoute } from 'vue-router';
 import router from '@/util/router';
-import { usePlayer } from '@/composables/state/usePlayer';
 import { usePartidas } from '@/composables/apis/usePartidas';
 import { useDeck } from '@/composables/game/useDeck';
 import { Partidas, Jogador } from 'type';
 import { StatusMatch } from '@/enums/statusMatch';
 import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
+import { usePlayerStore } from '@/state/usePlayerStore';
 
-const { getMyself } = usePlayer();
+const store = usePlayerStore();
+const {getMyself} = store;
 const { updateRecord,
   getPlayersFromSession,
   sala,
@@ -44,7 +45,7 @@ async function startGame() {
     jogadores: sala.value?.jogadores || [],
     estado: StatusMatch.WAITINGSTATUS,
     acoes: [],
-    cartas_disponiveis: generateDeck(sala.value, totalPartidas),
+    cartas_disponiveis: '',
     rodada_atual: 0,
   };
 
@@ -56,7 +57,7 @@ async function startGame() {
 async function leave() {
   if (!sala.value) return;
 
-  const playerIndex = sala.value.jogadores.findIndex((jogador: Jogador) => jogador.nickname === getMyself.value.nickname);
+  const playerIndex = sala.value.jogadores.findIndex((jogador: Jogador) => jogador.nickname === getMyself.nickname);
   if (playerIndex === -1) {
     alert('Jogador não encontrado na sala.');
     return;
@@ -79,13 +80,12 @@ function pickDeck() {
 onMounted(() => {
   getRandomSentence();
   getPlayersFromSession(route.params.id);
-  const roomId = Number(route.params.id ?? 0);
-  subscribeToChanges(roomId, (payload: Salas) => {
-    if (payload.id === roomId && payload.estado === StatusMatch.INITSTATUS) {
-      clearSelectedCards();
-      router.push(`/match/${roomId}`);
-    }
-  });
+  // subscribeToChanges(roomId, (payload: Salas) => {
+  //   if (payload.id === roomId && payload.estado === StatusMatch.INITSTATUS) {
+  //     clearSelectedCards();
+  //     router.push(`/match/${roomId}`);
+  //   }
+  // });
 });
 
 </script>

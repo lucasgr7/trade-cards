@@ -24,6 +24,7 @@ export enum CardTypeV2 {
 }
 
 export enum Rarity{
+  basic = 'common',
   common = 'common',
   rare = 'rare',
   epic = 'epic',
@@ -58,7 +59,7 @@ export interface Partidas {
   id?: number;
   created_at?: string;
   sala_id: number;
-  cartas_disponiveis: Deck;
+  cartas_disponiveis: any;
   jogadores: Jogador[];
   rodada_atual: number;
   acoes: Acoes[];

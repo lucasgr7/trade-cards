@@ -1,14 +1,23 @@
 <script lang='ts' setup>
-import { useRouter } from 'vue-router';
+import { useDeck } from '@/composables/game/useDeck';
+import { DeckGameType } from '@/type';
+import { useRoute, useRouter } from 'vue-router';
+import { usePlayerStore } from '@/state/usePlayerStore';
 
 const router = useRouter();
+const route = useRoute();
+const store = usePlayerStore();
+const {generateDeck} = useDeck();
 
 function leave() {
   router.push('/');
 }
 
-function selectDeck(deckName: string) {
-  console.log(`O baralho escolhido foi: ${deckName}`);
+function selectDeck(deckType: DeckGameType) {
+  console.log(`O baralho escolhido foi: ${deckType}`);
+  const roomId = Number(route.params.id ?? 0);
+  store.deck = generateDeck(deckType)
+  router.push(`/match/${roomId}`);
 }
 
 </script>
@@ -27,7 +36,7 @@ function selectDeck(deckName: string) {
     </div>
     <div class="flex flex-col">
       <div class="px-16">
-        <div class="h-[300px] w-[210px] mb-2" @click="selectDeck('Baralho-Sol')">
+        <div class="h-[300px] w-[210px] mb-2" @click="selectDeck(DeckGameType.Sun)">
           <img src="@/assets/baralho-sol.png" alt="Baralho-Sol">
         </div>
         <div class="flex justify-between pt-1 pb-8">
@@ -42,7 +51,7 @@ function selectDeck(deckName: string) {
         </div>
       </div>
       <div class="border-0 border-t-2 px-16 pt-12 border-black">
-        <div class="h-[300px] w-[210px] mb-2" @click="selectDeck('Baralho-Lua')">
+        <div class="h-[300px] w-[210px] mb-2" @click="selectDeck(DeckGameType.Moon)">
           <img src="@/assets/baralho-lua.png" alt="Baralho-Lua">
         </div>
         <div class="flex justify-between pt-2 pb-2">

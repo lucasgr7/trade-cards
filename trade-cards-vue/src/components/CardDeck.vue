@@ -1,17 +1,16 @@
 <!-- src/components/CardDeck.vue -->
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import Card from './Card.vue';
 import ProgressBar from './ProgressBar.vue';
 import { useCardSwipe } from '@/composables/utils/useCardSwipe';
-import { usePlayerCardTracker } from '@/composables/game/usePlayerCardTracker';
-import { Cartas } from 'type';
+import { CartasType } from 'type';
 import { Howl } from 'howler'; // Library for handling sounds
+import { usePlayerStore } from '@/state/usePlayerStore';
 
-const { activeCardsTracking, resetDeck } = usePlayerCardTracker();
-const cardsInHand = ref<Cartas[]>([]);
+const  store = usePlayerStore();
+const cardsInHand = ref<CartasType[]>([]);
 const cardRefs = ref<HTMLElement[]>([]);
-const previousTopCardId = ref<number | undefined>(undefined);
 const cardUsedByPlayer = ref(false); // Flag to indicate if the local player used the card
 
 // multiple sound effects
@@ -67,43 +66,6 @@ function playCardSwipeSoundEffect(){
   soundEffect.play();
 }
 
-// update cards do servidor
-watch(
-  activeCardsTracking,
-  (currentActiveCards: Cartas[]) => {
-    // Get the IDs of the old and new top cards
-    const oldTopCardId = previousTopCardId.value;
-    const newTopCard = currentActiveCards[currentActiveCards.length - 1];
-    const newTopCardId = newTopCard?.id;
-
-    if(!oldTopCardId) {
-      return;
-    }
-    if (currentActiveCards.length !== cardsInHand.value.length) {
-      cardsInHand.value = [...currentActiveCards];
-    }
-
-    // Check if the top card has changed
-    if (oldTopCardId !== newTopCardId) {
-      if (cardUsedByPlayer.value) {
-        // The local player used the card
-        cardUsedByPlayer.value = false; // Reset the flag
-      } else {
-        // TODO: O sistem ainda não está identificando quando usuário usa uma carta
-        // The card was used by another player
-        console.log('Card was used by another player');
-        playFunnySoundEffect();
-      }
-    }
-
-    // Update the cardsInHand
-    cardsInHand.value = [...currentActiveCards];
-
-    // Update previousTopCardId for next comparison
-    previousTopCardId.value = newTopCardId;
-  },
-  { immediate: true}
-);
 // Função para emitir o evento com a carta atual
 const emit = defineEmits(['usarCarta', 'totalCartas']);
 
@@ -122,15 +84,13 @@ function handleUsarCarta() {
 
 defineExpose({
   handleUsarCarta,
-  removeCard,
-  resetDeck
+  removeCard
 });
 
 onMounted(async () => {
   cardsInHand.value = [];
-  cardsInHand.value = [...activeCardsTracking.value];
-  previousTopCardId.value = activeCardsTracking.value[activeCardsTracking.value.length - 1]?.id;
-  totalCards.value = activeCardsTracking.value.length;
+  cardsInHand.value = [...store.deck];
+  totalCards.value = store.deck.length;
 });
 
 </script>
@@ -139,8 +99,8 @@ onMounted(async () => {
   <div class="card-deck">
     <!-- Render all cards in the stack -->
     <div
-      v-for="(card, index) in cardsInHand"
-      :key="card.id"
+      v-for="(card, index) in store.deck"
+      :key="index"
       class="card-container"
       :class="{ 'current-card': index === topCardIndex }"
       :style="getCardStyle(index)"
@@ -150,9 +110,8 @@ onMounted(async () => {
       <Card
         :image="card.image ?? ''"
         :title="card.nome"
-        :description="card.descricao"
-        :type="card.tipo"
-        :id="card.id"
+        :description="card.nome"
+        :type="card.type"
         :isBottomCard="index === 0"
       />
     </div>

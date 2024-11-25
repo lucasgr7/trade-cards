@@ -4,15 +4,15 @@ import { useRouter } from "vue-router";
 import { usePartidas } from "../apis/usePartidas";
 import { CardType } from "@/enums/cardType";
 import { computed } from "vue";
-import { usePlayer } from "../state/usePlayer";
+import { usePlayerStore } from "@/state/usePlayerStore";
 
 const selectedActionCard = useSerializedStorage<Cartas | null>('selectedActionCard', null);
 const selectedObjectCard = useSerializedStorage<Cartas | null>('selectedObjectCard', null);
 const selectedConditionCard = useSerializedStorage<Cartas | null>('selectedConditionCard', null);
 export function usePartidaEvents() {
   const router = useRouter()
-  const { getMyself } = usePlayer();
-  const {  usarCarta, resetDeckStateAddingActionResetDeck  } = usePartidas(getMyself);;
+  const {getMyself} = usePlayerStore();
+  const {  usarCarta, resetDeckStateAddingActionResetDeck  } = usePartidas(getMyself);
 
   const allCardsSelected = computed(() => {
     return (

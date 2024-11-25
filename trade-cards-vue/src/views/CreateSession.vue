@@ -2,11 +2,11 @@
 import { useRouter } from 'vue-router';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { ref } from 'vue';
-import { usePlayer } from '@/composables/state/usePlayer';
+import { usePlayerStore } from '@/state/usePlayerStore';
 
 const router = useRouter();
 const { insertRecord, getRecords, records } = useSalas();
-const { getMyself } = usePlayer();
+const { getMyself, setAsCreator } = usePlayerStore();
 
 const sessionName = ref('');
 const sessionNameError = ref('');
@@ -20,8 +20,7 @@ async function createSession(event: Event) {
   }
 
   try {
-    var myself = await getMyself.value;
-    myself.creator = true;
+    setAsCreator();
     const newSession: Salas = {
       name: sessionName.value,
       jogadores: [myself],
