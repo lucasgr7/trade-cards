@@ -72,6 +72,10 @@ function getRandomSentence() {
   randomSentence.value = sentences[randomIndex];
 }
 
+function pickDeck() {
+  router.push(`/pick-deck/${sala.value?.id}`);
+}
+
 onMounted(() => {
   getRandomSentence();
   getPlayersFromSession(route.params.id);
@@ -118,12 +122,9 @@ onMounted(() => {
       <button @click="leave" class="border border-white rounded-full py-4 px-14 bg-trade-blue-50 font-bold text-xl">
         Sair
       </button>
-      <button v-if="isMyselfCreatorSession" @click="startGame"
+      <button v-if="isMyselfCreatorSession" @click="pickDeck"
         class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl">
-        Jogar
-      </button>
-      <button v-else class="border border-white rounded-full py-4 px-10 bg-trade-red-500 font-bold text-xl">
-        Acelerar o ínicio
+        Escolher Baralho
       </button>
     </div>
   </div>
