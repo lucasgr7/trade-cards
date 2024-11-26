@@ -18,6 +18,7 @@ function selectDeck(deckType: DeckGameType) {
   const roomId = Number(route.params.id ?? 0);
   store.deck = generateDeck(deckType)
   router.push(`/match/${roomId}`);
+  // router.push(`/create-joker-card/${roomId}/${deckType}`);
 }
 
 </script>
@@ -70,15 +71,19 @@ function selectDeck(deckType: DeckGameType) {
   </div>
 </template>
 
-<style scoped lang='scss'>/* Animação de flutuação */
+<style scoped lang='scss'>
+/* Animação de flutuação */
 .float {
   animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-20px);
   }
@@ -97,7 +102,7 @@ function selectDeck(deckType: DeckGameType) {
   left: -75%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%);
   animation: shine 2s infinite;
 }
 
@@ -105,4 +110,5 @@ function selectDeck(deckType: DeckGameType) {
   to {
     left: 125%;
   }
-}</style>
+}
+</style>
