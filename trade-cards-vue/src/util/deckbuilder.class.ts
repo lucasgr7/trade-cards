@@ -1,5 +1,4 @@
 import { CardTypeV2, CartasType, Deck, Rarity } from "../type";
-import { Salas } from "../composables/apis/useSalas";
 
 
 export abstract class AbstractDeck {
@@ -45,19 +44,25 @@ export abstract class AbstractDeck {
     const rareCount = Math.floor(totalCards * (this.percentualRare/100));
     const epicCount = Math.floor(totalCards * (this.percentualEpic/100));
 
-    const deck = [];
+    const deck: CartasType[] = [];
     for (let i = 0; i < basicCount; i++) {
-      deck.push(basicCards[Math.floor(Math.random() * basicCards.length -1)]);
+      deck.push(basicCards[Math.floor(Math.random() * basicCards.length )]);
     }
     for (let i = 0; i < commonCount; i++) {
-      deck.push(commonCards[Math.floor(Math.random() * commonCards.length-1)]);
+      deck.push(commonCards[Math.floor(Math.random() * commonCards.length)]);
     }
     for (let i = 0; i < rareCount; i++) {
-      deck.push(rareCards[Math.floor(Math.random() * rareCards.length-1)]);
+      deck.push(rareCards[Math.floor(Math.random() * rareCards.length)]);
     }
     for (let i = 0; i < epicCount; i++) {
-      deck.push(epicCards[Math.floor(Math.random() * epicCards.length-1)]);
+      deck.push(epicCards[Math.floor(Math.random() * epicCards.length)]);
     }
+
+    // filter off any undefined cards
+    deck.filter(card => card !== undefined);
+    // shuffle the deck
+    deck.sort(() => Math.random() - 0.5);
+    
     return deck;
   }
 }
@@ -116,7 +121,7 @@ export class MoonDeck extends AbstractDeck {
     // meses nascimento
     const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']; 
     months.forEach(month => {
-      this.cards.push({ nome: month, type: CardTypeV2.Object, input: month, rarity: Rarity.rare });
+      this.cards.push({ nome: month, type: CardTypeV2.Condition, input: month, rarity: Rarity.rare });
     });
 
     // Cores 12

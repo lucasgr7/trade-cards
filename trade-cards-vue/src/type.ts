@@ -24,7 +24,7 @@ export enum CardTypeV2 {
 }
 
 export enum Rarity{
-  basic = 'common',
+  basic = 'basic',
   common = 'common',
   rare = 'rare',
   epic = 'epic',

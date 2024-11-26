@@ -32,8 +32,8 @@ describe("useDeck - Função generateDeck", () => {
     const totalCartasComuns = deck.filter((carta) => carta.rarity === Rarity.common).length;
     const totalCartasBasicas = deck.filter((carta) => carta.rarity === Rarity.basic).length;
     // expect 45% of basic cards to be or 'Trocar' or 'Revelar'
-    const totalCartasBasicasTrocar = deck.filter((carta) => carta.name === 'Trocar').length;
-    const totalCartasBasicasRevelar = deck.filter((carta) => carta.name === 'Revelar').length;
+    const totalCartasBasicasTrocar = deck.filter((carta) => carta.nome === 'Troca').length;
+    const totalCartasBasicasRevelar = deck.filter((carta) => carta.nome === 'Revelar').length;
 
     // should contain any quantity of these cards
     expect(totalCartasBasicas).toBeGreaterThan(0);
@@ -59,6 +59,7 @@ describe("useDeck - Função generateDeck", () => {
 
   test('Deve gerar deck Moon contendo 60% cartas comuns', () => {
     const deck: CartasType[] = generateDeck(DeckGameType.Moon);
+    console.log(deck);
 
     // assert 60% de cartas comuns
     const totalCartas = deck.length;

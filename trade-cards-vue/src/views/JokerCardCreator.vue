@@ -3,17 +3,17 @@ import { useRouter, useRoute } from 'vue-router';
 import Card from '@/components/Card.vue';
 import { onMounted, ref, watch } from 'vue';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
-import { usePlayer } from '@/composables/state/usePlayer';
 import { StatusMatch } from '@/enums/statusMatch';
 import { useSerializedStorage } from "@/util/storage";
+import { usePlayerStore } from '@/state/usePlayerStore';
 
-const { getMyself } = usePlayer();
 const router = useRouter();
 const route = useRoute();
 const jokerCardDescription = ref('');
 const jokerCardsCount = ref(0);
 const jokerCardsList = useSerializedStorage<string[]>('jokerCardsList', []);
-const { sala, updateRecord, getPlayersFromSession, subscribeToChanges } = useSalas( getMyself );
+const store = usePlayerStore();
+const { sala, updateRecord, getPlayersFromSession, subscribeToChanges } = useSalas( store.getMyself );
 
 const deck = route.params.deck as string;
 if (deck === 'baralho-sol') {
