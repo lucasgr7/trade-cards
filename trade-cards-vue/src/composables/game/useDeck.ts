@@ -1,4 +1,4 @@
-import { SunDeck } from "../../util/deckbuilder.class";
+import { SunDeck, MoonDeck } from "../../util/deckbuilder.class";
 import { CartasType, DeckGameType } from "../../type";
 
 export const useDeck = () => {
@@ -23,8 +23,8 @@ export const useDeck = () => {
   }
 
   const generateMoonDeck = (): CartasType[] => {
-    const deck = new SunDeck('Moon Deck');
-    deck.setPercentualBasic(40);
+    const deck = new MoonDeck('Moon Deck');
+    deck.setPercentualBasic(50);
     deck.setPercentualCommon(30);
     deck.setPercentualRare(22);
     deck.setPercentualEpic(8);

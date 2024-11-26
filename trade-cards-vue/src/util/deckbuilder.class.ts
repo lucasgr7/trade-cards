@@ -95,11 +95,13 @@ export class SunDeck extends AbstractDeck {
     // Conexões
     const connections = ['Com', 'Sem', 'Na cor', 'Usando', 'Homem', 'Mulher', 'Próximo', 'A Esquerda', 'A Direita', 'A Frente'];
     connections.forEach(connection => {
-      this.cards.push({ nome: connection, type: CardTypeV2.Conection, input: connection, rarity: Rarity.common });
+      this.cards.push({ nome: connection, type: CardTypeV2.Connection, input: connection, rarity: Rarity.common });
     });
 
     // epic 'qualquer um que'
     this.cards.push({ nome: 'Qualquer um que', type: CardTypeV2.Condition, input: 'qualquer um que', rarity: Rarity.epic });
+    this.cards.push({ nome: 'Qualuqer mulher', type: CardTypeV2.Condition, input: 'Qualuqer mulher', rarity: Rarity.epic });
+    this.cards.push({ nome: 'Qualquer homem', type: CardTypeV2.Condition, input: 'Qualquer homem', rarity: Rarity.epic });
   }
 }
 export class MoonDeck extends AbstractDeck {
@@ -119,7 +121,7 @@ export class MoonDeck extends AbstractDeck {
     this.cards.push({ nome: 'Short', type: CardTypeV2.Object, input: 'usando a Bermuda', rarity: Rarity.rare });
 
     // meses nascimento
-    const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']; 
+    const months = ['Entre Jan a Abril', 'Entre Maio a Ago', 'Entre Set a Dez', 'Lado Esquerdo', 'Lado Direito']; 
     months.forEach(month => {
       this.cards.push({ nome: month, type: CardTypeV2.Condition, input: month, rarity: Rarity.rare });
     });
@@ -134,9 +136,9 @@ export class MoonDeck extends AbstractDeck {
     this.cards.push({ nome: 'Qualquer Cor', type: CardTypeV2.Color, input: 'qualquer cor', rarity: Rarity.epic });
 
     // Conexões
-    const connections = ['Com', 'Sem', 'Na cor', 'Usando', 'Homem', 'Mulher'];
+    const connections = ['Com', 'Na cor', 'Usando', 'Homem', 'Mulher', 'Nasceu'];
     connections.forEach(connection => {
-      this.cards.push({ nome: connection, type: CardTypeV2.Conection, input: connection, rarity: Rarity.common });
+      this.cards.push({ nome: connection, type: CardTypeV2.Connection, input: connection, rarity: Rarity.common });
     });
 
     // signos

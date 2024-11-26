@@ -17,7 +17,7 @@ const progressBarWidth = computed(() => {
     <div class="w-full h-5 bg-yellow-900 rounded-lg overflow-hidden border-2 border-white">
       <div class="h-full bg-gradient-to-r from-yellow-700 to-yellow-500 transition-width duration-300 ease-in-out" :style="{ width: progressBarWidth }"></div>
     </div>
-    <p class="text-white text-center mt-2">
+    <p class="text-white text-center mt-2 text-game text-sm">
       Cartas restantes: {{ remainingCards }}/{{ totalCards }}
     </p>
   </div>

@@ -108,10 +108,7 @@ onMounted(async () => {
       v-on="index === topCardIndex ? touchEvents : {}"
     >
       <Card
-        :image="card.image ?? ''"
-        :title="card.nome"
-        :description="card.nome"
-        :type="card.type"
+        :card="card"
         :isBottomCard="index === 0"
       />
     </div>

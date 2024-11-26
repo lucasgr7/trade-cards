@@ -6,7 +6,7 @@ import { usePlayerStore } from '@/state/usePlayerStore';
 
 const router = useRouter();
 const { insertRecord, getRecords, records } = useSalas();
-const { getMyself, setAsCreator } = usePlayerStore();
+const store = usePlayerStore();
 
 const sessionName = ref('');
 const sessionNameError = ref('');
@@ -20,10 +20,10 @@ async function createSession(event: Event) {
   }
 
   try {
-    setAsCreator();
+    store.setAsCreator();
     const newSession: Salas = {
       name: sessionName.value,
-      jogadores: [myself],
+      jogadores: [store.getMyself],
       estado: 1,
     };
 

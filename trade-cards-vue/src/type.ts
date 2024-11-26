@@ -19,8 +19,9 @@ export enum CardTypeV2 {
   Action = 'action',
   Object = 'object',
   Condition = 'condition',
-  Conection = 'connection',
-  Color = 'color'
+  Connection = 'connection',
+  Color = 'color',
+  Joker = 'joker'
 }
 
 export enum Rarity{
