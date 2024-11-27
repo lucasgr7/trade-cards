@@ -8,7 +8,7 @@ import { CartasType } from 'type';
 import { Howl } from 'howler'; // Library for handling sounds
 import { usePlayerStore } from '@/state/usePlayerStore';
 
-const  store = usePlayerStore();
+const store = usePlayerStore();
 const cardsInHand = ref<CartasType[]>([]);
 const cardRefs = ref<HTMLElement[]>([]);
 const cardUsedByPlayer = ref(false); // Flag to indicate if the local player used the card
@@ -50,7 +50,6 @@ function setCardRef(el: HTMLElement | null, index: number) {
   }
 }
 
-
 // Touch events for the top card
 const touchEvents = {
   touchstart: startSwipe,
@@ -62,7 +61,7 @@ function playFunnySoundEffect() {
   soundEffect.play();
 }
 
-function playCardSwipeSoundEffect(){
+function playCardSwipeSoundEffect() {
   soundEffect.play();
 }
 
@@ -80,8 +79,6 @@ function handleUsarCarta() {
 }
 
 // Expose the functions and variables
-
-
 defineExpose({
   handleUsarCarta,
   removeCard
@@ -98,19 +95,10 @@ onMounted(async () => {
 <template>
   <div class="card-deck">
     <!-- Render all cards in the stack -->
-    <div
-      v-for="(card, index) in store.deck"
-      :key="index"
-      class="card-container"
-      :class="{ 'current-card': index === topCardIndex }"
-      :style="getCardStyle(index)"
-      :ref="el => setCardRef(el, index)"
-      v-on="index === topCardIndex ? touchEvents : {}"
-    >
-      <Card
-        :card="card"
-        :isBottomCard="index === 0"
-      />
+    <div v-for="(card, index) in store.deck" :key="index" class="card-container"
+      :class="{ 'current-card': index === topCardIndex }" :style="getCardStyle(index)"
+      :ref="el => setCardRef(el, index)" v-on="index === topCardIndex ? touchEvents : {}">
+      <Card :card="card" :isBottomCard="index === 0" />
     </div>
     <ProgressBar :remainingCards="remainingCards" :totalCards="totalCards" />
   </div>
@@ -155,6 +143,7 @@ onMounted(async () => {
   .card-deck {
     height: 200px;
   }
+
   .card-container {
     margin-left: 6.8rem;
   }

@@ -15,7 +15,7 @@ const props = defineProps({
 });
 
 // Computed para obter a classe e o ícone com base no tipo
-const cardTypeClass = computed(() => `${props.card.type}-card`);
+const cardTypeClass = computed(() => `${props.card?.type}-card`);
 const isJokerCard = computed(() => props.card.type === CardTypeV2.Joker);
 
 const titleCard = computed(() => {
@@ -30,6 +30,8 @@ const titleCard = computed(() => {
       return 'Conexão';
     case CardTypeV2.Color:
       return 'Cor';
+    case CardTypeV2.Joker:
+      return 'Coringa';
     default:
       return '';
   }
