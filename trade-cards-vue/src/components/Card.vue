@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { CartasType, CardTypeV2 } from 'type';
+import { CartasType, CardTypeV2 } from '@/type';
 import { computed, PropType } from 'vue';
 
 // Definição das props
@@ -40,7 +40,7 @@ const titleCard = computed(() => {
 // Computed para obter a imagem da carta
 const image = computed(() => {
   // Lógica para retornar a imagem com base na carta
-  return `/assets/cards/${props.card.nome}.png`;
+  return `/v2/${props.card.type}.png`;
 });
 </script>
 
@@ -109,6 +109,46 @@ const image = computed(() => {
 }
 
 /* Similar para .object-card, .condition-card, etc. */
+
+/* Estilos para cartas vermelhas */
+.card.object-card {
+  border: 4px solid #ffb1a3;
+  background: linear-gradient(135deg, #ffb1a3, #ff6347);
+}
+
+.card.object-card::before {
+  background: radial-gradient(circle at center, rgba(255, 177, 163, 0.4), transparent);
+}
+
+/* Estilos para cartas verdes */
+.card.condition-card {
+  border: 4px solid #178520;
+  background: linear-gradient(135deg, #178520, #a0ffa0);
+}
+
+.card.condition-card::before {
+  background: radial-gradient(circle at center, rgba(23, 133, 32, 0.4), transparent);
+}
+
+/* Estilos para cartas amarelas */
+.card.connection-card {
+  border: 4px solid #f7d154;
+  background: linear-gradient(135deg, #f7d154, #f7f754);
+}
+
+.card.connection-card::before {
+  background: radial-gradient(circle at center, rgba(247, 209, 84, 0.4), transparent);
+}
+
+/* Estilos para cartas roxas */
+.card.color-card {
+  border: 4px solid #a35ff7;
+  background: linear-gradient(135deg, #a35ff7, #d2a2ff);
+}
+
+.card.color-card::before {
+  background: radial-gradient(circle at center, rgba(163, 95, 247, 0.4), transparent);
+}
 
 /* Classes de raridade */
 .rarity-basic {
