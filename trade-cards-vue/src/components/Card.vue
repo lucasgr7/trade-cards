@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { CartasType, CardTypeV2 } from '@/type';
+import { CartasType, CardTypeV2 } from 'type';
 import { computed, PropType } from 'vue';
 
 // Definição das props
