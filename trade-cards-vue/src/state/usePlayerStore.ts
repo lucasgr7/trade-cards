@@ -5,7 +5,7 @@ import { CartasType, Jogador } from '@/type';
 import * as _ from 'lodash';
 import { defaultWindow } from '@vueuse/core';
 
-const MAX_CARDS_IN_BAG = 8;
+const MAX_CARDS_IN_BAG = 15;
 
 function generateRandomSeed(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -38,21 +38,16 @@ export const usePlayerStore = defineStore('player', {
       this.deck = _.shuffle(this.deck);
       this.signalResetDeck = !this.signalResetDeck;
     },
-    canAddCard(card: CartasType): boolean {
-      if (this.bagOfCards.some((c) => c.type === card.type)) {
-        defaultWindow.alert(`Você já tem uma carta do tipo ${card.type} na sua mão, remova-a para adicionar outra!`);
-        this.shuffleDeck();
-        return false;
-      }
+    canAddCard(): boolean {
       if (this.bagOfCards.length >= MAX_CARDS_IN_BAG) {
-        defaultWindow.alert(`Você já tem ${MAX_CARDS_IN_BAG} cartas na sua mão, remova uma para adicionar outra!`);
+        defaultWindow.alert(`Você já tem ${MAX_CARDS_IN_BAG} cartas escolhidas, remova uma para adicionar outra!`);
         this.shuffleDeck();
         return false;
       }
       return true;
     },
     addToBagOfCards(card: CartasType) {
-      if (!this.canAddCard(card)) {
+      if (!this.canAddCard()) {
         return;
       }
       this.bagOfCards.push(card);
@@ -66,9 +61,9 @@ export const usePlayerStore = defineStore('player', {
       if (index !== -1) {
         this.bagOfCards.splice(index, 1);
       }
-      this.deck.push(card); // retorna a carta para o deck
+      this.deck.push(card); // carta retornada ao deck
       this.shuffleDeck();
-    }
+    },
   },
   getters: {
     getMyself(state): Jogador {
