@@ -15,7 +15,6 @@ export const usePlayerStore = defineStore('player', {
     avatarUrl: '',
     isCreator: false,
     deck: [] as CartasType[],
-    defaultDeck: [] as CartasType[],
     signalResetDeck: false,
     bagOfCards: [] as CartasType[],
   }),

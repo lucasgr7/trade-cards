@@ -18,8 +18,6 @@ function selectDeck(deckType: DeckGameType) {
   console.log(`O baralho escolhido foi: ${deckType}`);
   const roomId = Number(route.params.id ?? 0);
   store.deck = generateDeck(deckType)
-  // create a copy of deck into a constante deck variable 
-  store.defaultDeck = _.cloneDeep(store.deck);
   router.push(`/create-joker-card/${roomId}/${deckType}`);
 }
 
