@@ -87,7 +87,7 @@ export class SunDeck extends AbstractDeck {
       { nome: 'Chinelo', type: CardTypeV2.Object, input: 'usando o brinco', rarity: Rarity.rare },
       { nome: 'Cavada', type: CardTypeV2.Object, input: 'cavada', rarity: Rarity.rare },
       { nome: 'Qualquer um que', type: CardTypeV2.Condition, input: 'qualquer um que', rarity: Rarity.epic },
-      { nome: 'Qualuqer mulher', type: CardTypeV2.Condition, input: 'Qualuqer mulher', rarity: Rarity.epic },
+      { nome: 'Qualquer mulher', type: CardTypeV2.Condition, input: 'Qualquer mulher', rarity: Rarity.epic },
       { nome: 'Qualquer homem', type: CardTypeV2.Condition, input: 'Qualquer homem', rarity: Rarity.epic }
     ]);
 

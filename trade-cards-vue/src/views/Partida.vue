@@ -1,13 +1,11 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import CardDeck from '@/components/CardDeck.vue';
-import CardChosen from '@/components/CardChosen.vue';
-import { CardType } from '@/enums/cardType';
+import BagOfCards from '@/components/BagOfCards.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePartidas } from '../composables/apis/usePartidas';
 import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
 import ShowHand from '@/components/ShowHand.vue';
-import { StatusMatch } from '@/enums/statusMatch';
 import { Partidas } from '@/type';
 import { PartidaAcoes } from '@/enums/partidas.actions';
 import { usePlayerStore } from '@/state/usePlayerStore';
@@ -21,26 +19,15 @@ const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
 // GAME EVENTS
 const {
   onLeaveGame,
-  onPlayCard,
   allCardsSelected,
-  selectedActionCard,
-  selectedConditionCard,
-  selectedObjectCard,
   clearSelectedCards
-
 } = usePartidaEvents();
 
-const cardPiles = [
-  { type: CardType.Action, card: selectedActionCard },
-  { type: CardType.Object, card: selectedObjectCard },
-  { type: CardType.Condition, card: selectedConditionCard }
-];
 const isSubscribed = ref(false);
 
 onMounted(async () => {
   await initialize(route, router);
   isSubscribed.value = true;
-  checkUsedCards();
   console.log(store.deck)
 });
 
@@ -52,24 +39,7 @@ subscribeToChanges(Number(route.params.id), (payload: Partidas) => {
   }
 });
 
-function checkUsedCards() {
-  if (partida.value?.estado === StatusMatch.INITSTATUS) {
-    resetCardPiles();
-  } else {
-    cardPiles.forEach((pile, index) => {
-      if (pile.card.value) {
-        cardPiles[index].card = pile.card;
-      }
-    });
-  }
-}
-
-function resetCardPiles() {
-  cardPiles.forEach((pile) => {
-    pile.card.value = null;
-  });
-}
-
+const bagOfCards = computed(() => store.bagOfCards);
 
 </script>
 <template>
@@ -86,14 +56,12 @@ function resetCardPiles() {
     </div>
     <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " v-if="!allCardsSelected">
       <div class="flex gap-x-1">
-        <CardChosen v-for="(pile, index) in cardPiles" :key="index" :cardType="pile.type" :noCard="!pile.card.value"
-          :nome="pile.card?.value?.nome" :descricao="pile.card?.value?.descricao" :image="pile.card?.value?.image"
-          :tipo="pile.card?.value?.tipo" class="w-[6.8rem] md:w-1/2 lg:w-1/5 xl:w-1/3" />
+        <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)"/>
       </div>
       <div id="end-square">
         <p>Vazio</p>
       </div>
-      <CardDeck ref="cardDeckRef" @usarCarta="store.addToBagOfCards" :isSubscribedUpdate="isSubscribed" />
+      <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)" :isSubscribedUpdate="isSubscribed" />
       <!-- div center middle tailwindcss -->
       <div class="flex items-center justify-center xl:mt-10">
         <button @click="store.shuffleDeck"

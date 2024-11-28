@@ -72,7 +72,7 @@ const image = computed(() => {
 
     <!-- Descrição -->
     <p
-      class="description text-xs text-game bg-white/70 backdrop-blur-md flex-shrink border-b-0 rounded-b-[14px] p-5 text-black text-base font-medium text-center leading-snug overflow-hidden">
+      class="description text-xs text-game bg-white/70 backdrop-blur-md flex-shrink border-b-0 rounded-b-[14px] p-5 text-black font-medium text-center leading-snug overflow-hidden">
       {{ titleCard }} - {{ card.nome }}
     </p>
   </div>
