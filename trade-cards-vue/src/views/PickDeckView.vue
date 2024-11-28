@@ -20,8 +20,7 @@ function selectDeck(deckType: DeckGameType) {
   store.deck = generateDeck(deckType)
   // create a copy of deck into a constante deck variable 
   store.defaultDeck = _.cloneDeep(store.deck);
-  router.push(`/match/${roomId}`);
-  // router.push(`/create-joker-card/${roomId}/${deckType}`);
+  router.push(`/create-joker-card/${roomId}/${deckType}`);
 }
 
 </script>

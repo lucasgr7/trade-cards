@@ -110,7 +110,7 @@ export function useSalas(myself?: Jogador) {
     .channel('room' + salaId)
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'salas' }, payload => {
       console.log('Change received!', payload.new)
-      const playersExceptMyself = payload.new.jogadores.filter((jogador: Jogador) => jogador.nickname !== myself?.value.nickname);
+      const playersExceptMyself = payload.new.jogadores.filter((jogador: Jogador) => jogador.nickname !== myself?.value?.nickname);
       players.value = playersExceptMyself;
       callback(payload.new)
     })

@@ -1,11 +1,12 @@
 <script lang='ts' setup>
 import { useRouter, useRoute } from 'vue-router';
 import Card from '@/components/Card.vue';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { StatusMatch } from '@/enums/statusMatch';
 import { useSerializedStorage } from "@/util/storage";
 import { usePlayerStore } from '@/state/usePlayerStore';
+import { CardTypeV2, Rarity } from '@/type';
 
 const router = useRouter();
 const route = useRoute();
@@ -14,6 +15,12 @@ const jokerCardsCount = ref(0);
 const jokerCardsList = useSerializedStorage<string[]>('jokerCardsList', []);
 const store = usePlayerStore();
 const { sala, updateRecord, getPlayersFromSession, subscribeToChanges } = useSalas(store.getMyself);
+const jokerCard = computed(() => ({ 
+  type: CardTypeV2.Joker, 
+  rarity: Rarity.joker,
+  nome: jokerCardDescription.value,
+  input: jokerCardDescription.value,
+}));
 
 const deck = route.params.deck as string;
 if (deck === 'sun') {
@@ -66,7 +73,7 @@ onMounted(() => {
       </button>
       <h1 class="text-3xl font-black text-outline-blue mb-8">Cartas coringa</h1>
     </div>
-    <Card :title="'Joker Card'" :description="jokerCardDescription" :type="'action'" :isJokerCard="true" />
+    <Card :isJokerCard="true" :card="jokerCard"/>
     <div class="flex flex-col items-center gap-y-6">
       <p class="text-trade-blue-900">Cartas coringas restantes:</p>
       <span class="text-trade-blue-900 text-3xl border bg-white rounded-full p-2 w-14 text-center">{{ jokerCardsCount
