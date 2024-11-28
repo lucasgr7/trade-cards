@@ -34,7 +34,8 @@ export const usePlayerStore = defineStore('player', {
     },
     shuffleDeck() {
       this.deck = _.cloneDeep(this.defaultDeck);
-      this.deck.sort(() => Math.random() - 0.5);
+      // need a smarter way to randomize to avoid the next card be the same
+      this.deck = _.shuffle(this.deck);
       this.signalResetDeck = !this.signalResetDeck;
     }
   },

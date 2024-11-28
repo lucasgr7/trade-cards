@@ -24,7 +24,7 @@ export enum CardTypeV2 {
   Joker = 'joker'
 }
 
-export enum Rarity{
+export enum Rarity {
   basic = 'basic',
   common = 'common',
   rare = 'rare',
@@ -32,11 +32,13 @@ export enum Rarity{
   joker = 'joker'
 }
 
-export interface CartasType{
+export interface CartasType {
+  description: any;
   nome: string; // seria o nome da carta apresentando "Homem", "Mulher", "Verde", "Calça"
   input: string; // seria o input que vai para o LLM gerar a palavra como "na cor Verde", "usando a calça"
   type: CardTypeV2;
-  rarity: Rarity
+  rarity: Rarity;
+  image?: string;
 }
 
 
@@ -52,7 +54,7 @@ export interface Cartas {
 }
 
 
-export interface Acoes{
+export interface Acoes {
   acao: PartidaAcoes,
 }
 

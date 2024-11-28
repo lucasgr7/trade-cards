@@ -14,22 +14,22 @@ export const useDeck = () => {
 
   const generateSunDeck = (): CartasType[] => {
     const deck = new SunDeck('Sun Deck');
-    deck.setPercentualBasic(50);
-    deck.setPercentualCommon(25);
-    deck.setPercentualRare(20);
+    deck.setPercentualBasic(40);
+    deck.setPercentualCommon(32);
+    deck.setPercentualRare(23);
     deck.setPercentualEpic(5);
 
-    return deck.generateDeck(50);
+    return deck.generateDeck(60);
   }
 
   const generateMoonDeck = (): CartasType[] => {
     const deck = new MoonDeck('Moon Deck');
-    deck.setPercentualBasic(50);
-    deck.setPercentualCommon(30);
+    deck.setPercentualBasic(40);
+    deck.setPercentualCommon(40);
     deck.setPercentualRare(12);
     deck.setPercentualEpic(8);
 
-    return deck.generateDeck(50);
+    return deck.generateDeck(60);
   }
 
   return { generateDeck };

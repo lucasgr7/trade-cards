@@ -40,6 +40,9 @@ const titleCard = computed(() => {
 // Computed para obter a imagem da carta
 const image = computed(() => {
   // Lógica para retornar a imagem com base na carta
+  if (props.card.image) {
+    return `/v2/${props.card.image}`;
+  }
   return `/v2/${props.card.type}.png`;
 });
 </script>
@@ -50,8 +53,9 @@ const image = computed(() => {
     <!-- Cabeçalho: Ícone e Título -->
     <div
       class="header flex items-center justify-between p-2 w-full bg-gradient-to-b from-white/60 to-transparent relative">
-      <h3 class="title font-press-start text-base text-[#0c0c0c] uppercase leading-[1.2] text-center m-0 py-2">
-        {{ titleCard }}
+      <h3 class="title font-press-start text-base text-[#0c0c0c] uppercase leading-[1.2] text-center m-0 py-2"
+        :class="{ 'text-xs': card.nome.length > 20, 'text-sm': card.nome.length > 10 && card.nome.length <= 20, 'text-base': card.nome.length <= 10 }">
+        {{ card.nome }}
       </h3>
       <h2 class="rarity text-black text-xs font-bold uppercase p-1 rounded-[16px]" :class="`rarity-` + card.rarity">
         {{ card.rarity }}
@@ -68,8 +72,8 @@ const image = computed(() => {
 
     <!-- Descrição -->
     <p
-      class="description bg-white/80 backdrop-blur-md flex-shrink border-b-0 rounded-b-[14px] p-5 text-black text-base font-medium text-center leading-snug overflow-hidden">
-      {{ card.nome }}
+      class="description text-xs text-game bg-white/70 backdrop-blur-md flex-shrink border-b-0 rounded-b-[14px] p-5 text-black text-base font-medium text-center leading-snug overflow-hidden">
+      {{ titleCard }} - {{ card.nome }}
     </p>
   </div>
 </template>
@@ -84,6 +88,10 @@ const image = computed(() => {
 /* Estilos adicionais que não podem ser substituídos pelo Tailwind */
 .card {
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.5), 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.description {
+  --tw-backdrop-blur: blur(4px);
 }
 
 .card::before {
