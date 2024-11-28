@@ -4,22 +4,22 @@ import Card from '@/components/Card.vue';
 import { onMounted, ref, watch, computed } from 'vue';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { StatusMatch } from '@/enums/statusMatch';
-import { useSerializedStorage } from "@/util/storage";
 import { usePlayerStore } from '@/state/usePlayerStore';
-import { CardTypeV2, Rarity } from '@/type';
+import { CardTypeV2, CartasType, Rarity } from '@/type';
 
 const router = useRouter();
 const route = useRoute();
 const jokerCardDescription = ref('');
 const jokerCardsCount = ref(0);
-const jokerCardsList = useSerializedStorage<string[]>('jokerCardsList', []);
+const jokerCardsList = ref<CartasType[]>([]);
 const store = usePlayerStore();
 const { sala, updateRecord, getPlayersFromSession, subscribeToChanges } = useSalas(store.getMyself);
 const jokerCard = computed(() => ({ 
-  type: CardTypeV2.Joker, 
-  rarity: Rarity.joker,
+  description: '',
   nome: jokerCardDescription.value,
   input: jokerCardDescription.value,
+  type: CardTypeV2.Joker, 
+  rarity: Rarity.joker,
 }));
 
 const deck = route.params.deck as string;
@@ -35,7 +35,7 @@ function leave() {
 
 function saveJokerCard() {
   if (jokerCardDescription.value.trim()) {
-    jokerCardsList.value.push(jokerCardDescription.value);
+    jokerCardsList.value.push(jokerCard.value);
     jokerCardDescription.value = '';
     jokerCardsCount.value--;
   }
@@ -43,7 +43,7 @@ function saveJokerCard() {
 
 watch(jokerCardsCount, async (newValue) => {
   if (newValue === 0) {
-    console.log('Lista de cartas coringas:', jokerCardsList.value);
+    store.deck.push(...jokerCardsList.value);
     await updateRecord(sala.value?.id as number, { ...sala.value, estado: StatusMatch.INITSTATUS });
   }
 });

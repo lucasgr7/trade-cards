@@ -39,6 +39,7 @@ export const usePlayerStore = defineStore('player', {
       this.signalResetDeck = !this.signalResetDeck;
     },
     canAddCard(): boolean {
+      // validação de máximo de cartas na bag
       if (this.bagOfCards.length >= MAX_CARDS_IN_BAG) {
         defaultWindow.alert(`Você já tem ${MAX_CARDS_IN_BAG} cartas escolhidas, remova uma para adicionar outra!`);
         this.shuffleDeck();

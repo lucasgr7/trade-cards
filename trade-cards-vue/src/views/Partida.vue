@@ -43,10 +43,9 @@ const bagOfCards = computed(() => store.bagOfCards);
 
 </script>
 <template>
-  <div class="deck-table
-    w-screen h-screen">
+  <div class="deck-table w-screen h-screen text-game">
     <div class="flex w-full items-center justify-between">
-      <h1 class="text-3xl font-black text-outline-blue mt-4 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1>
+      <h1 class="text-2xl font-black text-outline-blue mt-5 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1>
       <button @click="onLeaveGame"
         class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,7 +54,7 @@ const bagOfCards = computed(() => store.bagOfCards);
       </button>
     </div>
     <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " v-if="!allCardsSelected">
-      <div class="flex gap-x-1">
+      <div class="flex gap-x-1 z-50">
         <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)"/>
       </div>
       <div id="end-square">

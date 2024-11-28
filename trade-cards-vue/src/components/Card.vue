@@ -158,6 +158,17 @@ const image = computed(() => {
   background: radial-gradient(circle at center, rgba(163, 95, 247, 0.4), transparent);
 }
 
+/* Estilos para cartas coringa cinza*/
+.card.joker-card {
+  border: 4px solid #d3d3d3;
+  background: linear-gradient(135deg, #c7c7c7, #ffffff);
+}
+
+.card.joker-card::before {
+  background: radial-gradient(circle at center, rgba(211, 211, 211, 0.4), transparent);
+}
+
+
 /* Classes de raridade */
 .rarity-basic {
   background: linear-gradient(to left, rgba(0, 0, 0, 0.9), rgb(70, 66, 66));

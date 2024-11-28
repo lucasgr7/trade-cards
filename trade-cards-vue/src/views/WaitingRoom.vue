@@ -33,7 +33,6 @@ const sentences = [
   "Quer trocar figurinhas"
 ];
 const randomSentence = ref('');
-const { clearSelectedCards } = usePartidaEvents();
 
 async function startGame() {
   // what data do we need to start the game?
@@ -77,32 +76,44 @@ function pickDeck() {
   router.push(`/pick-deck/${sala.value?.id}`);
 }
 
+function handleButtonStartGame() {
+  if (isMyselfCreatorSession) {
+    pickDeck();
+  } else {
+    getRandomSentence();
+  }
+}
+
 onMounted(() => {
   getRandomSentence();
   getPlayersFromSession(route.params.id);
-  // subscribeToChanges(roomId, (payload: Salas) => {
-  //   if (payload.id === roomId && payload.estado === StatusMatch.INITSTATUS) {
-  //     clearSelectedCards();
-  //     router.push(`/match/${roomId}`);
-  //   }
-  // });
 });
 
 </script>
 
 <template>
   <div class="flex flex-col items-center justify-between p-4
-    border border-white rounded-xl bg-trade-blue-600
+    border border-white rounded-xl bg-trade-blue-600 text-game
     w-screen h-screen">
-    <div class="flex justify-between items-center w-[20rem] bg-trade-red-500 h-24 rounded-xl px-5 border border-white mt-12">
+    <div class="flex w-full items-center">
+      <button @click="leave"
+        class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <h1 class="text-3xl font-black text-outline-blue mb-8">Sala de espera</h1>
+    </div>
+    <div class="min-w-[10rem]">
       <UserPicture :src="getMyself.avatarUrl"/>
-      <div class="flex flex-col">
-        <h1 class="text-3xl truncate w-full">{{ getMyself.nickname }}</h1>
-        <p>{{ randomSentence }}</p>
-      </div>
+    </div>
+    <div class="w-[20rem] bg-trade-red-500 h-24 rounded-xl px-5 border border-black
+      flex flex-col text-black text-center justify-center items-center">
+      <h1 class="text-base truncate text-ellipsis">{{ getMyself.nickname }}</h1>
+      <p class="text-xs">{{ randomSentence }}</p>
     </div>
     <div class="flex flex-col w-full gap-y-4 max-h-[26rem] mb-12">
-      <h2 class="text-2xl font-bold text-white">Jogadores na sala:</h2>
+      <h2 class="text-base font-bold text-white">Jogadores na sala:</h2>
       <div class="flex w-full border-t-4 border-b-4 border-trade-blue-900 max-h-96 overflow-y-auto px-1">
         <ul class="flex flex-wrap">
           <li v-for="jogador in players" :key="jogador.seed">
@@ -110,23 +121,18 @@ onMounted(() => {
             border rounded-xl border-trade-blue-900 w-[6rem] h-40">
               <UserPicture :src="jogador.avatarUrl || ''" class="user-picture-small" />
               <div class="flex w-full border-t-4 border-trade-blue-900 mt-2"></div>
-              <div class="h-16 flex flex-col items-center justify-center">
-                <p class="text-white flex-wrap">{{ jogador.nickname }}</p>
+              <div class="h-16 flex flex-col items-center justify-center text-center">
+                <p class="text-white flex-wrap text-xs">{{ jogador.nickname }}</p>
               </div>
             </div>
           </li>
         </ul>
       </div>
     </div>
-    <div class="flex gap-x-2">
-      <button @click="leave" class="border border-white rounded-full py-4 px-14 bg-trade-blue-50 font-bold text-xl">
-        Sair
-      </button>
-      <button v-if="isMyselfCreatorSession" @click="pickDeck"
-        class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl">
-        Escolher Baralho
-      </button>
-    </div>
+    <button @click="handleButtonStartGame"
+      class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl text-black">
+      {{ isMyselfCreatorSession ? 'Escolher Baralho' : 'Acelerar início' }}
+    </button>
   </div>
 </template>
 

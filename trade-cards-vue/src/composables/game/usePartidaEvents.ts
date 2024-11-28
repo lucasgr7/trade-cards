@@ -53,24 +53,3 @@ export function usePartidaEvents() {
   }
 
 }
-
-/* 
-2 state para gerenciamento dos dados V2
-
-1. store.deck = Deck único do jogador gerado assim que ele passa pelo componente pickDeck.vue
-2. CardsInHand (DeckCard.vue) = variável utilizada pelo componente para efeitos de animação de carta sumindo
-
-NOVA FEATURE:
-3. Removendo cartas - Garantir que store.deck retire a carta para não reutilizar
-
-<- esquerda [CARTA] direita ->
-carta é apagada apenas do CardsInHands (ref interna de componente)
-
-GLOBAL store não é afetada
-
-quando o usuário arrastar para cima a GLOBAL tem que ser efaetada
-
-
-
-
-*/
