@@ -2,6 +2,7 @@
 // stores/usePlayerStore.ts
 import { defineStore } from 'pinia';
 import { CartasType, Jogador } from '@/type';
+import * as _ from 'lodash';
 
 
 function generateRandomSeed(): string {
@@ -14,6 +15,8 @@ export const usePlayerStore = defineStore('player', {
     avatarUrl: '',
     isCreator: false,
     deck: [] as CartasType[],
+    defaultDeck: [] as CartasType[],
+    signalResetDeck: false,
   }),
   actions: {
     generateRandomSeed(): string {
@@ -29,8 +32,10 @@ export const usePlayerStore = defineStore('player', {
     setAsCreator() {
       this.isCreator = true;
     },
-    shuffleDeck(){
+    shuffleDeck() {
+      this.deck = _.cloneDeep(this.defaultDeck);
       this.deck.sort(() => Math.random() - 0.5);
+      this.signalResetDeck = !this.signalResetDeck;
     }
   },
   getters: {

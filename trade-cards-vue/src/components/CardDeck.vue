@@ -1,12 +1,12 @@
-<!-- src/components/CardDeck.vue -->
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import Card from './Card.vue';
 import ProgressBar from './ProgressBar.vue';
 import { useCardSwipe } from '@/composables/utils/useCardSwipe';
-import { CartasType } from 'type';
+import { CartasType } from '@/type';
 import { Howl } from 'howler'; // Library for handling sounds
 import { usePlayerStore } from '@/state/usePlayerStore';
+import * as _ from 'lodash';
 
 const store = usePlayerStore();
 const cardsInHand = ref<CartasType[]>([]);
@@ -84,6 +84,11 @@ defineExpose({
   removeCard
 });
 
+watch(() => store.signalResetDeck, (signal: boolean) => {
+  cardsInHand.value = _.cloneDeep(store.deck);
+  totalCards.value = store.deck.length;
+});
+
 onMounted(async () => {
   cardsInHand.value = [];
   cardsInHand.value = [...store.deck];
@@ -154,5 +159,4 @@ onMounted(async () => {
     margin-left: 6.5rem;
   }
 }
-
 </style>

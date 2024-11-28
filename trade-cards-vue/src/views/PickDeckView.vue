@@ -3,6 +3,7 @@ import { useDeck } from '@/composables/game/useDeck';
 import { DeckGameType } from '@/type';
 import { useRoute, useRouter } from 'vue-router';
 import { usePlayerStore } from '@/state/usePlayerStore';
+import * as _ from 'lodash';
 
 const router = useRouter();
 const route = useRoute();
@@ -17,6 +18,8 @@ function selectDeck(deckType: DeckGameType) {
   console.log(`O baralho escolhido foi: ${deckType}`);
   const roomId = Number(route.params.id ?? 0);
   store.deck = generateDeck(deckType)
+  // create a copy of deck into a constante deck variable 
+  store.defaultDeck = _.cloneDeep(store.deck);
   router.push(`/match/${roomId}`);
   // router.push(`/create-joker-card/${roomId}/${deckType}`);
 }
