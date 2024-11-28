@@ -17,6 +17,7 @@ export const usePlayerStore = defineStore('player', {
     deck: [] as CartasType[],
     defaultDeck: [] as CartasType[],
     signalResetDeck: false,
+    bagOfCards: [] as CartasType[],
   }),
   actions: {
     generateRandomSeed(): string {
@@ -33,10 +34,14 @@ export const usePlayerStore = defineStore('player', {
       this.isCreator = true;
     },
     shuffleDeck() {
-      this.deck = _.cloneDeep(this.defaultDeck);
-      // need a smarter way to randomize to avoid the next card be the same
       this.deck = _.shuffle(this.deck);
       this.signalResetDeck = !this.signalResetDeck;
+    },
+    addToBagOfCards(card: CartasType) {
+      debugger;
+      // Adiciona no bagOfCards
+      this.bagOfCards.push(card);
+      // TODO: Remove card from deck
     }
   },
   getters: {

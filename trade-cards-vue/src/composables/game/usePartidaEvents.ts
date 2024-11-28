@@ -11,8 +11,9 @@ const selectedObjectCard = useSerializedStorage<Cartas | null>('selectedObjectCa
 const selectedConditionCard = useSerializedStorage<Cartas | null>('selectedConditionCard', null);
 export function usePartidaEvents() {
   const router = useRouter()
-  const {getMyself} = usePlayerStore();
-  const {  usarCarta, resetDeckStateAddingActionResetDeck  } = usePartidas(getMyself);
+  const store = usePlayerStore();
+  const { resetDeckStateAddingActionResetDeck } = usePartidas(store.getMyself);
+
 
   const allCardsSelected = computed(() => {
     return (
@@ -29,25 +30,6 @@ export function usePartidaEvents() {
     router.push('/sessions');
   }
 
-  function onPlayCard(carta: Cartas) {
-    usarCarta(carta);
-    const cartaTipo = carta.tipo.toLowerCase();
-  
-    const cardMap = {
-      [CardType.Action.toLowerCase()]: selectedActionCard,
-      [CardType.Object.toLowerCase()]: selectedObjectCard,
-      [CardType.Condition.toLowerCase()]: selectedConditionCard,
-    };
-  
-    const selectedCard = cardMap[cartaTipo];
-  
-    if (!selectedCard || selectedCard.value) {
-      alert('Você já escolheu uma carta desse tipo.');
-      return;
-    }
-  
-    selectedCard.value = carta;
-  }
 
   function clearSelectedCards() {
     selectedActionCard.value = null;
@@ -55,14 +37,13 @@ export function usePartidaEvents() {
     selectedConditionCard.value = null;
   }
 
-  function onResetDeckBuilding(){
+  function onResetDeckBuilding() {
     clearSelectedCards();
     resetDeckStateAddingActionResetDeck();
   }
 
   return {
     onLeaveGame,
-    onPlayCard,
     allCardsSelected,
     selectedActionCard,
     selectedObjectCard,
@@ -70,5 +51,26 @@ export function usePartidaEvents() {
     clearSelectedCards,
     onResetDeckBuilding
   }
-  
+
 }
+
+/* 
+2 state para gerenciamento dos dados V2
+
+1. store.deck = Deck único do jogador gerado assim que ele passa pelo componente pickDeck.vue
+2. CardsInHand (DeckCard.vue) = variável utilizada pelo componente para efeitos de animação de carta sumindo
+
+NOVA FEATURE:
+3. Removendo cartas - Garantir que store.deck retire a carta para não reutilizar
+
+<- esquerda [CARTA] direita ->
+carta é apagada apenas do CardsInHands (ref interna de componente)
+
+GLOBAL store não é afetada
+
+quando o usuário arrastar para cima a GLOBAL tem que ser efaetada
+
+
+
+
+*/

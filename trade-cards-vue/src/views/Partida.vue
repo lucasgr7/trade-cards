@@ -29,6 +29,7 @@ const {
   clearSelectedCards
 
 } = usePartidaEvents();
+
 const cardPiles = [
   { type: CardType.Action, card: selectedActionCard },
   { type: CardType.Object, card: selectedObjectCard },
@@ -83,8 +84,7 @@ function resetCardPiles() {
         </svg>
       </button>
     </div>
-    <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " 
-      v-if="!allCardsSelected">
+    <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " v-if="!allCardsSelected">
       <div class="flex gap-x-1">
         <CardChosen v-for="(pile, index) in cardPiles" :key="index" :cardType="pile.type" :noCard="!pile.card.value"
           :nome="pile.card?.value?.nome" :descricao="pile.card?.value?.descricao" :image="pile.card?.value?.image"
@@ -93,10 +93,11 @@ function resetCardPiles() {
       <div id="end-square">
         <p>Vazio</p>
       </div>
-      <CardDeck ref="cardDeckRef" @usarCarta="onPlayCard" :isSubscribedUpdate="isSubscribed" />
+      <CardDeck ref="cardDeckRef" @usarCarta="store.addToBagOfCards" :isSubscribedUpdate="isSubscribed" />
       <!-- div center middle tailwindcss -->
-       <div class="flex items-center justify-center xl:mt-10">
-        <button @click="store.shuffleDeck" class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+      <div class="flex items-center justify-center xl:mt-10">
+        <button @click="store.shuffleDeck"
+          class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
           Reimpilhar
         </button>
         <button @click="onLeaveGame"
@@ -173,6 +174,7 @@ h1 {
     border-radius: 10px;
   }
 }
+
 /* Ajustes para telas Tablet */
 @media (max-width: 912px) {
   #end-square {
