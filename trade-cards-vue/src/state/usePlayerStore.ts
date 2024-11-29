@@ -65,6 +65,9 @@ export const usePlayerStore = defineStore('player', {
       this.deck.push(card); // carta retornada ao deck
       this.shuffleDeck();
     },
+    clearBagOfCards() {
+      this.bagOfCards = [];
+    }
   },
   getters: {
     getMyself(state): Jogador {

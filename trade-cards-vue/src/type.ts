@@ -80,3 +80,4 @@ export interface Jogador {
   isValid?: boolean;
   userSeed?: string;
 }
+

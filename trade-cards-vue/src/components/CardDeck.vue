@@ -70,7 +70,6 @@ const emit = defineEmits(['usarCarta', 'totalCartas']);
 
 function handleUsarCarta() {
   const currentCard = cardsInHand.value[cardsInHand.value.length - 1];
-  cardUsedByPlayer.value = true;
   if (currentCard) {
     emit('usarCarta', currentCard);
   }
@@ -100,7 +99,7 @@ onMounted(async () => {
 <template>
   <div class="card-deck">
     <!-- Render all cards in the stack -->
-    <div v-for="(card, index) in store.deck" :key="index" class="card-container"
+    <div v-for="(card, index) in cardsInHand" :key="index" class="card-container"
       :class="{ 'current-card': index === topCardIndex }" :style="getCardStyle(index)"
       :ref="el => setCardRef(el, index)" v-on="index === topCardIndex ? touchEvents : {}">
       <Card :card="card" :isBottomCard="index === 0" />

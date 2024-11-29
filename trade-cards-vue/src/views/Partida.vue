@@ -9,21 +9,41 @@ import ShowHand from '@/components/ShowHand.vue';
 import { Partidas } from '@/type';
 import { PartidaAcoes } from '@/enums/partidas.actions';
 import { usePlayerStore } from '@/state/usePlayerStore';
+import { useChatCompletion } from '@/composables/apis/useChatCompletion';
+import CommandPrompt from '@/components/CommandPrompt.vue';
 
 const route = useRoute();
 const router = useRouter();
 const store = usePlayerStore();
-const { partida, initialize, subscribeToChanges, isMyselfAdmin } = usePartidas(store.getMyself);
+const { partida, initialize, isMyselfAdmin } = usePartidas(store.getMyself);
 const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
+const { response, fetchChatCompletion, loading, fetchChatCompletionRankingInstruction, ranking } = useChatCompletion();
 
+// LOCAL EVENTS
+const responseCommand = ref('');
 // GAME EVENTS
 const {
   onLeaveGame,
   allCardsSelected,
-  clearSelectedCards
 } = usePartidaEvents();
 
 const isSubscribed = ref(false);
+
+async function onClickGenerateCommand() {
+  try {
+    await fetchChatCompletion(store.bagOfCards);
+    console.log(response.value?.choices[0].message.content);
+    responseCommand.value = response.value?.choices[0]?.message?.content ?? '';
+
+    // check how percentage of the words in the store.bagOfWords are in the responseCommando
+    const percentage = responseCommand.value.split(' ').filter((word: string) => store.bagOfCards.some(card => card.input === word)).length / store.bagOfCards.length;
+    console.log('percentage', percentage);
+    await fetchChatCompletionRankingInstruction(responseCommand.value, percentage);
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
 
 onMounted(async () => {
   await initialize(route, router);
@@ -31,18 +51,25 @@ onMounted(async () => {
   console.log(store.deck)
 });
 
-subscribeToChanges(Number(route.params.id), (payload: Partidas) => {
-  isSubscribed.value = true;
-  const lastAction = payload.acoes[payload.acoes.length - 1];
-  if (lastAction?.acao === PartidaAcoes.resetDeck) {
-    clearSelectedCards();
-  }
-});
 
+function accept() {
+  responseCommand.value = '';
+  store.clearBagOfCards();;
+}
+
+function tryAgain() {
+  onClickGenerateCommand();
+}
+function onCloseModal() {
+  responseCommand.value = '';
+}
 const bagOfCards = computed(() => store.bagOfCards);
 
 </script>
 <template>
+  <CommandPrompt :show="responseCommand !== ''" :ranking="ranking" :command="responseCommand"
+    @update:show="onCloseModal" @accept="accept" @try-again="tryAgain">
+  </CommandPrompt>
   <div class="deck-table w-screen h-screen text-game">
     <div class="flex w-full items-center justify-between">
       <h1 class="text-2xl font-black text-outline-blue mt-5 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1>
@@ -55,21 +82,26 @@ const bagOfCards = computed(() => store.bagOfCards);
     </div>
     <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " v-if="!allCardsSelected">
       <div class="flex gap-x-1 z-50">
-        <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)"/>
+        <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)" />
       </div>
       <div id="end-square">
         <p>Vazio</p>
       </div>
-      <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)" :isSubscribedUpdate="isSubscribed" />
+      <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
+        :isSubscribedUpdate="isSubscribed" />
       <!-- div center middle tailwindcss -->
       <div class="flex items-center justify-center xl:mt-10">
         <button @click="store.shuffleDeck"
-          class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+          class="text-sm mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
           Reimpilhar
         </button>
         <button @click="onLeaveGame"
-          class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+          class="text-sm mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
           Sair
+        </button>
+        <button @click="onClickGenerateCommand"
+          class="text-sm mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+          Gerar Comando
         </button>
       </div>
     </div>

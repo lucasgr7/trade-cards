@@ -96,7 +96,7 @@ export class SunDeck extends AbstractDeck {
       this.cards.push({ nome: color, type: CardTypeV2.Color, input: color, rarity: Rarity.common });
     });
 
-    const connections = ['Com', 'Sem', 'Na cor', 'Usando', 'Homem', 'Mulher', 'Próximo', 'A Esquerda', 'A Direita', 'A Frente'];
+    const connections = ['Com', 'Sem', 'Na cor', 'Usando', 'Homem', 'Mulher', 'Próximo', 'com o da Esquerda', 'A Direita', 'A Frente'];
     connections.forEach(connection => {
       this.cards.push({ nome: connection, type: CardTypeV2.Connection, input: connection, rarity: Rarity.common });
     });
