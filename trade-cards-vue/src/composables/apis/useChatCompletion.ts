@@ -27,7 +27,8 @@ export function useChatCompletion() {
   const response = ref<ChatCompletionResponse | null>(null);
   const error = ref<null | unknown>(null);
   const loading = ref(false);
-  const ranking = ref('');
+  const ranking = ref('')
+  const url = `${import.meta.env.VITE_LLM_URL}/v1/chat/completions`;
 
   const fetchChatCompletion = async (cartas: CartasType[]): Promise<void> => {
     loading.value = true;
@@ -38,6 +39,16 @@ export function useChatCompletion() {
       .sort(() => Math.random() - 0.5)
       .join(' ');
     const url = `${import.meta.env.VITE_LLM_URL}/v1/chat/completions`;
+    const system = `Você é um auxiliar de um jogo, irá gerar um comando as palavras passadas pelo jogador
+    que contenha uma palavra que faça sentido, suas prioridades são: 
+    1. A frase deve ser um comando de ação, 
+    2. A frase deve conter todas as palavras inseridas
+    3. A frase tem que ser apenas o comando
+    4. Palavras chave como 'Troca' devem ser usadas em frases como 'Troca os assentos' ou 'Troca os presentes'
+    5. Palavras chave como 'Revela' devem ser usadas em frases como 'Revela o assento' ou 'Revela o presente'
+    6. Comece o comando com 'O comando:'
+    7. Não retorne notas, comentários ou sugestões
+    `;
     try {
       const result = await fetch(url, {
         method: 'POST',
@@ -49,15 +60,7 @@ export function useChatCompletion() {
           messages: [
             {
               role: "system",
-              content: `Você é um auxiliar de um jogo, irá gerar um comando as palavras passadas pelo jogador
-          que contenha uma palavra que faça sentido, suas prioridades são: 
-          1. A frase deve ser um comando de ação, 
-          2. A frase deve conter todas as palavras inseridas
-          3. A frase tem que ser apenas o comando
-          4. Palavras chave como 'Troca' devem ser usadas em frases como 'Troca os assentos' ou 'Troca os presentes'
-          5. Palavras chave como 'Revela' devem ser usadas em frases como 'Revela o assento' ou 'Revela o presente'
-          6. Comece o comando com 'O comando:'
-          `
+              content: system
             },
             {
               role: "user",
@@ -80,8 +83,7 @@ export function useChatCompletion() {
   //create a fetchChatCompletionRankingInstruction that should give a S to F to ranking how direct the instruction is
   const fetchChatCompletionRankingInstruction = async (command: string, percentageCoverageWords: number): Promise<void> => {
     loading.value = true;
-    const defaultIntroConentet: string = `**Crie uma nota de 0 a 10 para a instrução, o percentual é ${percentageCoverageWords.toFixed(2)}**`;
-    const url = `${import.meta.env.VITE_LLM_URL}/v1/chat/completions`;
+    const defaultIntroConentet: string = `** Crie uma nota de 0 a 10 para a instrução, o percentual é ${percentageCoverageWords.toFixed(2)} ** `;
     const system = `You are a judge of a simple gift exchange game, a percentage and a command will be presented
     The goal of the game is to create commands to be executed by the players.
     Originality and creativity should be frowned upon and penalized, as they break the dynamics
@@ -89,7 +91,8 @@ export function useChatCompletion() {
     2. If it consists of Action followed by defining a target or multiple targets, it is a good command
     3. Give a score from 0 to 10 and justify the score.
     4. Provide a corrected version with: "Suggestion:"
-    5. Defining targets using clothing is a good command
+    5. Defining targets using clothing is part of the game, and helps increase the target
+    Output as Portuguese
   `
     try {
       const result = await fetch(url, {

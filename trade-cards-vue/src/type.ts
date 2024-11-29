@@ -33,7 +33,6 @@ export enum Rarity {
 }
 
 export interface CartasType {
-  description: any;
   nome: string; // seria o nome da carta apresentando "Homem", "Mulher", "Verde", "Calça"
   input: string; // seria o input que vai para o LLM gerar a palavra como "na cor Verde", "usando a calça"
   type: CardTypeV2;

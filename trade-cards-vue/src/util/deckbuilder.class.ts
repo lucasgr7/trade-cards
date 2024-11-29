@@ -7,6 +7,24 @@ export abstract class AbstractDeck {
   percentualCommon = 40;
   percentualRare = 15;
   percentualEpic = 5;
+
+
+  // GENERAL CARDS
+  cardPresente: CartasType = {
+    nome: 'Presente', type: CardTypeV2.Object, input: 'o presente do', rarity: Rarity.basic,
+  };
+  cardTroca: CartasType = {
+    nome: 'Troca', type: CardTypeV2.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png',
+  };
+  cardRevelear: CartasType = {
+    nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar o', rarity: Rarity.basic, image: 'reveal.png',
+  };
+  cardAssento: CartasType = {
+    nome: 'Assento', type: CardTypeV2.Object, input: 'o assento', rarity: Rarity.basic, image: 'seat.png',
+  };
+  cardCoins: CartasType = {
+    nome: 'Coins', type: CardTypeV2.Object, input: 'Coins', rarity: Rarity.basic, image: 'coins.png',
+  };
   constructor(name: string) {
     this.name = name;
   }
@@ -68,17 +86,22 @@ export abstract class AbstractDeck {
   protected addCards(cards: CartasType[]) {
     this.cards.push(...cards);
   }
+  protected getDefaultCards(): CartasType[] {
+    return [
+      this.cardPresente,
+      this.cardTroca,
+      this.cardRevelear,
+      this.cardAssento,
+      this.cardCoins
+    ];
+  }
 }
 
 export class SunDeck extends AbstractDeck {
   constructor(name: string) {
     super(name);
     this.addCards([
-      { nome: 'Troca', type: CardTypeV2.Action, input: 'troca', rarity: Rarity.basic, image: 'exchange.png' },
-      { nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar', rarity: Rarity.basic, image: 'reveal.png' },
-      { nome: 'Assento', type: CardTypeV2.Object, input: 'o assento', rarity: Rarity.basic, image: 'seat.png' },
-      { nome: 'Presente', type: CardTypeV2.Object, input: 'o presente', rarity: Rarity.basic },
-      { nome: 'Coins', type: CardTypeV2.Object, input: 'Coins', rarity: Rarity.rare, image: 'coins.png' },
+      ...this.getDefaultCards(),
       { nome: 'Calça', type: CardTypeV2.Object, input: 'usando a calça', rarity: Rarity.rare },
       { nome: 'Camisa', type: CardTypeV2.Object, input: 'usando a camisa', rarity: Rarity.common },
       { nome: 'Biquini', type: CardTypeV2.Object, input: 'usando o Biquini', rarity: Rarity.rare },
@@ -107,11 +130,7 @@ export class MoonDeck extends AbstractDeck {
   constructor(name: string) {
     super(name);
     this.addCards([
-      { nome: 'Troca', type: CardTypeV2.Action, input: 'troca', rarity: Rarity.basic, image: 'exchange.png' },
-      { nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar', rarity: Rarity.basic, image: 'reveal.png' },
-      { nome: 'Assento', type: CardTypeV2.Object, input: 'o assento', rarity: Rarity.basic, image: 'seat.png' },
-      { nome: 'Presente', type: CardTypeV2.Object, input: 'o presente', rarity: Rarity.basic },
-      { nome: 'Coins', type: CardTypeV2.Object, input: 'Coins', rarity: Rarity.rare, image: 'coins.png' },
+      ...this.getDefaultCards(),
       { nome: 'Calça', type: CardTypeV2.Object, input: 'usando a calça', rarity: Rarity.rare },
       { nome: 'Camisa', type: CardTypeV2.Object, input: 'usando a camisa', rarity: Rarity.common },
       { nome: 'Biquini', type: CardTypeV2.Object, input: 'usando o Biquini', rarity: Rarity.common },
@@ -135,9 +154,9 @@ export class MoonDeck extends AbstractDeck {
     });
 
     // TODO: Rework esse aqui para usar palavras de posicionamento como "entre duas mulheres", ou "entre dois homens"
-    const signs = ['Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem', 'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'];
+    const signs = ['Entre duas mulheres', 'Entre dois homens', 'Entre uma mulher e um homem'];
     signs.forEach(sign => {
-      this.cards.push({ nome: sign, type: CardTypeV2.Object, input: sign, rarity: Rarity.epic });
+      this.cards.push({ nome: sign, type: CardTypeV2.Condition, input: sign, rarity: Rarity.epic });
     });
   }
 }
