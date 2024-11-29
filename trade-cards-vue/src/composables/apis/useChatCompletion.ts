@@ -82,6 +82,15 @@ export function useChatCompletion() {
     loading.value = true;
     const defaultIntroConentet: string = `**Crie uma nota de 0 a 10 para a instrução, o percentual é ${percentageCoverageWords.toFixed(2)}**`;
     const url = `${import.meta.env.VITE_LLM_URL}/v1/chat/completions`;
+    const system = `You are a judge of a simple gift exchange game, a percentage and a command will be presented
+    The goal of the game is to create commands to be executed by the players.
+    Originality and creativity should be frowned upon and penalized, as they break the dynamics
+    1. Words like 'Exchange gift', 'Exchange seat', 'Reveal gift' should be well scored
+    2. If it consists of Action followed by defining a target or multiple targets, it is a good command
+    3. Give a score from 0 to 10 and justify the score.
+    4. Provide a corrected version with: "Suggestion:"
+    5. Defining targets using clothing is a good command
+  `
     try {
       const result = await fetch(url, {
         method: 'POST',
@@ -93,14 +102,7 @@ export function useChatCompletion() {
           messages: [
             {
               role: "system",
-              content: `Você é um Juíz de um jogo simpels de troca de presentes, será apresentado um percentual e um comando
-              O objetivo do jogo é criar comandos para serem executados pelos jogadores.
-              Originalidade e criativdade devem ser mal vistos e penalizados, pois quebram a dinamica
-              Palavras como 'Trocar presente', 'Trocar assento', 'Revelar presente' devem ser bem pontuados
-              pois atingem o ponto chave do jogo. De uma nota de 0 a 10 e justifique a nota.
-              Se o comando for perfeito, apenas diga 'Perfeito' e dê a nota 10
-              Caso acha incoerencia reformule o comando começando com "Sugestão:"
-          `
+              content: system
             },
             {
               role: "user",

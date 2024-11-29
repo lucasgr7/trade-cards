@@ -37,11 +37,15 @@ watch(() => props.show, (newVal) => {
 <template>
   <div v-show="props.show" class="fixed inset-0 z-10 flex items-center justify-center bg-gray-800 bg-opacity-75">
     <div class="bg-white rounded-lg shadow-lg p-6">
-      <div class="flex justify-end">
+      <div class="flex justify-evenly">
         <slot name="header">
-          <h2 class="text-sm text-black text-game font-bold">{{ props.ranking }}</h2>
+          <h2 class="text-sm text-black text-game font-bold">Comando Gerado</h2>
         </slot>
         <button class="text-gray-500 hover:text-gray-700" @click="closeModal">X</button>
+      </div>
+      <div class="mt-4">
+        <h2 class="text-xs flex-shrink font-bold">Ranking</h2>
+        <p class="mt-2 text-game text-sm text-black">{{ props.ranking }}</p>
       </div>
       <div class="mt-4">
         <h2 class="text-2xl font-bold">Command Prompt</h2>

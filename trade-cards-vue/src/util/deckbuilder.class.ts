@@ -84,7 +84,7 @@ export class SunDeck extends AbstractDeck {
       { nome: 'Biquini', type: CardTypeV2.Object, input: 'usando o Biquini', rarity: Rarity.rare },
       { nome: 'Short', type: CardTypeV2.Object, input: 'usando a Bermuda', rarity: Rarity.common },
       { nome: 'Brinco', type: CardTypeV2.Object, input: 'usando o brinco', rarity: Rarity.rare },
-      { nome: 'Chinelo', type: CardTypeV2.Object, input: 'usando o brinco', rarity: Rarity.rare },
+      { nome: 'Chinelo', type: CardTypeV2.Object, input: 'usando o chinelo', rarity: Rarity.rare },
       { nome: 'Cavada', type: CardTypeV2.Object, input: 'cavada', rarity: Rarity.rare },
       { nome: 'Qualquer um que', type: CardTypeV2.Condition, input: 'qualquer um que', rarity: Rarity.epic },
       { nome: 'Qualquer mulher', type: CardTypeV2.Condition, input: 'Qualquer mulher', rarity: Rarity.epic },
@@ -93,10 +93,10 @@ export class SunDeck extends AbstractDeck {
 
     const colors = ['Azul', 'Vermelho', 'Verde', 'Amarelo', 'Rosa', 'Preto', 'Branco'];
     colors.forEach(color => {
-      this.cards.push({ nome: color, type: CardTypeV2.Color, input: color, rarity: Rarity.common });
+      this.cards.push({ nome: color, type: CardTypeV2.Color, input: `na cor ${color}`, rarity: Rarity.common });
     });
 
-    const connections = ['Com', 'Sem', 'Na cor', 'Usando', 'Homem', 'Mulher', 'Próximo', 'com o da Esquerda', 'A Direita', 'A Frente'];
+    const connections = ['Com', 'Sem', 'Na cor', 'Usando', 'Homem', 'Mulher', 'Próximo', 'com o daj Esquerda', 'A Direita', 'A Frente'];
     connections.forEach(connection => {
       this.cards.push({ nome: connection, type: CardTypeV2.Connection, input: connection, rarity: Rarity.common });
     });
@@ -126,7 +126,7 @@ export class MoonDeck extends AbstractDeck {
 
     const colors = ['Azul', 'Vermelho', 'Verde', 'Amarelo', 'Rosa', 'Preto', 'Branco', 'Laranja', 'Roxo', 'Cinza', 'Marrom', 'Bege'];
     colors.forEach(color => {
-      this.cards.push({ nome: color, type: CardTypeV2.Color, input: color, rarity: Rarity.rare });
+      this.cards.push({ nome: color, type: CardTypeV2.Color, input: `na cor ${color}`, rarity: Rarity.rare });
     });
 
     const connections = ['Com', 'Na cor', 'Usando', 'Homem', 'Mulher', 'Nasceu'];
