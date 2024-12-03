@@ -88,7 +88,7 @@ function onCloseModal() {
         </svg>
       </button>
     </div>
-    <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " v-if="!allCardsSelected">
+    <div class="fixed inset-0 flex mt-16 flex-col items-center justify-between" v-if="!allCardsSelected">
       <div class="flex gap-x-1 z-50">
         <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)" />
       </div>
@@ -96,16 +96,16 @@ function onCloseModal() {
         <p>Vazio</p>
       </div>
       <EnergyBar :totalEnergy="totalEnergy" :current-energy="currentEnergy"/>
-      <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
-        :isSubscribedUpdate="isSubscribed" />
+      <!-- <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
+        :isSubscribedUpdate="isSubscribed" /> -->
       <!-- div center middle tailwindcss -->
-      <div class="flex items-center justify-center xl:mt-10">
+      <div class="flex items-center justify-center xl:mt-10 text-[0.6rem]">
         <button @click="store.shuffleDeck"
-          class="text-xs mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Reimpilhar
         </button>
         <button @click="onClickGenerateCommand"
-          class="text-xs mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Gerar Comando
         </button>
       </div>
@@ -138,8 +138,8 @@ h1 {
 
 /* Estilos para o quadrado branco */
 #end-square {
-  width: 202px;
-  height: 292px;
+  width: 150px;
+  height: 230px;
   border: 4px solid white;
   border-radius: 20px;
 
@@ -147,7 +147,7 @@ h1 {
 
   /* Centralizar o quadrado dentro do #deck-table */
   position: absolute;
-  top: 62%;
+  top: 55%;
   left: 45%;
   transform: translate(-50%, -50%);
 

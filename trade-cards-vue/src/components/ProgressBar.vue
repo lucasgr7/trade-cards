@@ -13,7 +13,7 @@ const progressBarWidth = computed(() => {
 </script>
 <!-- ProgressBar.vue -->
 <template>
-  <div class="fixed bottom-24 left-1/2 transform -translate-x-1/2 w-3/4">
+  <div class="fixed bottom-24 left-1/2 transform -translate-x-1/2 w-[60%]">
     <div class="w-full h-5 bg-yellow-900 rounded-lg overflow-hidden border-2 border-white">
       <div class="h-full bg-gradient-to-r from-yellow-700 to-yellow-500 transition-width duration-300 ease-in-out" :style="{ width: progressBarWidth }"></div>
     </div>
