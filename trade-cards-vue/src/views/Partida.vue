@@ -40,7 +40,7 @@ async function onClickGenerateCommand() {
     await fetchChatCompletion(store.bagOfCards);
     console.log(response.value?.choices[0].message.content);
     responseCommand.value = response.value?.choices[0]?.message?.content ?? '';
-    store.removeEnergy(1);
+    store.removeEnergy(store.deckType);
 
     // check how percentage of the words in the store.bagOfWords are in the responseCommando
     const percentage = responseCommand.value.split(' ').filter((word: string) => store.bagOfCards.some(card => card.input === word)).length / store.bagOfCards.length;

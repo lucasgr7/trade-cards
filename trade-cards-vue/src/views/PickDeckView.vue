@@ -9,6 +9,7 @@ const router = useRouter();
 const route = useRoute();
 const store = usePlayerStore();
 const { generateDeck } = useDeck();
+const INITIAL_ENERGY = 15;
 const SUN_DECK = {
   ENERGY: 5,
   JOKERS: 2,
@@ -26,13 +27,7 @@ function leave() {
 function selectDeck(deckType: DeckGameType) {
   const roomId = Number(route.params.id ?? 0);
   store.deck = generateDeck(deckType)
-
-  if (deckType === DeckGameType.Sun) {
-    store.setTotalEnergyUnits(5);
-  } else if (deckType === DeckGameType.Moon) {
-    store.setTotalEnergyUnits(3);
-  }
-  
+  store.setTotalEnergyUnits(INITIAL_ENERGY);
   router.push(`/create-joker-card/${roomId}/${deckType}`);
 }
 

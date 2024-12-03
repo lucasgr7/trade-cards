@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { CartasType, Jogador } from '@/type';
 import * as _ from 'lodash';
 import { defaultWindow } from '@vueuse/core';
+import { DeckGameType } from '../type';
 
 const MAX_CARDS_IN_BAG = 15;
 
@@ -16,6 +17,7 @@ export const usePlayerStore = defineStore('player', {
     avatarUrl: '',
     isCreator: false,
     deck: [] as CartasType[],
+    deckType: '' as DeckGameType,
     signalResetDeck: false,
     bagOfCards: [] as CartasType[],
     energyUnits: 0,
@@ -39,7 +41,7 @@ export const usePlayerStore = defineStore('player', {
       this.deck = _.shuffle(this.deck);
       this.signalResetDeck = !this.signalResetDeck;
     },
-    // metodos relacionados a bag de cartas
+    // métodos relacionados à bag de cartas
     canAddCard(): boolean {
       // validação de máximo de cartas na bag
       if (this.bagOfCards.length >= MAX_CARDS_IN_BAG) {
@@ -70,7 +72,7 @@ export const usePlayerStore = defineStore('player', {
     clearBagOfCards() {
       this.bagOfCards = [];
     },
-    // metodos relacionados a energia
+    // métodos relacionados à energia
     setTotalEnergyUnits(units: number) {
       this.energyUnits = units;
       this.currentEnergy = units;
@@ -80,9 +82,11 @@ export const usePlayerStore = defineStore('player', {
         this.currentEnergy += units;
       }
     },
-    removeEnergy(units: number) {
-      if (this.currentEnergy - units >= 0) {
-        this.currentEnergy -= units;
+    removeEnergy(deck: DeckGameType) {
+      if (deck == DeckGameType.Sun) {
+        this.currentEnergy -= 3; // Baralho Sun: custo de 3 de energia para cada comando
+      } else {
+        this.currentEnergy -= 5; // Baralho Moon: custo de 5 de energia para cada comando
       }
     },
   },

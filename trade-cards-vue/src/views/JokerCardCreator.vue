@@ -5,7 +5,7 @@ import { onMounted, ref, watch, computed } from 'vue';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { StatusMatch } from '@/enums/statusMatch';
 import { usePlayerStore } from '@/state/usePlayerStore';
-import { CardTypeV2, CartasType, Rarity } from '@/type';
+import { CardTypeV2, CartasType, DeckGameType, Rarity } from '@/type';
 
 const router = useRouter();
 const route = useRoute();
@@ -23,9 +23,9 @@ const jokerCard = computed(() => ({
 }));
 
 const deck = route.params.deck as string;
-if (deck === 'sun') {
+if (deck === DeckGameType.Sun) {
   jokerCardsCount.value = 2;
-} else if (deck === 'moon') {
+} else if (deck === DeckGameType.Moon) {
   jokerCardsCount.value = 5;
 }
 
@@ -55,6 +55,7 @@ onMounted(() => {
   subscribeToChanges(roomId, (payload: Salas) => {
     if (payload.id === roomId && payload.estado === StatusMatch.INITSTATUS) {
       store.clearBagOfCards();
+      store.deckType = deck as DeckGameType;
       router.push(`/match/${roomId}`);
     }
   });
