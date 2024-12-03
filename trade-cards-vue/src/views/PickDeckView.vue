@@ -9,15 +9,30 @@ const router = useRouter();
 const route = useRoute();
 const store = usePlayerStore();
 const { generateDeck } = useDeck();
+const SUN_DECK = {
+  ENERGY: 5,
+  JOKERS: 2,
+}
+
+const MOON_DECK = {
+  ENERGY: 3,
+  JOKERS: 5,
+}
 
 function leave() {
   router.push('/');
 }
 
 function selectDeck(deckType: DeckGameType) {
-  console.log(`O baralho escolhido foi: ${deckType}`);
   const roomId = Number(route.params.id ?? 0);
   store.deck = generateDeck(deckType)
+
+  if (deckType === DeckGameType.Sun) {
+    store.setTotalEnergyUnits(5);
+  } else if (deckType === DeckGameType.Moon) {
+    store.setTotalEnergyUnits(3);
+  }
+  
   router.push(`/create-joker-card/${roomId}/${deckType}`);
 }
 
@@ -44,11 +59,11 @@ function selectDeck(deckType: DeckGameType) {
       <div class="flex justify-between pt-1 pb-8">
         <div class="flex items-center border border-black rounded-full px-4 bg-yellow-300">
           <img src="@/assets/icons/energy.png" class="h-10 w-10 pr-2 border-0 border-r-2 border-black" alt="Energia">
-          <p class="text-black ml-4">5</p>
+          <p class="text-black ml-4">{{ SUN_DECK.ENERGY }}</p>
         </div>
         <div class="flex items-center border border-black rounded-full px-4 bg-blue-300">
           <img src="@/assets/icons/joker.png" class="h-10 w-10 pr-2 border-0 border-r-2 border-black" alt="Coringas">
-          <p class="text-black ml-4">2</p>
+          <p class="text-black ml-4">{{ SUN_DECK.JOKERS }}</p>
         </div>
       </div>
     </div>
@@ -59,11 +74,11 @@ function selectDeck(deckType: DeckGameType) {
       <div class="flex justify-between pt-2 pb-2">
         <div class="flex items-center border border-black rounded-full px-4 bg-yellow-300">
           <img src="@/assets/icons/energy.png" class="h-10 w-10 pr-2 border-0 border-r-2 border-black" alt="Energia">
-          <p class="text-black ml-4">3</p>
+          <p class="text-black ml-4">{{ MOON_DECK.ENERGY }}</p>
         </div>
         <div class="flex items-center border border-black rounded-full px-4 bg-blue-300">
           <img src="@/assets/icons/joker.png" class="h-10 w-10 pr-2 border-0 border-r-2 border-black" alt="Coringas">
-          <p class="text-black ml-4">5</p>
+          <p class="text-black ml-4">{{ MOON_DECK.JOKERS }}</p>
         </div>
       </div>
     </div>

@@ -44,6 +44,7 @@ function saveJokerCard() {
 watch(jokerCardsCount, async (newValue) => {
   if (newValue === 0) {
     store.deck.push(...jokerCardsList.value);
+    store.shuffleDeck();
     await updateRecord(sala.value?.id as number, { ...sala.value, estado: StatusMatch.INITSTATUS });
   }
 });
@@ -53,6 +54,7 @@ onMounted(() => {
   const roomId = Number(route.params.id ?? 0);
   subscribeToChanges(roomId, (payload: Salas) => {
     if (payload.id === roomId && payload.estado === StatusMatch.INITSTATUS) {
+      store.clearBagOfCards();
       router.push(`/match/${roomId}`);
     }
   });

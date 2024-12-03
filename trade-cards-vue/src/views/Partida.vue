@@ -6,18 +6,20 @@ import { useRoute, useRouter } from 'vue-router';
 import { usePartidas } from '../composables/apis/usePartidas';
 import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
 import ShowHand from '@/components/ShowHand.vue';
-import { Partidas } from '@/type';
-import { PartidaAcoes } from '@/enums/partidas.actions';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import { useChatCompletion } from '@/composables/apis/useChatCompletion';
 import CommandPrompt from '@/components/CommandPrompt.vue';
+import EnergyBar from '@/components/EnergyBar.vue';
 
 const route = useRoute();
 const router = useRouter();
 const store = usePlayerStore();
 const { partida, initialize, isMyselfAdmin } = usePartidas(store.getMyself);
 const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
-const { response, fetchChatCompletion, loading, fetchChatCompletionRankingInstruction, ranking } = useChatCompletion();
+const { response, fetchChatCompletion, fetchChatCompletionRankingInstruction, ranking } = useChatCompletion();
+const bagOfCards = computed(() => store.bagOfCards);
+const totalEnergy = computed(() => store.energyUnits);
+const currentEnergy = computed(() => store.currentEnergy);
 
 // LOCAL EVENTS
 const responseCommand = ref('');
@@ -30,10 +32,15 @@ const {
 const isSubscribed = ref(false);
 
 async function onClickGenerateCommand() {
+  if(store.currentEnergy === 0) {
+    alert('Você não tem energia suficiente para gerar um comando.');
+  }
+
   try {
     await fetchChatCompletion(store.bagOfCards);
     console.log(response.value?.choices[0].message.content);
     responseCommand.value = response.value?.choices[0]?.message?.content ?? '';
+    store.removeEnergy(1);
 
     // check how percentage of the words in the store.bagOfWords are in the responseCommando
     const percentage = responseCommand.value.split(' ').filter((word: string) => store.bagOfCards.some(card => card.input === word)).length / store.bagOfCards.length;
@@ -51,21 +58,22 @@ onMounted(async () => {
   console.log(store.deck)
 });
 
-
 function accept() {
   responseCommand.value = '';
-  store.clearBagOfCards();;
+  store.clearBagOfCards();
+  store.addEnergy(store.energyUnits); // restore energy
 }
 
 function tryAgain() {
   onClickGenerateCommand();
 }
+
 function onCloseModal() {
   responseCommand.value = '';
 }
-const bagOfCards = computed(() => store.bagOfCards);
 
 </script>
+
 <template>
   <CommandPrompt :show="responseCommand !== ''" :ranking="ranking" :command="responseCommand"
     @update:show="onCloseModal" @accept="accept" @try-again="tryAgain">
@@ -87,20 +95,17 @@ const bagOfCards = computed(() => store.bagOfCards);
       <div id="end-square">
         <p>Vazio</p>
       </div>
+      <EnergyBar :totalEnergy="totalEnergy" :current-energy="currentEnergy"/>
       <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
         :isSubscribedUpdate="isSubscribed" />
       <!-- div center middle tailwindcss -->
       <div class="flex items-center justify-center xl:mt-10">
         <button @click="store.shuffleDeck"
-          class="text-sm mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+          class="text-sm mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Reimpilhar
         </button>
-        <button @click="onLeaveGame"
-          class="text-sm mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-          Sair
-        </button>
         <button @click="onClickGenerateCommand"
-          class="text-sm mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+          class="text-sm mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Gerar Comando
         </button>
       </div>

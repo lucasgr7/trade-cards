@@ -1,4 +1,3 @@
-
 // stores/usePlayerStore.ts
 import { defineStore } from 'pinia';
 import { CartasType, Jogador } from '@/type';
@@ -19,6 +18,8 @@ export const usePlayerStore = defineStore('player', {
     deck: [] as CartasType[],
     signalResetDeck: false,
     bagOfCards: [] as CartasType[],
+    energyUnits: 0,
+    currentEnergy: 0,
   }),
   actions: {
     generateRandomSeed(): string {
@@ -38,6 +39,7 @@ export const usePlayerStore = defineStore('player', {
       this.deck = _.shuffle(this.deck);
       this.signalResetDeck = !this.signalResetDeck;
     },
+    // metodos relacionados a bag de cartas
     canAddCard(): boolean {
       // validação de máximo de cartas na bag
       if (this.bagOfCards.length >= MAX_CARDS_IN_BAG) {
@@ -67,7 +69,22 @@ export const usePlayerStore = defineStore('player', {
     },
     clearBagOfCards() {
       this.bagOfCards = [];
-    }
+    },
+    // metodos relacionados a energia
+    setTotalEnergyUnits(units: number) {
+      this.energyUnits = units;
+      this.currentEnergy = units;
+    },
+    addEnergy(units: number) {
+      if (this.currentEnergy + units <= this.energyUnits) {
+        this.currentEnergy += units;
+      }
+    },
+    removeEnergy(units: number) {
+      if (this.currentEnergy - units >= 0) {
+        this.currentEnergy -= units;
+      }
+    },
   },
   getters: {
     getMyself(state): Jogador {

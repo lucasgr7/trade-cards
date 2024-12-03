@@ -1,14 +1,13 @@
 <script lang='ts' setup>
 import { onMounted, ref } from 'vue';
 import UserPicture from '@/components/UserPicture.vue';
-import { Salas, useSalas } from '@/composables/apis/useSalas';
+import { useSalas } from '@/composables/apis/useSalas';
 import { useRoute } from 'vue-router';
 import router from '@/util/router';
 import { usePartidas } from '@/composables/apis/usePartidas';
 import { useDeck } from '@/composables/game/useDeck';
 import { Partidas, Jogador } from 'type';
 import { StatusMatch } from '@/enums/statusMatch';
-import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
 import { usePlayerStore } from '@/state/usePlayerStore';
 
 const store = usePlayerStore();
@@ -30,7 +29,14 @@ const sentences = [
   "Tá querendo beber depois do jogo",
   "Tá impaciente",
   "Quer jogar logo",
-  "Quer trocar figurinhas"
+  "Não quer ganhar meias",
+  "Quer trocar figurinhas",
+  "Roubou pão na Casa do João",
+  "Quer saber quem ficou na churrasqueira!",
+  ", o ILUMINADO",
+  "Quer o presente maior",
+  "Vai começar uma dieta em 2025",
+  "Vai entrar na academia em 2025",
 ];
 const randomSentence = ref('');
 
