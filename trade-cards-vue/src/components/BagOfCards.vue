@@ -14,7 +14,7 @@ const removeCarta = (card: any) => {
 </script>
 
 <template>
-  <div class="border-2 border-b-4 border-black p-4 w-[25rem] h-[9rem] rounded-lg bg-green-200 text-black 
+  <div class="border-2 border-b-4 border-black p-4 w-[20rem] h-[9rem] rounded-lg bg-green-200 text-black 
       mt-2 mb-4 flex flex-wrap gap-2 overflow-y-auto flex-shrink leading-snug">
     <div v-for="(carta, index) in props.cartas" :key="index" @click="removeCarta(carta)"
       :class="['card', `${carta.type.toLowerCase()}-card`, 'border p-2 rounded-lg bg-white border-black h-fit text-game text-xs']">

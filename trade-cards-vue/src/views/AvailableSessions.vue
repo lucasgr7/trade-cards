@@ -64,7 +64,7 @@ function leave() {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-between p-4
+  <div class="flex flex-col items-center justify-between p-4 text-game
     border border-white rounded-xl bg-trade-blue-100
     w-screen h-screen">
     <div class="flex w-full items-center ">
@@ -73,12 +73,12 @@ function leave() {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-      <h1 class="text-3xl font-black text-outline-blue">Salas disponíveis</h1>
+      <h1 class="text-xl text-white font-black text-outline-blue">Salas disponíveis</h1>
     </div>
-    <span class="text-trade-blue-900 text-3xl border bg-white rounded-full p-2 w-14 text-center">{{ getSessionsCount() }}</span>
+    <span class="text-trade-blue-900 text-lg border bg-white rounded-full p-2 w-12 text-center">{{ getSessionsCount() }}</span>
     <div class="text-trade-blue-900 bg-trade-blue-100 border-4 rounded-2xl border-trade-blue-900 border-b-0">
       <div class="max-h-96 overflow-y-auto max-w-80">
-        <table class="w-20">
+        <table class="w-20 text-[0.5rem]">
           <thead class="bg-trade-blue-100 sticky top-0 z-10">
             <tr>
               <th class="py-5 px-6 border-b-2 border-trade-blue-900">Sala</th>
@@ -100,16 +100,16 @@ function leave() {
       </div>
     </div>
     <div class="flex flex-col gap-y-2">
-      <button @click="joinSession" :disabled="!selectedSession" class="border border-black rounded-full py-4 px-16 bg-trade-blue-600 font-bold text-xl
+      <button @click="joinSession" :disabled="!selectedSession" class="border border-black rounded-full py-4 px-16 bg-trade-blue-600 font-bold text-xs
           disabled:opacity-50">
           Entrar
         </button>
       <button @click="createSession"
-        class="border border-black rounded-full py-4 px-16 bg-trade-blue-800 font-bold text-xl">
+        class="border border-black rounded-full py-4 px-16 bg-trade-blue-800 font-bold text-xs">
         Criar Sala
       </button>
     </div>
-    <p class="text-trade-blue-900">Selecione uma sala online ou crie a sua própria.</p>
+    <p class="text-trade-blue-900 text-xs">Selecione uma sala online ou crie a sua própria.</p>
   </div>
 </template>
 

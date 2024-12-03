@@ -11,7 +11,6 @@ import * as _ from 'lodash';
 const store = usePlayerStore();
 const cardsInHand = ref<CartasType[]>([]);
 const cardRefs = ref<HTMLElement[]>([]);
-const cardUsedByPlayer = ref(false); // Flag to indicate if the local player used the card
 
 // multiple sound effects
 const soundEffect = new Howl({
@@ -56,6 +55,7 @@ const touchEvents = {
   touchmove: moveSwipe,
   touchend: endSwipe,
 };
+
 // Function to play the funny sound effect
 function playFunnySoundEffect() {
   soundEffect.play();

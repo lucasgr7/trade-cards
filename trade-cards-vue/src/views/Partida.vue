@@ -80,7 +80,7 @@ function onCloseModal() {
   </CommandPrompt>
   <div class="deck-table w-screen h-screen text-game">
     <div class="flex w-full items-center justify-between">
-      <h1 class="text-2xl font-black text-outline-blue mt-5 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1>
+      <h1 class="text-lg text-white font-black text-outline-blue mt-5 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1>
       <button @click="onLeaveGame"
         class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -101,11 +101,11 @@ function onCloseModal() {
       <!-- div center middle tailwindcss -->
       <div class="flex items-center justify-center xl:mt-10">
         <button @click="store.shuffleDeck"
-          class="text-sm mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          class="text-xs mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Reimpilhar
         </button>
         <button @click="onClickGenerateCommand"
-          class="text-sm mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          class="text-xs mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Gerar Comando
         </button>
       </div>

@@ -108,7 +108,7 @@ onMounted(() => {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-      <h1 class="text-3xl font-black text-outline-blue mb-8">Sala de espera</h1>
+      <h1 class="text-lg text-white font-black text-outline-blue mt-2">Sala de espera</h1>
     </div>
     <div class="min-w-[10rem]">
       <UserPicture :src="getMyself.avatarUrl"/>
@@ -119,7 +119,7 @@ onMounted(() => {
       <p class="text-xs">{{ randomSentence }}</p>
     </div>
     <div class="flex flex-col w-full gap-y-4 max-h-[26rem] mb-12">
-      <h2 class="text-base font-bold text-white">Jogadores na sala:</h2>
+      <h2 class="text-xs text-center font-bold text-white">Jogadores na sala:</h2>
       <div class="flex w-full border-t-4 border-b-4 border-trade-blue-900 max-h-96 overflow-y-auto px-1">
         <ul class="flex flex-wrap">
           <li v-for="jogador in players" :key="jogador.seed">
@@ -136,7 +136,7 @@ onMounted(() => {
       </div>
     </div>
     <button @click="handleButtonStartGame"
-      class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl text-black">
+      class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xs text-black">
       {{ isMyselfCreatorSession ? 'Escolher Baralho' : 'Acelerar início' }}
     </button>
   </div>
