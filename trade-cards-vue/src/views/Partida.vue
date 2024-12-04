@@ -80,15 +80,15 @@ function onCloseModal() {
   </CommandPrompt>
   <div class="deck-table w-screen h-screen text-game">
     <div class="flex w-full items-center justify-between">
-      <h1 class="text-lg text-white font-black text-outline-blue mt-5 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1>
+      <h1 class="text-base text-white font-black text-outline-blue mt-5 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1>
       <button @click="onLeaveGame"
-        class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+        class="absolute top-3 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
-    <div class="fixed inset-0 flex mt-16 flex-col items-center justify-between" v-if="!allCardsSelected">
+    <div class="fixed inset-0 flex mt-14 flex-col items-center justify-between" v-if="!allCardsSelected">
       <div class="flex gap-x-1 z-50">
         <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)" />
       </div>
@@ -96,9 +96,8 @@ function onCloseModal() {
         <p>Vazio</p>
       </div>
       <EnergyBar :totalEnergy="totalEnergy" :current-energy="currentEnergy"/>
-      <!-- <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
-        :isSubscribedUpdate="isSubscribed" /> -->
-      <!-- div center middle tailwindcss -->
+      <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
+        :isSubscribedUpdate="isSubscribed" />
       <div class="flex items-center justify-center xl:mt-10 text-[0.6rem]">
         <button @click="store.shuffleDeck"
           class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
@@ -139,7 +138,7 @@ h1 {
 /* Estilos para o quadrado branco */
 #end-square {
   width: 150px;
-  height: 230px;
+  height: 200px;
   border: 4px solid white;
   border-radius: 20px;
 

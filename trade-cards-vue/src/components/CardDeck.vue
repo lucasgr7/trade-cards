@@ -111,8 +111,7 @@ onMounted(async () => {
 <style scoped>
 .card-deck {
   position: relative;
-  width: 210px;
-  height: 300px;
+  height: 105px;
   margin: auto;
 }
 
@@ -143,11 +142,17 @@ onMounted(async () => {
   margin: 0;
 }
 
-@media screen and (min-height: 667px) {
+@media screen and (min-height: 568px) {
   .card-deck {
-    height: 200px;
+    width: 210px;
   }
 
+  .card-container {
+    margin-left: 6.5rem;
+  }
+}
+
+@media screen and (min-height: 667px) {
   .card-container {
     margin-left: 6.8rem;
   }

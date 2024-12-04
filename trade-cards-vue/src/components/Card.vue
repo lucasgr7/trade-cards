@@ -49,30 +49,30 @@ const image = computed(() => {
 
 <template>
   <div :class="['card', cardTypeClass, { 'top-card': isBottomCard }]"
-    class="w-[210px] h-[300px] rounded-[20px] flex flex-col overflow-hidden touch-pan-x touch-pan-y relative shadow-inner shadow-lg">
+    class="w-[10rem] h-[12rem] rounded-[20px] flex flex-col overflow-hidden touch-pan-x touch-pan-y relative shadow-inner shadow-lg">
     <!-- Cabeçalho: Ícone e Título -->
-    <div
-      class="header flex items-center justify-between p-2 w-full bg-gradient-to-b from-white/60 to-transparent relative">
-      <h3 class="title font-press-start text-base text-[#0c0c0c] uppercase leading-[1.2] text-center m-0 py-2"
-        :class="{ 'text-xs': card.nome.length > 20, 'text-sm': card.nome.length > 10 && card.nome.length <= 20, 'text-base': card.nome.length <= 10 }">
+    <div class="header flex items-center justify-between p-2 w-full bg-gradient-to-b from-white/60 to-transparent relative">
+      <h3 class="title font-press-start text-[0.5rem] text-[#0c0c0c] uppercase leading-[1.2] text-center m-0 py-2"
+        :class="{ 'text-[0.4rem]': card.nome.length > 20, 'text-[0.5rem]': card.nome.length > 10 && card.nome.length <= 20, 'text-[0.6rem]': card.nome.length <= 10 }">
         {{ card.nome }}
       </h3>
-      <h2 class="rarity text-black text-xs font-bold uppercase p-1 rounded-[16px]" :class="`rarity-` + card.rarity">
+      <h2 class="rarity text-black text-[0.5rem] font-bold uppercase p-1 rounded-[16px]" :class="`rarity-` + card.rarity">
         {{ card.rarity }}
       </h2>
       <!-- Linha abaixo do header -->
-      <div class="absolute bottom-[-6px] left-1/2 transform -translate-x-1/2 w-4/5 h-px bg-white/70"></div>
+      <div class="absolute bottom-[-8px] left-1/2 transform -translate-x-1/2 w-4/5 h-px bg-white/70"></div>
     </div>
 
     <!-- Imagem Principal -->
-    <div class="image-container flex-1 relative overflow-hidden items-center mt-1.5">
+    <div class="relative overflow-hidden flex justify-center items-center mt-1.5">
       <img v-if="!isJokerCard" :src="image" alt="Card Image"
-        class="card-image object-cover w-[12.5rem] h-56 fixed top-16" />
+        class="card-image object-fit w-32 h-28 fixed top-16 rounded-md" />
     </div>
 
     <!-- Descrição -->
     <p
-      class="description text-xs text-game bg-white/70 backdrop-blur-md flex-shrink border-b-0 rounded-b-[14px] p-5 text-black font-medium text-center leading-snug overflow-hidden">
+      class="description text-[0.4rem] text-game bg-white/70 backdrop-blur-md flex-shrink border-b-0 rounded-b-[14px] p-2
+        text-black font-medium text-center leading-snug overflow-hidden">
       {{ titleCard }} - {{ card.nome }}
     </p>
   </div>
