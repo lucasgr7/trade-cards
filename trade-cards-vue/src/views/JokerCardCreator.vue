@@ -6,6 +6,8 @@ import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { StatusMatch } from '@/enums/statusMatch';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import { CardTypeV2, CartasType, DeckGameType, Rarity } from '@/type';
+import HeaderPage from '@/components/HeaderPage.vue';
+import Footer from '@/components/Footer.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -21,6 +23,7 @@ const jokerCard = computed(() => ({
   type: CardTypeV2.Joker, 
   rarity: Rarity.joker,
 }));
+const footerMsg = 'Crie a condição da sua carta coringa.';
 
 const deck = route.params.deck as string;
 if (deck === DeckGameType.Sun) {
@@ -67,15 +70,7 @@ onMounted(() => {
   <div class="flex flex-col items-center justify-between p-4 text-game
     border border-white rounded-xl bg-trade-blue-100 text-center
     w-screen h-screen">
-    <div class="flex w-full items-center">
-      <button @click="leave"
-        class="absolute top-2 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <h1 class="text-lg text-white font-black text-outline-blue mb-8">Cartas coringa</h1>
-    </div>
+    <HeaderPage title="Cartas coringa" @leaveGame="leave"/>
     <Card :isJokerCard="true" :card="jokerCard"/>
     <div class="flex flex-col items-center gap-y-2 text-xs pt-4">
       <p class="text-trade-blue-900">Cartas coringas restantes:</p>
@@ -85,9 +80,9 @@ onMounted(() => {
     <div class="flex flex-col text-xs">
       <input type="text" v-model="jokerCardDescription" @keyup.enter="saveJokerCard" :maxlength="40"
         placeholder="Condição" class="p-6 border border-black rounded-xl mb-4 bg-white text-black" />
-      <button @click="saveJokerCard" class="p-6 bg-trade-blue-300 text-white rounded-xl">Salvar</button>
+      <button @click="saveJokerCard" class="p-6 bg-trade-blue-300 text-white rounded-xl border border-black">Salvar</button>
     </div>
-    <p class="text-trade-blue-900 text-xs">Crie a condição da sua carta coringa.</p>
+    <Footer :message="footerMsg" />
   </div>
 </template>
 

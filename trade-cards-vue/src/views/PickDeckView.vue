@@ -4,6 +4,7 @@ import { DeckGameType } from '@/type';
 import { useRoute, useRouter } from 'vue-router';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import * as _ from 'lodash';
+import HeaderPage from '@/components/HeaderPage.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -35,17 +36,8 @@ function selectDeck(deckType: DeckGameType) {
 
 <template>
   <div class="flex flex-col items-center justify-between p-4 text-game
-    border border-white rounded-xl bg-trade-blue-100
-    w-screen h-screen">
-    <div class="flex w-full items-center">
-      <button @click="leave"
-        class="absolute top-3 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <h1 class="text-sm text-white font-black text-outline-blue">Escolha seu baralho</h1>
-    </div>
+    border border-white rounded-xl bg-trade-blue-100 w-screen h-screen">
+    <HeaderPage title="Escolha seu baralho" @leaveGame="leave"/>
     <!-- decks -->
     <div id="deck-sun" class="px-10 text-[0.5rem] flex flex-col items-center">
       <div class="h-[210px] w-[110px] mb-2 float shine" @click="selectDeck(DeckGameType.Sun)">

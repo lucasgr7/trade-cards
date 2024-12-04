@@ -10,6 +10,7 @@ import { usePlayerStore } from '@/state/usePlayerStore';
 import { useChatCompletion } from '@/composables/apis/useChatCompletion';
 import CommandPrompt from '@/components/CommandPrompt.vue';
 import EnergyBar from '@/components/EnergyBar.vue';
+import HeaderPage from '@/components/HeaderPage.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -79,15 +80,7 @@ function onCloseModal() {
     @update:show="onCloseModal" @accept="accept" @try-again="tryAgain">
   </CommandPrompt>
   <div class="deck-table w-screen h-screen text-game">
-    <div class="flex w-full items-center justify-between">
-      <h1 class="text-base text-white font-black text-outline-blue mt-5 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1>
-      <button @click="onLeaveGame"
-        class="absolute top-3 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
+    <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame"/>
     <div class="fixed inset-0 flex mt-14 flex-col items-center justify-between" v-if="!allCardsSelected">
       <div class="flex gap-x-1 z-50">
         <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)" />

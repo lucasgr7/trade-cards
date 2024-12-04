@@ -9,6 +9,7 @@ import { useDeck } from '@/composables/game/useDeck';
 import { Partidas, Jogador } from 'type';
 import { StatusMatch } from '@/enums/statusMatch';
 import { usePlayerStore } from '@/state/usePlayerStore';
+import HeaderPage from '@/components/HeaderPage.vue';
 
 const store = usePlayerStore();
 const {getMyself} = store;
@@ -33,7 +34,7 @@ const sentences = [
   "Quer trocar figurinhas",
   "Roubou pão na Casa do João",
   "Quer saber quem ficou na churrasqueira!",
-  ", o ILUMINADO",
+  "o ILUMINADO",
   "Quer o presente maior",
   "Vai começar uma dieta em 2025",
   "Vai entrar na academia em 2025",
@@ -99,17 +100,8 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col items-center justify-between p-4
-    border border-white rounded-xl bg-trade-blue-600 text-game
-    w-screen h-screen">
-    <div class="flex w-full items-center">
-      <button @click="leave"
-        class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <h1 class="text-lg text-white font-black text-outline-blue mt-2">Sala de espera</h1>
-    </div>
+    border border-white rounded-xl bg-trade-blue-600 text-game w-screen h-screen">
+    <HeaderPage title="Sala de Espera" @leaveGame="leave"/>
     <div class="min-w-[10rem]">
       <UserPicture :src="getMyself.avatarUrl"/>
     </div>

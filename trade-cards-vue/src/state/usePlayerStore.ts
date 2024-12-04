@@ -41,6 +41,15 @@ export const usePlayerStore = defineStore('player', {
       this.deck = _.shuffle(this.deck);
       this.signalResetDeck = !this.signalResetDeck;
     },
+    toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    },
     // métodos relacionados à bag de cartas
     canAddCard(): boolean {
       // validação de máximo de cartas na bag

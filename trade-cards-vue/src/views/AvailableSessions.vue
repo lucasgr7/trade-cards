@@ -7,10 +7,13 @@ import { useRouter } from 'vue-router';
 import { Jogador } from 'type';
 import { StatusMatch } from '@/enums/statusMatch';
 import { usePlayerStore } from '@/state/usePlayerStore';
+import HeaderPage from '@/components/HeaderPage.vue';
+import Footer from '@/components/Footer.vue';
 
 const { records, getPlayersCount, getSessionsCount, deleteOldRecords, updateRecord } = useSalas();
 const { getMyself } = usePlayerStore();
 const router = useRouter();
+const footerMsg = 'Selecione uma sala online ou crie a sua própria.';
 
 const selectedSession = ref<Salas | null>(null);
 
@@ -65,18 +68,10 @@ function leave() {
 
 <template>
   <div class="flex flex-col items-center justify-between p-4 text-game
-    border border-white rounded-xl bg-trade-blue-100
-    w-screen h-screen">
-    <div class="flex w-full items-center ">
-      <button @click="leave" class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <h1 class="text-xl text-white font-black text-outline-blue">Salas disponíveis</h1>
-    </div>
-    <span class="text-trade-blue-900 text-lg border bg-white rounded-full p-2 w-12 text-center">{{ getSessionsCount() }}</span>
-    <div class="text-trade-blue-900 bg-trade-blue-100 border-4 rounded-2xl border-trade-blue-900 border-b-0">
+      border border-white rounded-xl bg-trade-blue-100 w-screen h-screen">
+    <HeaderPage title="Salas disponíveis" @leaveGame="leave"/>
+    <span class="text-trade-blue-900 text-sm border bg-white rounded-full p-2 w-12 text-center">{{ getSessionsCount() }}</span>
+    <div class="text-trade-blue-900 bg-trade-blue-100 border-4 rounded-2xl border-trade-blue-900 border-b-0 my-2">
       <div class="max-h-96 overflow-y-auto max-w-80">
         <table class="w-20 text-[0.5rem]">
           <thead class="bg-trade-blue-100 sticky top-0 z-10">
@@ -109,7 +104,7 @@ function leave() {
         Criar Sala
       </button>
     </div>
-    <p class="text-trade-blue-900 text-xs">Selecione uma sala online ou crie a sua própria.</p>
+    <Footer :message="footerMsg" />
   </div>
 </template>
 

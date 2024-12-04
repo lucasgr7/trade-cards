@@ -2,7 +2,6 @@ import { Cartas } from "@/type";
 import { useSerializedStorage } from "@/util/storage";
 import { useRouter } from "vue-router";
 import { usePartidas } from "../apis/usePartidas";
-import { CardType } from "@/enums/cardType";
 import { computed } from "vue";
 import { usePlayerStore } from "@/state/usePlayerStore";
 

@@ -3,10 +3,13 @@ import { useRouter } from 'vue-router';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { ref } from 'vue';
 import { usePlayerStore } from '@/state/usePlayerStore';
+import HeaderPage from '@/components/HeaderPage.vue';
+import Footer from '@/components/Footer.vue';
 
 const router = useRouter();
 const { insertRecord, getRecords, records } = useSalas();
 const store = usePlayerStore();
+const footerMsg = 'Defina um nome para a sala de trade.';
 
 const sessionName = ref('');
 const sessionNameError = ref('');
@@ -40,7 +43,6 @@ async function createSession(event: Event) {
     alert('Erro ao criar a sala: ' + error.message);
     return;
   }
-
 }
 
 function cancel() {
@@ -52,7 +54,7 @@ function cancel() {
   <div class="flex flex-col justify-between p-4 text-game text-center
     border border-white rounded-xl bg-trade-blue-100
     w-screen h-screen">
-    <h1 class="text-xl text-white font-black text-outline-blue mt-10">Criar Sala</h1>
+    <HeaderPage title="Criar Sala" @leaveGame="cancel"/>
     <img src="@/assets/icons/world.png" alt="Logo" class="w-3/4 h-60 mx-auto">
     <form @submit="createSession($event)">
       <div class="flex flex-col gap-y-4">
@@ -61,19 +63,13 @@ function cancel() {
         <span v-if="sessionNameError" class="absolute text-red-600 text-sm bottom-[77px] left-[110px]">
           {{ sessionNameError }}
         </span>
-        <div class="flex justify-between gap-x-4 text-xs">
-          <button type="button" @click="cancel"
-            class="w-full p-2 bg-gray-500 text-white border border-trade-blue-900 rounded-full text-center">
-            Cancelar
-          </button>
         <button type="submit"
-          class="w-full p-6 bg-trade-blue-800 text-white border border-trade-blue-900 rounded-full text-center">
+          class="w-full p-4 bg-trade-blue-800 text-white border border-trade-blue-900 rounded-full text-center text-xs">
           Criar Sala
         </button>
-        </div>
       </div>
     </form>
-    <p class="text-trade-blue-900 text-xs">Defina um nome para a sala de trade.</p>
+    <Footer :message="footerMsg" />
   </div>
 </template>
 
