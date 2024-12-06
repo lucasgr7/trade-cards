@@ -35,12 +35,14 @@ const isSubscribed = ref(false);
 async function onClickGenerateCommand() {
   if (store.currentEnergy === 0) {
     alert('Você não tem energia suficiente para gerar um comando.');
+    return;
   }
 
   try {
     await fetchChatCompletion(store.bagOfCards);
     console.log(response.value?.choices[0].message.content);
     responseCommand.value = response.value?.choices[0]?.message?.content ?? '';
+    store.addCommandToList(responseCommand.value);
     store.removeEnergy(store.deckType);
   }
   catch (error) {
@@ -51,16 +53,19 @@ async function onClickGenerateCommand() {
 onMounted(async () => {
   await initialize(route, router);
   isSubscribed.value = true;
+  store.clearListOfCommands();
   console.log(store.deck)
 });
 
 function accept() {
   responseCommand.value = '';
-  store.clearBagOfCards();
+  store.clearBagOfCards(); // limpa as cartas escolhidas
+  store.clearListOfCommands(); // limpa os comandos da rodada
   store.addEnergy(store.energyUnits); // restore energy
 }
 
 function tryAgain() {
+  console.log(`Lista de Comandos: ${store.listOfCommands}`)
   onClickGenerateCommand();
 }
 
@@ -68,11 +73,15 @@ function onCloseModal() {
   responseCommand.value = '';
 }
 
+function handleUpdateCommand(command: string) {
+  responseCommand.value = command;
+}
+
 </script>
 
 <template>
   <CommandPrompt :show="responseCommand !== ''" :ranking="ranking" :command="responseCommand"
-    @update:show="onCloseModal" @accept="accept" @try-again="tryAgain">
+    @update:show="onCloseModal" @accept="accept" @try-again="tryAgain" @update:command="handleUpdateCommand">
   </CommandPrompt>
   <div class="deck-table w-screen h-screen text-game">
     <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />

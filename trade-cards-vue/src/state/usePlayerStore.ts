@@ -22,6 +22,7 @@ export const usePlayerStore = defineStore('player', {
     bagOfCards: [] as CartasType[],
     energyUnits: 0,
     currentEnergy: 0,
+    listOfCommands: [] as string[],
   }),
   actions: {
     generateRandomSeed(): string {
@@ -112,6 +113,13 @@ export const usePlayerStore = defineStore('player', {
       } else {
         this.currentEnergy -= 5; // Baralho Moon: custo de 5 de energia para cada comando
       }
+    },
+    // métodos relacionados à lista de comandos
+    addCommandToList(command: string) {
+      this.listOfCommands.push(command);
+    },
+    clearListOfCommands() {
+      this.listOfCommands = [];
     },
   },
   getters: {
