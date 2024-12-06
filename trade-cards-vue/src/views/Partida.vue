@@ -33,7 +33,7 @@ const {
 const isSubscribed = ref(false);
 
 async function onClickGenerateCommand() {
-  if(store.currentEnergy === 0) {
+  if (store.currentEnergy === 0) {
     alert('Você não tem energia suficiente para gerar um comando.');
   }
 
@@ -42,11 +42,6 @@ async function onClickGenerateCommand() {
     console.log(response.value?.choices[0].message.content);
     responseCommand.value = response.value?.choices[0]?.message?.content ?? '';
     store.removeEnergy(store.deckType);
-
-    // check how percentage of the words in the store.bagOfWords are in the responseCommando
-    const percentage = responseCommand.value.split(' ').filter((word: string) => store.bagOfCards.some(card => card.input === word)).length / store.bagOfCards.length;
-    console.log('percentage', percentage);
-    await fetchChatCompletionRankingInstruction(responseCommand.value, percentage);
   }
   catch (error) {
     console.error(error);
@@ -80,7 +75,7 @@ function onCloseModal() {
     @update:show="onCloseModal" @accept="accept" @try-again="tryAgain">
   </CommandPrompt>
   <div class="deck-table w-screen h-screen text-game">
-    <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame"/>
+    <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
     <div class="fixed inset-0 flex mt-14 flex-col items-center justify-between" v-if="!allCardsSelected">
       <div class="flex gap-x-1 z-50">
         <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)" />
@@ -88,7 +83,7 @@ function onCloseModal() {
       <div id="end-square">
         <p>Vazio</p>
       </div>
-      <EnergyBar :totalEnergy="totalEnergy" :current-energy="currentEnergy"/>
+      <EnergyBar :totalEnergy="totalEnergy" :current-energy="currentEnergy" />
       <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
         :isSubscribedUpdate="isSubscribed" />
       <div class="flex items-center justify-center xl:mt-10 text-[0.6rem]">

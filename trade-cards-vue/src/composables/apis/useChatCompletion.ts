@@ -101,7 +101,7 @@ export function useChatCompletion() {
     3. Give a score from 0 to 10 and justify the score.
     4. Provide a corrected version with: "Suggestion:"
     5. Defining targets using clothing is part of the game, and helps increase the target
-    Output as Portuguese
+    Output only the score value from 0 to 10
   `
     try {
       const result = await fetch(url, {

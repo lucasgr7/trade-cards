@@ -99,7 +99,7 @@ export const usePlayerStore = defineStore('player', {
     // métodos relacionados à energia
     setTotalEnergyUnits(units: number) {
       this.energyUnits = units;
-      this.currentEnergy = units;
+      this.currentEnergy = units * 100;
     },
     addEnergy(units: number) {
       if (this.currentEnergy + units <= this.energyUnits) {
