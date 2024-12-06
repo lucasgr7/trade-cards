@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { CartasType, Jogador } from '@/type';
 import * as _ from 'lodash';
 import { defaultWindow } from '@vueuse/core';
-import { DeckGameType } from '../type';
+import { CardTypeV2, DeckGameType, Rarity } from '../type';
 
 const MAX_CARDS_IN_BAG = 15;
 
@@ -38,6 +38,7 @@ export const usePlayerStore = defineStore('player', {
       this.isCreator = true;
     },
     shuffleDeck() {
+      this.addMissingActionCards();
       this.deck = _.shuffle(this.deck);
       this.signalResetDeck = !this.signalResetDeck;
     },
@@ -50,18 +51,32 @@ export const usePlayerStore = defineStore('player', {
         }
       }
     },
+    checkActionCardsInDeck(): boolean {
+      return this.deck.some((c: CartasType) => c.type === CardTypeV2.Action);
+    },
+    addMissingActionCards() {
+      // visto que o jogador não pode ficar sem cartas de ação, adiciona algumas cartas de ação básicas quando não houver
+      if (!this.checkActionCardsInDeck()) {
+        const actionCards: CartasType[] = [
+          { nome: 'Troca', type: CardTypeV2.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png', },
+          { nome: 'Troca', type: CardTypeV2.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png', },
+          { nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar o', rarity: Rarity.basic, image: 'reveal.png', },
+        ];
+        this.deck.push(...actionCards);
+      }
+    },
     // métodos relacionados à bag de cartas
-    canAddCard(): boolean {
+    canAddCardToBag(): boolean {
       // validação de máximo de cartas na bag
       if (this.bagOfCards.length >= MAX_CARDS_IN_BAG) {
-        defaultWindow.alert(`Você já tem ${MAX_CARDS_IN_BAG} cartas escolhidas, remova uma para adicionar outra!`);
+        defaultWindow?.alert(`Você já tem ${MAX_CARDS_IN_BAG} cartas escolhidas, remova uma para adicionar outra!`);
         this.shuffleDeck();
         return false;
       }
       return true;
     },
     addToBagOfCards(card: CartasType) {
-      if (!this.canAddCard()) {
+      if (!this.canAddCardToBag()) {
         return;
       }
       this.bagOfCards.push(card);

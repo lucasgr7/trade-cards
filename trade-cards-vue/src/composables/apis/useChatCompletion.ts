@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { CartasType } from '@/type';
+import { CardTypeV2 } from '../../type';
 
 interface ChatCompletionResponse {
   id: string;
@@ -49,6 +50,14 @@ export function useChatCompletion() {
     6. Comece o comando com 'O comando:'
     7. Não retorne notas, comentários ou sugestões
     `;
+
+    const haveAction = cartas.some((carta) => carta.type === CardTypeV2.Action);
+    if (!haveAction) {
+      alert('Você precisa ter uma carta de ação (Carta Azul) para gerar um comando!');
+      loading.value = false;
+      return;
+    }
+
     try {
       const result = await fetch(url, {
         method: 'POST',

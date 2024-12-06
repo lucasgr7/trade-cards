@@ -8,7 +8,6 @@ export abstract class AbstractDeck {
   percentualRare = 15;
   percentualEpic = 5;
 
-
   // GENERAL CARDS
   cardPresente: CartasType = {
     nome: 'Presente', type: CardTypeV2.Object, input: 'o presente do', rarity: Rarity.basic,
