@@ -22,6 +22,7 @@ const jokerCard = computed(() => ({
   input: jokerCardDescription.value,
   type: CardTypeV2.Joker, 
   rarity: Rarity.joker,
+  image: 'joker.png',
 }));
 const footerMsg = 'Crie a condição da sua carta coringa.';
 
@@ -71,14 +72,14 @@ onMounted(() => {
     border border-white rounded-xl bg-trade-blue-100 text-center
     w-screen h-screen">
     <HeaderPage title="Cartas coringa" @leaveGame="leave"/>
-    <Card :isJokerCard="true" :card="jokerCard"/>
+    <Card :isJokerCreation="true" :card="jokerCard"/>
     <div class="flex flex-col items-center gap-y-2 text-xs pt-4">
       <p class="text-trade-blue-900">Cartas coringas restantes:</p>
       <span class="text-trade-blue-900 border bg-white rounded-full p-2 w-8 text-center">
         {{ jokerCardsCount }}</span>
     </div>
     <div class="flex flex-col text-xs">
-      <input type="text" v-model="jokerCardDescription" @keyup.enter="saveJokerCard" :maxlength="40"
+      <input type="text" v-model="jokerCardDescription" @keyup.enter="saveJokerCard" :maxlength="21"
         placeholder="Condição" class="p-6 border border-black rounded-xl mb-4 bg-white text-black" />
       <button @click="saveJokerCard" class="p-6 bg-trade-blue-300 text-white rounded-xl border border-black">Salvar</button>
     </div>
