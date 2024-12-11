@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { CartasType } from '@/type';
-import { CardTypeV2 } from '../../type';
+import { CardTypeV3 } from '../../type';
 
 interface ChatCompletionResponse {
   id: string;
@@ -51,7 +51,7 @@ export function useChatCompletion() {
     7. Não retorne notas, comentários ou sugestões
     `;
 
-    const haveAction = cartas.some((carta) => carta.type === CardTypeV2.Action);
+    const haveAction = cartas.some((carta) => carta.type === CardTypeV3.Action);
     if (!haveAction) {
       alert('Você precisa ter uma carta de ação (Carta Azul) para gerar um comando!');
       loading.value = false;

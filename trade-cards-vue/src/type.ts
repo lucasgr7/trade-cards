@@ -15,42 +15,29 @@ export enum DeckGameType {
   Moon = 'moon',
 }
 
-export enum CardTypeV2 {
+export enum CardTypeV3 {
   Action = 'action',
   Object = 'object',
   Condition = 'condition',
-  Connection = 'connection',
-  Color = 'color',
-  Joker = 'joker'
+  Subtraction = 'subtraction',
 }
 
-export enum Rarity {
-  basic = 'basic',
-  common = 'common',
-  rare = 'rare',
-  epic = 'epic',
-  joker = 'joker'
-}
 
 export interface CartasType {
   nome: string; // seria o nome da carta apresentando "Homem", "Mulher", "Verde", "Calça"
-  input: string; // seria o input que vai para o LLM gerar a palavra como "na cor Verde", "usando a calça"
-  type: CardTypeV2;
-  rarity: Rarity;
+  type: CardTypeV3;
   image?: string;
+  weight?: number;
+  compositions?: Composition[];
+}
+
+export interface Composition {
+  value: string;
+  description: string;
 }
 
 
-// TypeScript interfaces
-export interface Cartas {
-  nome: string;
-  descricao: string;
-  tipo: CardType;
-  isGenerative: boolean;
-  image?: string;
-  specificType?: string; // Para condições específicas
-  id?: number;
-}
+
 
 
 export interface Acoes {

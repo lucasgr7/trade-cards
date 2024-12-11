@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { CartasType, Jogador } from '@/type';
 import * as _ from 'lodash';
 import { defaultWindow } from '@vueuse/core';
-import { CardTypeV2, DeckGameType, Rarity } from '../type';
+import { CardTypeV3, DeckGameType, Rarity } from '../type';
 
 const MAX_CARDS_IN_BAG = 15;
 
@@ -53,15 +53,15 @@ export const usePlayerStore = defineStore('player', {
       }
     },
     checkActionCardsInDeck(): boolean {
-      return this.deck.some((c: CartasType) => c.type === CardTypeV2.Action);
+      return this.deck.some((c: CartasType) => c.type === CardTypeV3.Action);
     },
     addMissingActionCards() {
       // visto que o jogador não pode ficar sem cartas de ação, adiciona algumas cartas de ação básicas quando não houver
       if (!this.checkActionCardsInDeck()) {
         const actionCards: CartasType[] = [
-          { nome: 'Troca', type: CardTypeV2.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png', },
-          { nome: 'Troca', type: CardTypeV2.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png', },
-          { nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar o', rarity: Rarity.basic, image: 'reveal.png', },
+          { nome: 'Troca', type: CardTypeV3.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png', },
+          { nome: 'Troca', type: CardTypeV3.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png', },
+          { nome: 'Revelar', type: CardTypeV3.Action, input: 'revelar o', rarity: Rarity.basic, image: 'reveal.png', },
         ];
         this.deck.push(...actionCards);
       }

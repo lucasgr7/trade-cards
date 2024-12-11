@@ -1,161 +1,211 @@
-import { CardTypeV2, CartasType, Deck, Rarity } from "../type";
+export enum CardTypeV3 {
+  Action = 'action',
+  Object = 'object',
+  Condition = 'condition',
+  Subtraction = 'subtraction',
+}
 
-export abstract class AbstractDeck {
-  cards = Array<CartasType>();
-  name = '';
-  percentualBasic = 40;
-  percentualCommon = 40;
-  percentualRare = 15;
-  percentualEpic = 5;
+export interface Card {
+  name: string;
+  type: CardTypeV3;
+  weight: number; // número de composições
+  compositions?: string[];
+}
 
-  // GENERAL CARDS
-  cardPresente: CartasType = {
-    nome: 'Presente', type: CardTypeV2.Object, input: 'o presente do', rarity: Rarity.basic,
-  };
-  cardTroca: CartasType = {
-    nome: 'Troca', type: CardTypeV2.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png',
-  };
-  cardRevelear: CartasType = {
-    nome: 'Revelar', type: CardTypeV2.Action, input: 'revelar o', rarity: Rarity.basic, image: 'reveal.png',
-  };
-  cardAssento: CartasType = {
-    nome: 'Assento', type: CardTypeV2.Object, input: 'o assento', rarity: Rarity.basic, image: 'seat.png',
-  };
-  cardCoins: CartasType = {
-    nome: 'Coins', type: CardTypeV2.Object, input: 'Coins', rarity: Rarity.basic, image: 'coins.png',
-  };
-  constructor(name: string) {
-    this.name = name;
-  }
-  setPercentualBasic(percentual: number) {
-    this.percentualBasic = percentual;
-  }
-  setPercentualCommon(percentual: number) {
-    this.percentualCommon = percentual;
-  }
-  setPercentualRare(percentual: number) {
-    this.percentualRare = percentual;
-  }
-  setPercentualEpic(percentual: number) {
-    this.percentualEpic = percentual;
-  }
-  validate(): boolean {
-    // the sum of all percentual  should be 1
-    return this.percentualBasic + this.percentualCommon + this.percentualRare + this.percentualEpic === 100;
-  }
-  generateDeck(totalCards: number): CartasType[] {
-    if (!this.validate()) {
-      throw new Error('Percentuals are not valid expected: 100, got: '
-        + (this.percentualBasic + this.percentualCommon + this.percentualRare + this.percentualEpic));
-    }
-    // select only the common cards from the this.cards
-    const basicCards = this.cards.filter(card => card.rarity === Rarity.basic);
-    const commonCards = this.cards.filter(card => card.rarity === Rarity.common);
-    const rareCards = this.cards.filter(card => card.rarity === Rarity.rare);
-    const epicCards = this.cards.filter(card => card.rarity === Rarity.epic);
+// Classe Abstrata para definir a interface do builder
+export abstract class AbstractDeckBuilder {
+  abstract setActionCards(trocar: number, revelar: number, espiar?: number): this;
+  abstract setObjectCards(quantityWith3: number, quantityWith2: number, quantityWith1: number, quantityWith0: number): this;
+  abstract setConditionCards(quantityWith3: number, quantityWith2: number, quantityWith1: number): this;
+  abstract buildDeck(): Card[];
+}
 
-    // randomly generate 75% of totalCards to be the common type
-    const basicCount = Math.floor(totalCards * (this.percentualBasic / 100));
-    const commonCount = Math.floor(totalCards * (this.percentualCommon / 100));
-    const rareCount = Math.floor(totalCards * (this.percentualRare / 100));
-    const epicCount = Math.floor(totalCards * (this.percentualEpic / 100));
+// Implementação padrão configurável
+export class ConfigurableDeckBuilder extends AbstractDeckBuilder {
+  // Quantidades de cartas
+  private actionTrocar: number = 0;
+  private actionRevelar: number = 0;
+  private actionEspiar: number = 0;
 
-    const deck: CartasType[] = [];
-    for (let i = 0; i < basicCount; i++) {
-      deck.push(basicCards[Math.floor(Math.random() * basicCards.length)]);
+  private objectWith3: number = 0;
+  private objectWith2: number = 0;
+  private objectWith1: number = 0;
+  private objectWith0: number = 0;
+
+  private conditionWith3: number = 0;
+  private conditionWith2: number = 0;
+  private conditionWith1: number = 0;
+
+  // OBJETCTS
+  private objectNames: string[] = ["Presente", "Assento"];
+  private objectCompositions: string[] = [
+    "Em qualquer cor",
+    "embrulhado",
+    "desembrulhado",
+    "Na cor verde",
+    "Na cor vermelha",
+    "Na cor azul",
+    "Na cor amarela",
+    "Na cor preta",
+    "Na cor branca",
+    "Na cor rosa",
+    "Na cor roxa",
+    "Na cor laranja",
+  ];
+
+  // Conditions
+  private conditionBases: string[] = [
+    "Homem",
+    "Mulher",
+    "Jogador"
+  ];
+
+  private conditionCompositions: string[] = [
+    "à direita",
+    "à esquerda",
+    "à frente",
+    "com nome iniciando em A/B/C/D",
+    "com nome iniciando em E/F/G/H",
+    "com nome iniciando em I/J/K/L",
+    "com nome iniciando em M/N/O/P",
+    "com Barba",
+    "com Cabelo comprido",
+    "com Cabelo curto",
+    "Calvo",
+    "usando Biquini",
+    "usando Calça",
+    "usando Camisa",
+    "usando Vestido",
+  ];
+
+
+  // Métodos de configuração
+  public setActionCards(trocar: number, revelar: number, espiar: number = 0): this {
+    this.actionTrocar = trocar;
+    this.actionRevelar = revelar;
+    this.actionEspiar = espiar;
+    return this;
+  }
+
+  public setObjectCards(quantityWith3: number, quantityWith2: number, quantityWith1: number, quantityWith0: number): this {
+    this.objectWith3 = quantityWith3;
+    this.objectWith2 = quantityWith2;
+    this.objectWith1 = quantityWith1;
+    this.objectWith0 = quantityWith0;
+    return this;
+  }
+
+  public setConditionCards(quantityWith3: number, quantityWith2: number, quantityWith1: number): this {
+    this.conditionWith3 = quantityWith3;
+    this.conditionWith2 = quantityWith2;
+    this.conditionWith1 = quantityWith1;
+    return this;
+  }
+
+  public buildDeck(): Card[] {
+    const deck: Card[] = [];
+
+    // Ações
+    for (let i = 0; i < this.actionTrocar; i++) {
+      deck.push(this.createActionCard("Trocar"));
     }
-    for (let i = 0; i < commonCount; i++) {
-      deck.push(commonCards[Math.floor(Math.random() * commonCards.length)]);
+    for (let i = 0; i < this.actionRevelar; i++) {
+      deck.push(this.createActionCard("Revelar"));
     }
-    for (let i = 0; i < rareCount; i++) {
-      deck.push(rareCards[Math.floor(Math.random() * rareCards.length)]);
-    }
-    for (let i = 0; i < epicCount; i++) {
-      deck.push(epicCards[Math.floor(Math.random() * epicCards.length)]);
+    for (let i = 0; i < this.actionEspiar; i++) {
+      deck.push(this.createActionCard("Espiar"));
     }
 
-    // filter off any undefined cards
-    deck.filter(card => card !== undefined);
-    // shuffle the deck
-    deck.sort(() => Math.random() - 0.5);
+    // Objetos
+    deck.push(...this.createObjectCards(this.objectWith3, 3));
+    deck.push(...this.createObjectCards(this.objectWith2, 2));
+    deck.push(...this.createObjectCards(this.objectWith1, 1));
+    deck.push(...this.createObjectCards(this.objectWith0, 0));
+
+    // Condições
+    deck.push(...this.createConditionCards(this.conditionWith3, 3));
+    deck.push(...this.createConditionCards(this.conditionWith2, 2));
+    deck.push(...this.createConditionCards(this.conditionWith1, 1));
+
+    // Gerar cartas de subtração
+    const totalCompositions = deck
+      .filter(c => c.type === CardTypeV3.Object || c.type === CardTypeV3.Condition)
+      .reduce((acc, card) => acc + (card.compositions?.length || 0), 0);
+
+    for (let i = 0; i < totalCompositions; i++) {
+      deck.push(this.createSubtractionCard());
+    }
 
     return deck;
   }
 
-  protected addCards(cards: CartasType[]) {
-    this.cards.push(...cards);
+  private createActionCard(name: string): Card {
+    return {
+      name,
+      type: CardTypeV3.Action,
+      weight: 0,
+      compositions: []
+    };
   }
-  protected getDefaultCards(): CartasType[] {
-    return [
-      this.cardPresente,
-      this.cardTroca,
-      this.cardRevelear,
-      this.cardAssento,
-      this.cardCoins
-    ];
+
+  private createObjectCards(quantity: number, compCount: number): Card[] {
+    const cards: Card[] = [];
+    for (let i = 0; i < quantity; i++) {
+      // Escolhe um objeto aleatório
+      const objName = this.getRandomItem(this.objectNames);
+      let chosenComps: string[] = [];
+      if (compCount > 0) {
+        chosenComps = this.getRandomCompositions(this.objectCompositions, compCount);
+      }
+      cards.push({
+        name: objName,
+        type: CardTypeV3.Object,
+        weight: compCount,
+        compositions: chosenComps
+      });
+    }
+    return cards;
   }
-}
 
-export class SunDeck extends AbstractDeck {
-  constructor(name: string) {
-    super(name);
-    this.addCards([
-      ...this.getDefaultCards(),
-      { nome: 'Calça', type: CardTypeV2.Object, input: 'usando a calça', rarity: Rarity.rare },
-      { nome: 'Camisa', type: CardTypeV2.Object, input: 'usando a camisa', rarity: Rarity.common },
-      { nome: 'Biquini', type: CardTypeV2.Object, input: 'usando o Biquini', rarity: Rarity.rare },
-      { nome: 'Short', type: CardTypeV2.Object, input: 'usando a Bermuda', rarity: Rarity.common },
-      { nome: 'Brinco', type: CardTypeV2.Object, input: 'usando o brinco', rarity: Rarity.rare },
-      { nome: 'Chinelo', type: CardTypeV2.Object, input: 'usando o chinelo', rarity: Rarity.rare },
-      { nome: 'Cavada', type: CardTypeV2.Object, input: 'cavada', rarity: Rarity.rare },
-      { nome: 'Qualquer um que', type: CardTypeV2.Condition, input: 'qualquer um que', rarity: Rarity.epic },
-      { nome: 'Qualquer mulher', type: CardTypeV2.Condition, input: 'Qualquer mulher', rarity: Rarity.epic },
-      { nome: 'Qualquer homem', type: CardTypeV2.Condition, input: 'Qualquer homem', rarity: Rarity.epic }
-    ]);
-
-    const colors = ['Azul', 'Vermelho', 'Verde', 'Amarelo', 'Rosa', 'Preto', 'Branco'];
-    colors.forEach(color => {
-      this.cards.push({ nome: color, type: CardTypeV2.Color, input: `na cor ${color}`, rarity: Rarity.common });
-    });
-
-    const connections = ['Com', 'Sem', 'Na cor', 'Usando', 'Homem', 'Mulher', 'Próximo', 'com o da Esquerda', 'A Direita', 'A Frente'];
-    connections.forEach(connection => {
-      this.cards.push({ nome: connection, type: CardTypeV2.Connection, input: connection, rarity: Rarity.common });
-    });
+  private createConditionCards(quantity: number, compCount: number): Card[] {
+    const cards: Card[] = [];
+    for (let i = 0; i < quantity; i++) {
+      const base = this.getRandomItem(this.conditionBases);
+      const chosenComps = this.getRandomCompositions(this.conditionCompositions, compCount);
+      cards.push({
+        name: base,
+        type: CardTypeV3.Condition,
+        weight: compCount,
+        compositions: chosenComps
+      });
+    }
+    return cards;
   }
-}
 
-export class MoonDeck extends AbstractDeck {
-  constructor(name: string) {
-    super(name);
-    this.addCards([
-      ...this.getDefaultCards(),
-      { nome: 'Calça', type: CardTypeV2.Object, input: 'usando a calça', rarity: Rarity.rare },
-      { nome: 'Camisa', type: CardTypeV2.Object, input: 'usando a camisa', rarity: Rarity.common },
-      { nome: 'Biquini', type: CardTypeV2.Object, input: 'usando o Biquini', rarity: Rarity.common },
-      { nome: 'Short', type: CardTypeV2.Object, input: 'usando a Bermuda', rarity: Rarity.common },
-      { nome: 'Qualquer Cor', type: CardTypeV2.Color, input: 'qualquer cor', rarity: Rarity.epic }
-    ]);
+  private createSubtractionCard(): Card {
+    return {
+      name: "Subtração",
+      type: CardTypeV3.Subtraction,
+      weight: 0,
+      compositions: []
+    };
+  }
 
-    const months = ['Entre Jan a Abril', 'Entre Maio a Ago', 'Entre Set a Dez', 'Lado Esquerdo', 'Lado Direito'];
-    months.forEach(month => {
-      this.cards.push({ nome: month, type: CardTypeV2.Condition, input: month, rarity: Rarity.rare });
-    });
+  private getRandomItem<T>(arr: T[]): T {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
 
-    const colors = ['Azul', 'Vermelho', 'Verde', 'Amarelo', 'Rosa', 'Preto', 'Branco', 'Laranja', 'Roxo', 'Cinza', 'Marrom', 'Bege'];
-    colors.forEach(color => {
-      this.cards.push({ nome: color, type: CardTypeV2.Color, input: `na cor ${color}`, rarity: Rarity.rare });
-    });
-
-    const connections = ['Com', 'Na cor', 'Usando', 'Homem', 'Mulher', 'Nasceu'];
-    connections.forEach(connection => {
-      this.cards.push({ nome: connection, type: CardTypeV2.Connection, input: connection, rarity: Rarity.common });
-    });
-
-    // TODO: Rework esse aqui para usar palavras de posicionamento como "entre duas mulheres", ou "entre dois homens"
-    const signs = ['Entre duas mulheres', 'Entre dois homens', 'Entre uma mulher e um homem'];
-    signs.forEach(sign => {
-      this.cards.push({ nome: sign, type: CardTypeV2.Condition, input: sign, rarity: Rarity.epic });
-    });
+  private getRandomCompositions(source: string[], count: number): string[] {
+    const comps = new Set<string>();
+    while (comps.size < count && comps.size < source.length) {
+      comps.add(this.getRandomItem(source));
+    }
+    return Array.from(comps);
   }
 }
+
+// Exemplo de uso:
+// Quero 10 cartas de trocar, 5 revelar, 2 espiar
+// Objetos: 3 com 3 comp, 4 com 2 comp, 5 com 1 comp, 6 sem comp
+// Condições: 2 com 3 comp, 2 com 2 comp, 2 com 1 comp
+
