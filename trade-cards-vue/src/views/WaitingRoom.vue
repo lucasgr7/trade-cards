@@ -1,25 +1,23 @@
 <script lang='ts' setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import UserPicture from '@/components/UserPicture.vue';
-import { Salas, useSalas } from '@/composables/apis/useSalas';
+import { useSalas } from '@/composables/apis/useSalas';
 import { useRoute } from 'vue-router';
 import router from '@/util/router';
-import { usePlayer } from '@/composables/state/usePlayer';
 import { usePartidas } from '@/composables/apis/usePartidas';
-import { useDeck } from '@/composables/game/useDeck';
 import { Partidas, Jogador } from 'type';
-import { StatusMatch } from '@/enums/statusMatch';
-import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
+import { usePlayerStore } from '@/state/usePlayerStore';
+import HeaderPage from '@/components/HeaderPage.vue';
+import { EnumStatusPartida } from '@/enums/statusMatch';
 
-const { getMyself } = usePlayer();
+const store = usePlayerStore();;
 const { updateRecord,
   getPlayersFromSession,
   sala,
   players,
-  isMyselfCreatorSession,
-  subscribeToChanges } = useSalas(getMyself);
-const { generateDeck } = useDeck();
-const { insertRecord } = usePartidas(getMyself);
+  isMyselfCreatorSession } = useSalas(store.getMyself);
+const { insertRecord, partida, initialize } = usePartidas(store.getMyself);
+
 const route = useRoute();
 
 const sentences = [
@@ -29,34 +27,39 @@ const sentences = [
   "Tá querendo beber depois do jogo",
   "Tá impaciente",
   "Quer jogar logo",
-  "Quer trocar figurinhas"
+  "Não quer ganhar meias",
+  "Quer trocar figurinhas",
+  "Roubou pão na Casa do João",
+  "Quer saber quem ficou na churrasqueira!",
+  "o ILUMINADO",
+  "Quer o presente maior",
+  "Vai começar uma dieta em 2025",
+  "Vai entrar na academia em 2025",
 ];
 const randomSentence = ref('');
-const { clearSelectedCards } = usePartidaEvents();
+const initialized = ref(false);
 
 async function startGame() {
   // what data do we need to start the game?
   if(!sala.value) return;
-  const totalPartidas = import.meta.env.VITE_DEFAULT_RODADAS ?? 9;
-
   const match: Partidas = {
     sala_id: sala.value?.id as number,
     jogadores: sala.value?.jogadores || [],
-    estado: StatusMatch.WAITINGSTATUS,
+    estado: EnumStatusPartida.WAITINGSTATUS,
     acoes: [],
-    cartas_disponiveis: generateDeck(sala.value, totalPartidas),
+    cartas_disponiveis: '',
     rodada_atual: 0,
   };
 
   // insert the match in the database
-  await updateRecord(sala.value.id as number, { ...sala.value, estado: StatusMatch.INITSTATUS });
+  await updateRecord(sala.value.id as number, { ...sala.value, estado: EnumStatusPartida.WAITINGSTATUS });
   await insertRecord(match);
 }
 
 async function leave() {
   if (!sala.value) return;
 
-  const playerIndex = sala.value.jogadores.findIndex((jogador: Jogador) => jogador.nickname === getMyself.value.nickname);
+  const playerIndex = sala.value.jogadores.findIndex((jogador: Jogador) => jogador.nickname === store.getMyself.nickname);
   if (playerIndex === -1) {
     alert('Jogador não encontrado na sala.');
     return;
@@ -72,33 +75,56 @@ function getRandomSentence() {
   randomSentence.value = sentences[randomIndex];
 }
 
-onMounted(() => {
+function pickDeck() {
+  router.push(`/pick-deck/${sala.value?.id}`);
+}
+
+function handleButtonStartGame() {
+  if (isMyselfCreatorSession) {
+    pickDeck();
+  } else {
+    getRandomSentence();
+  }
+}
+
+watch(() => sala.value, (newValue) => {
+  if(initialized.value || partida.value != null) return;
+  if (newValue?.estado === EnumStatusPartida.INITSTATUS) {
+    router.push(`/match/${sala.value?.id}`);
+  }
+  else if(isMyselfCreatorSession){
+    console.log('isMyselfCreatorSession', isMyselfCreatorSession);
+    console.log('sala.value', sala.value);
+    console.log('starting the game');
+    startGame();
+  }
+  initialized.value = true;
+});
+
+onMounted(async () => {
+  await initialize(route, router);
   getRandomSentence();
   getPlayersFromSession(route.params.id);
-  const roomId = Number(route.params.id ?? 0);
-  subscribeToChanges(roomId, (payload: Salas) => {
-    if (payload.id === roomId && payload.estado === StatusMatch.INITSTATUS) {
-      clearSelectedCards();
-      router.push(`/match/${roomId}`);
-    }
-  });
+  const salaId = route.params.id;
+  store.setSalaId(Number(salaId));
 });
 
 </script>
 
 <template>
   <div class="flex flex-col items-center justify-between p-4
-    border border-white rounded-xl bg-trade-blue-600
-    w-screen h-screen">
-    <div class="flex justify-between items-center w-[20rem] bg-trade-red-500 h-24 rounded-xl px-5 border border-white mt-12">
-      <UserPicture :src="getMyself.avatarUrl"/>
-      <div class="flex flex-col">
-        <h1 class="text-3xl truncate w-full">{{ getMyself.nickname }}</h1>
-        <p>{{ randomSentence }}</p>
-      </div>
+    border border-white rounded-xl bg-trade-blue-600 text-game w-screen h-screen">
+    <HeaderPage title="Sala de Espera" @leaveGame="leave"/>
+    <div class="min-w-[10rem]">
+      <UserPicture :src="store.getMyself.avatarUrl"/>
+    </div>
+    <div class="w-[20rem] bg-trade-red-500 h-24 rounded-xl px-5 border border-black
+      flex flex-col text-black text-center justify-center items-center">
+      <h1 class="text-base truncate text-ellipsis">{{ store.getMyself.nickname }}</h1>
+      <p class="text-xs">{{ randomSentence }}</p>
     </div>
     <div class="flex flex-col w-full gap-y-4 max-h-[26rem] mb-12">
-      <h2 class="text-2xl font-bold text-white">Jogadores na sala:</h2>
+      <h2 class="text-xs text-center font-bold text-white">Jogadores na sala:</h2>
       <div class="flex w-full border-t-4 border-b-4 border-trade-blue-900 max-h-96 overflow-y-auto px-1">
         <ul class="flex flex-wrap">
           <li v-for="jogador in players" :key="jogador.seed">
@@ -106,26 +132,18 @@ onMounted(() => {
             border rounded-xl border-trade-blue-900 w-[6rem] h-40">
               <UserPicture :src="jogador.avatarUrl || ''" class="user-picture-small" />
               <div class="flex w-full border-t-4 border-trade-blue-900 mt-2"></div>
-              <div class="h-16 flex flex-col items-center justify-center">
-                <p class="text-white flex-wrap">{{ jogador.nickname }}</p>
+              <div class="h-16 flex flex-col items-center justify-center text-center">
+                <p class="text-white flex-wrap text-xs">{{ jogador.nickname }}</p>
               </div>
             </div>
           </li>
         </ul>
       </div>
     </div>
-    <div class="flex gap-x-2">
-      <button @click="leave" class="border border-white rounded-full py-4 px-14 bg-trade-blue-50 font-bold text-xl">
-        Sair
-      </button>
-      <button v-if="isMyselfCreatorSession" @click="startGame"
-        class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xl">
-        Jogar
-      </button>
-      <button v-else class="border border-white rounded-full py-4 px-10 bg-trade-red-500 font-bold text-xl">
-        Acelerar o ínicio
-      </button>
-    </div>
+    <button @click="handleButtonStartGame"
+      class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xs text-black">
+      {{ isMyselfCreatorSession ? 'Escolher Baralho' : 'Acelerar início' }}
+    </button>
   </div>
 </template>
 

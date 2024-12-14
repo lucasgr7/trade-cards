@@ -1,113 +1,84 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import CardDeck from '@/components/CardDeck.vue';
-import CardChosen from '@/components/CardChosen.vue';
-import { CardType } from '@/enums/cardType';
+import BagOfCards from '@/components/BagOfCards.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePartidas } from '../composables/apis/usePartidas';
-import { usePlayer } from '@/composables/state/usePlayer';
 import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
-import ShowHand from '@/components/ShowHand.vue';
-import { StatusMatch } from '@/enums/statusMatch';
-import { Partidas } from '@/type';
-import { PartidaAcoes } from '@/enums/partidas.actions';
+import { usePlayerStore } from '@/state/usePlayerStore';
+import HeaderPage from '@/components/HeaderPage.vue';
+import { useTimestamp } from '@vueuse/core';
 
 const route = useRoute();
 const router = useRouter();
-const { getMyself } = usePlayer();
-const { partida, initialize, subscribeToChanges, isMyselfAdmin } = usePartidas(getMyself);
+const store = usePlayerStore();
+const { partida, initialize, finishTurn } = usePartidas(store.getMyself);
 const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
+const bagOfCards = computed(() => store.bagOfCards);
 
 // GAME EVENTS
 const {
   onLeaveGame,
-  onPlayCard,
-  allCardsSelected,
-  selectedActionCard,
-  selectedConditionCard,
-  selectedObjectCard,
-  clearSelectedCards
-
 } = usePartidaEvents();
-const cardPiles = [
-  { type: CardType.Action, card: selectedActionCard },
-  { type: CardType.Object, card: selectedObjectCard },
-  { type: CardType.Condition, card: selectedConditionCard }
-];
+
+// initialize a timer, vueuse or lodash
+const timestamp = useTimestamp({ offset: 0 })
+const start = timestamp.value
+
 const isSubscribed = ref(false);
+
+async function onClickFinish() {
+  if(await finishTurn({
+    command: store.getCommandPhrase(),
+    Jogador: store.getMyself,
+    time: timeSpent.value,
+    weight: store.currentHandWeight,
+  })){
+    // display command phrase
+    router.push({ name: 'ShowCommand' });
+  }
+}
 
 onMounted(async () => {
   await initialize(route, router);
   isSubscribed.value = true;
-  checkUsedCards();
 });
 
-subscribeToChanges(Number(route.params.id), (payload: Partidas) => {
-  isSubscribed.value = true;
-  const lastAction = payload.acoes[payload.acoes.length - 1];
-  if (lastAction?.acao === PartidaAcoes.resetDeck) {
-    clearSelectedCards();
-  }
-});
+const timeSpent = computed(() => {
+  return timestamp.value - start
+})
 
-function checkUsedCards() {
-  if (partida.value?.estado === StatusMatch.INITSTATUS) {
-    resetCardPiles();
-  } else {
-    cardPiles.forEach((pile, index) => {
-      if (pile.card.value) {
-        cardPiles[index].card = pile.card;
-      }
-    });
-  }
-}
 
-function resetCardPiles() {
-  cardPiles.forEach((pile) => {
-    pile.card.value = null;
-  });
-}
-
-function refresh() {
-  cardDeckRef.value?.resetDeck();
-}
 
 </script>
+
 <template>
-  <div class="deck-table
-    w-screen h-screen">
-    <div class="flex w-full items-center justify-between">
-      <h1 class="text-3xl font-black text-outline-blue mt-4 mb-4 pl-8">Trade-Cards {{ partida?.id }}</h1>
-      <button @click="onLeaveGame"
-        class="absolute top-4 right-0 mb-4 mr-1 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    <div class="fixed inset-0 flex mt-16 flex-col items-center justify-center " 
-      v-if="!allCardsSelected">
-      <div class="flex gap-x-1">
-        <CardChosen v-for="(pile, index) in cardPiles" :key="index" :cardType="pile.type" :noCard="!pile.card.value"
-          :nome="pile.card?.value?.nome" :descricao="pile.card?.value?.descricao" :image="pile.card?.value?.image"
-          :tipo="pile.card?.value?.tipo" class="w-[6.8rem] md:w-1/2 lg:w-1/5 xl:w-1/3" />
+  <div class="deck-table w-screen h-screen text-game">
+    <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
+    <div class="fixed inset-0 flex mt-14 flex-col items-center justify-between">
+      <div class="flex gap-x-1 z-50">
+        <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)" />
       </div>
       <div id="end-square">
         <p>Vazio</p>
       </div>
-      <CardDeck ref="cardDeckRef" @usarCarta="onPlayCard" :isSubscribedUpdate="isSubscribed" />
-      <!-- div center middle tailwindcss -->
-       <div class="flex items-center justify-center xl:mt-10">
-        <button @click="refresh" class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
+      <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
+        :isSubscribedUpdate="isSubscribed" />
+      <div class="flex items-center justify-center xl:mt-10 text-[0.6rem]">
+        <button @click="store.shuffleDeck"
+          class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Reimpilhar
         </button>
-        <button @click="onLeaveGame"
-          class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-2">
-          Sair
+        <button @click="onClickFinish"
+          class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          Finalizar
+        </button>
+        <button @click="store.clearBagOfCards"
+          class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          Limpar sacola
         </button>
       </div>
     </div>
-    <ShowHand :is-myself-admin="isMyselfAdmin" v-else />
   </div>
 </template>
 
@@ -135,8 +106,8 @@ h1 {
 
 /* Estilos para o quadrado branco */
 #end-square {
-  width: 202px;
-  height: 292px;
+  width: 150px;
+  height: 200px;
   border: 4px solid white;
   border-radius: 20px;
 
@@ -144,7 +115,7 @@ h1 {
 
   /* Centralizar o quadrado dentro do #deck-table */
   position: absolute;
-  top: 62%;
+  top: 55%;
   left: 45%;
   transform: translate(-50%, -50%);
 
@@ -175,6 +146,7 @@ h1 {
     border-radius: 10px;
   }
 }
+
 /* Ajustes para telas Tablet */
 @media (max-width: 912px) {
   #end-square {

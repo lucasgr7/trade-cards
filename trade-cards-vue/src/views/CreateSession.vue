@@ -2,11 +2,15 @@
 import { useRouter } from 'vue-router';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { ref } from 'vue';
-import { usePlayer } from '@/composables/state/usePlayer';
+import { usePlayerStore } from '@/state/usePlayerStore';
+import HeaderPage from '@/components/HeaderPage.vue';
+import Footer from '@/components/Footer.vue';
+import { EnumStatusPartida } from '@/enums/statusMatch';
 
 const router = useRouter();
 const { insertRecord, getRecords, records } = useSalas();
-const { getMyself } = usePlayer();
+const store = usePlayerStore();
+const footerMsg = 'Defina um nome para a sala de trade.';
 
 const sessionName = ref('');
 const sessionNameError = ref('');
@@ -20,12 +24,11 @@ async function createSession(event: Event) {
   }
 
   try {
-    var myself = await getMyself.value;
-    myself.creator = true;
+    store.setAsCreator();
     const newSession: Salas = {
       name: sessionName.value,
-      jogadores: [myself],
-      estado: 1,
+      jogadores: [store.getMyself],
+      estado: EnumStatusPartida.WAITINGSTATUS,
     };
 
     await insertRecord(newSession);
@@ -41,7 +44,6 @@ async function createSession(event: Event) {
     alert('Erro ao criar a sala: ' + error.message);
     return;
   }
-
 }
 
 function cancel() {
@@ -50,31 +52,25 @@ function cancel() {
 </script>
 
 <template>
-  <div class="flex flex-col justify-between p-4
+  <div class="flex flex-col justify-between p-4 text-game text-center
     border border-white rounded-xl bg-trade-blue-100
     w-screen h-screen">
-    <h1 class="text-4xl font-black text-outline-blue mt-10">Criar Sala</h1>
+    <HeaderPage title="Criar Sala" @leaveGame="cancel"/>
     <img src="@/assets/icons/world.png" alt="Logo" class="w-3/4 h-60 mx-auto">
     <form @submit="createSession($event)">
       <div class="flex flex-col gap-y-4">
         <input type="text" placeholder="Nome da sala" v-model="sessionName"
-          class="w-full p-2 bg-white text-trade-blue-900 border border-trade-blue-900 rounded-full text-center">
+          class="w-full p-2 bg-white text-trade-blue-900 border border-trade-blue-900 rounded-full text-sm text-center">
         <span v-if="sessionNameError" class="absolute text-red-600 text-sm bottom-[77px] left-[110px]">
           {{ sessionNameError }}
         </span>
-        <div class="flex justify-between gap-x-4">
-          <button type="button" @click="cancel"
-          class="w-full p-2 bg-gray-500 text-white border border-trade-blue-900 rounded-full text-center">
-          Cancelar
-        </button>
         <button type="submit"
-          class="w-full p-6 bg-trade-blue-800 text-white border border-trade-blue-900 rounded-full text-center">
+          class="w-full p-4 bg-trade-blue-800 text-white border border-trade-blue-900 rounded-full text-center text-xs">
           Criar Sala
         </button>
-        </div>
       </div>
     </form>
-    <p class="text-trade-blue-900">Defina um nome para a sala de trade.</p>
+    <Footer :message="footerMsg" />
   </div>
 </template>
 

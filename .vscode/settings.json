@@ -20,12 +20,57 @@
   },
   "terminal.integrated.env.osx": {
     "PATH": "/Users/lucas.ribeiro.br/.nvm/versions/node/v18.x.x/bin:${env:PATH}"
-  },  
+  },
   "vitest.commandLine": "npx vitest",
   "testExplorer.codeLens": true,
   "testExplorer.gutterDecoration": true,
-  "testExplorer.onStart": "start",
-  "testExplorer.onReload": "reload",
   "vitest.defaultTestTimeout": 5000,
-  "peacock.color": "#42b883"
+  "peacock.color": "#42b883",
+  // typescript
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  // eslint
+  "eslint.alwaysShowStatus": true,
+  "eslint.format.enable": true,
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue"
+  ],
+  "eslint.probeAuto": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue"
+  ],
+  // prettier
+  "prettier.singleQuote": true,
+  "prettier.semi": false,
+  "prettier.trailingComma": "none",
+  "editor.tabSize": 2,
+  //configre for vue
+  "editor.formatOnSave": false,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "vue"
+  ],
+  "eslint.options": {
+    "extensions": [
+      ".js",
+      ".vue"
+    ]
+  },
+  "editor.formatOnPaste": false,
+  "files.exclude": {
+    "**/node_modules": true
+  }
 }

@@ -103,7 +103,7 @@ export function useCardSwipe(
       }
     }
   }
-  function removeCard(){
+  function removeCard() {
     cardsInHand.value.pop();
   }
 

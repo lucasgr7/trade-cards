@@ -4,6 +4,8 @@ import Partida from "@/views/Partida.vue";
 import AvailableSessions from "@/views/AvailableSessions.vue";
 import CreateSession from "@/views/CreateSession.vue";
 import WaitingRoom from "@/views/WaitingRoom.vue";
+import PickDeckView from "@/views/PickDeckView.vue";
+import ShowCommand from "@/views/ShowCommand.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -33,6 +35,16 @@ const routes: Array<RouteRecordRaw> = [
     component: WaitingRoom,
     props: true,
   },
+  {
+    path: "/pick-deck/:id",
+    name: "PickDeck",
+    component: PickDeckView,
+  },
+  {
+    path: "/show-command/:id",
+    name: "ShowCommand",
+    component: ShowCommand,
+  }
 ];
 
 const router = createRouter({

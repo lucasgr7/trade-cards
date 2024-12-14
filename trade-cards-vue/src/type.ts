@@ -1,6 +1,7 @@
+import { finishTurn } from "./composables/apis/usePartidas";
 import { CardType } from "./enums/cardType";
 import { PartidaAcoes } from "./enums/partidas.actions";
-import { StatusMatch } from "./enums/statusMatch";
+import { EnumStatusPartida } from "./enums/EnumStatusPartida";
 
 export interface Deck {
   [cardName: string]: {
@@ -10,30 +11,33 @@ export interface Deck {
   };
 }
 
-export interface CartasType{
-  nome: string;
-  descricao: string;
-  tipo: CardType;
-  // define se a carta tem uma condição generativa como gerar uma carta que afeta um jogador específico
-  isGenerative?: boolean;
-  specificType?: string; // Add optional specificType property
-  userSeed?: string;
+
+export enum CardTypeV3 {
+  Action = 'action',
+  Gift = 'gift',
+  Seat = 'seat',
+  Subtraction = 'subtraction',
 }
 
-
-// TypeScript interfaces
-export interface Cartas {
-  nome: string;
-  descricao: string;
-  tipo: CardType;
-  isGenerative: boolean;
+export interface TradingCard {
+  description: string;
+  title: string;
+  type: CardTypeV3;
+  weight: number; // número de composições
+  compositions?: Composition;
   image?: string;
-  specificType?: string; // Para condições específicas
-  id?: number;
+  completeText?: string;
+}
+
+export interface Composition {
+  [key: string]: string[];
 }
 
 
-export interface Acoes{
+
+
+
+export interface Acoes {
   acao: PartidaAcoes,
 }
 
@@ -41,12 +45,12 @@ export interface Partidas {
   id?: number;
   created_at?: string;
   sala_id: number;
-  cartas_disponiveis: Deck;
+  cartas_disponiveis: any;
   jogadores: Jogador[];
   rodada_atual: number;
-  acoes: Acoes[];
+  acoes: finishTurn[];
   atualizado_em?: string;
-  estado: StatusMatch;
+  estado: EnumStatusPartida;
 }
 
 // Interface para o jogador
@@ -59,3 +63,4 @@ export interface Jogador {
   isValid?: boolean;
   userSeed?: string;
 }
+

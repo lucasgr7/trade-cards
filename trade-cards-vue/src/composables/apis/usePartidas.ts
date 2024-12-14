@@ -1,11 +1,10 @@
 // src/composables/usePartidas.ts
-import { ref, computed, ComputedRef, Ref } from 'vue';
+import { ref, computed, Ref } from 'vue';
 import { useSupaTable } from '../../util/useSupaTable';
 import { supabase } from '../../util/supabase';
 import { Exceptions } from '../../util/enum.exceptions';
-import { Partidas, Cartas, Jogador } from "@/type";
+import { Partidas, Jogador } from "@/type";
 import { useSerializedStorage } from "../../util/storage";
-import { PartidaAcoes } from '@/enums/partidas.actions';
 
 const columns = {
   "created_at": {
@@ -41,9 +40,18 @@ const columns = {
     "nullable": true
   }
 }
+
+export interface finishTurn{
+  hash?: string;
+  Jogador: Jogador,
+  weight: number;
+  time: number;
+  command: string;
+  round?: number;
+}
 const partida: Ref<Partidas | null> = useSerializedStorage<Partidas | null>('partida', null);;
 
-export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
+export function usePartidas(getMyself: Jogador | null) {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Partidas>("partidas", columns);
   // storage partida
   const partidaAtualizada = ref(false);
@@ -55,7 +63,7 @@ export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
       if (!matchId) {
         throw Exceptions.MATCH_INVALID_ID;
       }
-      if (!getMyself?.value.isValid) {
+      if (!getMyself!.isValid) {
         throw Exceptions.USER_SESSION_NOT_FOUND;
       }
       // should make a request to the api
@@ -86,49 +94,6 @@ export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
     return data[0];
   }
 
-  const removerCartaDoDeck = async (partida: Partidas, carta: Cartas) => {
-    const cartaDisponivel = partida.cartas_disponiveis[carta.nome];
-    if (cartaDisponivel && cartaDisponivel.count > 0) {
-      partida.cartas_disponiveis[carta.nome].count--;
-    } else {
-      throw new Error(`Carta ${carta.nome} não disponível ou count já é zero.`);
-    }
-    if(partida == null || partida.id == null){
-      console.error('Partida não encontrada ou id não encontrado');
-      return;
-    }
-    
-    // Atualizar a partida
-    await updateRecord(partida?.id, partida);
-  };
-
-  const resetDeckStateAddingActionResetDeck = async () => {
-    // create new acao on partida.acoes 
-    if(!partida.value || !partida.value.id){
-      throw Exceptions.PARTIDA_NOT_FOUND;
-    }
-    partida.value.acoes.push({
-      acao: PartidaAcoes.resetDeck,
-    });
-    
-    await updateRecord(partida.value.id, partida.value);
-  }
-    
-
-  const usarCarta = (carta: Cartas) => {
-    if(!partida.value || !partida.value.id){
-      throw Exceptions.PARTIDA_NOT_FOUND;
-    }
-    if (partida.value) {
-      partida.value.acoes.push({
-        jogadorId: getMyself!.value.seed,
-        cartaId: carta.id,
-        acao: 'usar_carta',
-        timestamp: new Date().toISOString()
-      });
-      removerCartaDoDeck(partida.value, carta);
-    }
-  };
 
   const subscribeToChanges = (salaId: number, callback: (payload: any) => void) => {
     supabase
@@ -143,11 +108,58 @@ export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
   };
     
   const isMyselfAdmin = computed((): boolean => {
-    if(!partida.value || !getMyself?.value){
+    if(!partida.value || !getMyself){
       return false;
     }
-    return partida.value?.jogadores[0]?.seed === getMyself?.value.seed;
+    return partida.value?.jogadores[0]?.seed === getMyself.seed;
   })
+
+  function generateHash(){
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  }
+
+  async function finishTurn(data: finishTurn): Promise<boolean> {
+    const hash = generateHash();
+
+    if(!partida.value){
+      return false;
+    }
+    try{
+      partida.value.acoes.push({
+        hash,
+        Jogador: data.Jogador,
+        weight: data.weight,
+        time: Date.now(),
+        command: data.command,
+        round: partida.value.rodada_atual
+      })
+      await updateRecord(partida.value.id!, partida.value);
+    }
+    catch(e){
+      console.error('Erro ao finalizar turno:', e);
+      return false;
+    }
+    finally{
+      return true;
+    }
+  }
+
+  async function nextTurn() {
+    if(!partida.value){
+      return false;
+    }
+    try{
+      partida.value.rodada_atual = partida.value.rodada_atual + 1;
+      await updateRecord(partida.value.id!, partida.value);
+    }
+    catch(e){
+      console.error('Erro ao finalizar turno:', e);
+      return false;
+    }
+    finally{
+      return true;
+    }
+  }
   
   return {
     records,
@@ -164,9 +176,8 @@ export function usePartidas(getMyself: ComputedRef<Jogador> | null) {
     subscribeToChanges,
     partida,
     isInitialized,
-    usarCarta,
-    removerCartaDoDeck,
     isMyselfAdmin,
-    resetDeckStateAddingActionResetDeck
+    finishTurn,
+    nextTurn
   };
 }

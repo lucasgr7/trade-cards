@@ -1,91 +1,106 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { TradingCard } from '@/type';
+import { computed, PropType } from 'vue';
 
 // Definição das props
-const { image, title, description, type, isBottomCard } = defineProps({
-  image: {
-    type: String,
+const props = defineProps({
+  card: {
+    type: Object as PropType<TradingCard>,
     required: true,
   },
-  title: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    required: true,
-    validator: (value: string) => ['action', 'object', 'condition'].includes(value),
-  },
-  id: {
-    type: Number,
-    required: false,
-  },  
   isBottomCard: {
     type: Boolean,
-    required: false,
+    default: false,
+  },
+  isJokerCreation: {
+    type: Boolean,
+    default: false,
+  },
+  small: {
+    type: Boolean,
     default: false,
   }
 });
 
-// Mapeamento de tipos para classes de cor e ícones
-const typeMappings: Record<string, { class: string; icon: string }> = {
-  action: {
-    class: 'blue-card',
-    icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828817.png', // Exemplo de ícone azul
-  },
-  object: {
-    class: 'red-card',
-    icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828919.png', // Exemplo de ícone vermelho
-  },
-  condition: {
-    class: 'green-card',
-    icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', // Exemplo de ícone verde
-  },
-};
+const cardTypeClass = computed(() => `${props.card?.type}-card`);
 
-// Computed para obter a classe e o ícone com base no tipo
-const cardTypeClass = computed(() => {
-  return typeMappings[type].class
+const title = computed(() => {
+  // if contains the word 'Negativa' return only Negativa
+  return props.card.title;
+})
+
+const image = computed(() => {
+  if (props.card.image) {
+    return `/v2/${props.card.image}`;
+  }
+  return `/v2/${props.card.type}.png`;
 });
-const icon = computed(() => typeMappings[type].icon);
 
+const fontSizeClass = computed(() => {
+  const length = props.card.completeText?.length ?? 0;
+  if (length <= 20) {
+    return 'text-lg';
+  } else if (length <= 40) {
+    return 'text-base';
+  } else {
+    return 'text-xs';
+  }
+});
 </script>
+
 <template>
-  <div :class="['card', cardTypeClass, { 'top-card': isBottomCard }]">
+  <div :class="['card', cardTypeClass, { 'top-card': isBottomCard }, {'small': small}]"
+    class="w-[10rem] h-[15rem] rounded-[20px] flex flex-col overflow-hidden touch-pan-x touch-pan-y relative shadow-lg">
     <!-- Cabeçalho: Ícone e Título -->
-    <div class="header flex items-center gap-x-2" :class="['header', cardTypeClass]">
-      <img :src="icon" alt="Icon" class="icon w-6 h-6 mr-2"/>
-      <h3 class="title text-sm font-semibold">{{ title }}</h3>
+    <div
+      class="header flex items-center justify-between p-2 w-full bg-gradient-to-b from-white/60 to-transparent relative h-6">
+      <h3 class="title font-press-start text-[0.6rem] text-[#0c0c0c] uppercase leading-[1.2] text-center m-0 py-2"
+        :class="{ 'text-[8px]': card.title.length >= 10, 'text-[0.5rem]': card.title.length < 10 }">
+        {{ title }}
+      </h3>
+      <h2 class="rarity text-black text-[0.5rem] font-bold uppercase p-1 rounded-[16px]"
+        :class="`rarity-` + card.weight">
+        {{ card.weight }}
+      </h2>
+      <!-- Linha abaixo do header -->
+      <div class="absolute bottom-[-8px] left-1/2 transform -translate-x-1/2 w-4/5 h-px bg-white/70"></div>
     </div>
-    
+
+
     <!-- Imagem Principal -->
-    <div class="image-container">
-      <img :src="image" alt="Card Image" class="card-image h-40 object-contain" />
+    <div :class="['overflow-hidden flex justify-center items-center mt-1.5', isJokerCreation ? '' : 'relative']">
+      <img :src="image" alt="Card Image"
+        :class="['card-image object-fit w-32 h-28 rounded-md', isJokerCreation ? 'top-[14.5rem]' : 'top-16']" />
     </div>
-    
+
     <!-- Descrição -->
-    <p class="description">{{ description }}</p>
+    <p v-if="!small" :class="['description text-center', fontSizeClass]"
+       class="font-mono
+       bg-white/70 
+       backdrop-blur-md 
+       flex-shrink border-b-0 rounded-b-[14px] p-1.5
+       text-black font-medium leading-snug overflow-hidden mt-2 pt-4 h-20">
+      {{ card.completeText }}
+    </p>
   </div>
 </template>
+
 <style scoped>
-/* Estilos padrão da carta */
-.card {
-  width: 210px;
-  height: 300px;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  touch-action: pan-x pan-y;
-  position: relative;
-  box-shadow: inset 0 1px rgba(255,255,255,0.5), 0 4px 8px rgba(0,0,0,0.2);
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.font-press-start {
+  font-family: 'Press Start 2P', sans-serif;
 }
 
-/* Efeito glossy padrão */
+/* Estilos adicionais que não podem ser substituídos pelo Tailwind */
+.card {
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.5), 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.description {
+  --tw-backdrop-blur: blur(4px);
+}
+
 .card::before {
   content: '';
   position: absolute;
@@ -93,91 +108,129 @@ const icon = computed(() => typeMappings[type].icon);
   left: -30%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.4), transparent);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4), transparent);
   transform: rotate(25deg);
 }
 
-/* Estilos para cartas azuis */
-.card.blue-card {
-  border: 4px solid #61c5ff;
+/* Estilos para os tipos de cartas */
+.action-card {
+  border-width: 4px;
+  border-color: #61c5ff;
   background: linear-gradient(135deg, #61c5ff, #a2d2ff);
 }
 
-.card.blue-card::before {
-  background: radial-gradient(circle at center, rgba(97,197,255,0.4), transparent);
+.action-card::before {
+  background: radial-gradient(circle at center, rgba(97, 197, 255, 0.4), transparent);
 }
 
+/* Similar para .object-card, .gift-card, etc. */
+
 /* Estilos para cartas vermelhas */
-.card.red-card {
+.card.subtraction-card {
   border: 4px solid #ffb1a3;
   background: linear-gradient(135deg, #ffb1a3, #ff6347);
 }
 
-.card.red-card::before {
-  background: radial-gradient(circle at center, rgba(255,177,163,0.4), transparent);
+.card.subtraction-card::before {
+  background: radial-gradient(circle at center, rgba(255, 177, 163, 0.4), transparent);
 }
 
 /* Estilos para cartas verdes */
-.card.green-card {
+.card.gift-card {
   border: 4px solid #178520;
   background: linear-gradient(135deg, #178520, #a0ffa0);
 }
 
-.card.green-card::before {
-  background: radial-gradient(circle at center, rgba(23,133,32,0.4), transparent);
+.card.gift-card::before {
+  background: radial-gradient(circle at center, rgba(23, 133, 32, 0.4), transparent);
 }
 
-/* Restante dos estilos */
-.header {
-  padding: 8px;
-  width: 100%;
-  border: 0 !important;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+/* Estilos para cartas amarelas */
+.card.object-card {
+  border: 4px solid #f7d154;
+  background: linear-gradient(135deg, #f7d154, #f7f754);
 }
 
-.header::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  height: 1px;
-  background: rgba(255,255,255,0.7);
+.card.object-card::before {
+  background: radial-gradient(circle at center, rgba(247, 209, 84, 0.4), transparent);
 }
 
-.icon {
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+/* Estilos para cartas roxas */
+.card.seat-card {
+  border: 4px solid #a35ff7;
+  background: linear-gradient(135deg, #a35ff7, #d2a2ff);
 }
 
-.title {
-  color: #000;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+.card.seat-card::before {
+  background: radial-gradient(circle at center, rgba(163, 95, 247, 0.4), transparent);
 }
 
-.image-container {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  place-items: center;
-  margin-top: 6px;
+/* Estilos para cartas coringa cinza*/
+.card.joker-card {
+  border: 4px solid #d3d3d3;
+  background: linear-gradient(135deg, #c7c7c7, #ffffff);
 }
 
-.card-image {
-  border-radius: 20%;
+.card.joker-card::before {
+  background: radial-gradient(circle at center, rgba(211, 211, 211, 0.4), transparent);
 }
 
-.description {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
-  flex-shrink: 0;
-  border-radius: 0 0 14px 14px;
-  padding: 16px;
-  color: #000;
-  font-size: 14px;
+
+/* Classes de raridade */
+.rarity-basic {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.9), rgb(70, 66, 66));
+  color: white;
+}
+
+.rarity-common {
+  background: linear-gradient(to left, rgba(255, 254, 254, 0.9), rgb(255, 255, 255));
+}
+
+.rarity-rare {
+  background: linear-gradient(to left, rgba(149, 16, 226, 0.9), rgb(72, 11, 151));
+  color: rgb(255, 230, 0);
+}
+
+.rarity-epic {
+  background: linear-gradient(to left, rgba(255, 0, 0, 0.9), rgb(255, 0, 0));
+  color: white;
 }
 
 .top-card {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 8px -8px 12px rgba(0, 0, 0, 0.9);
+}
+
+.small {
+  transform: scale(0.75);
+  width: 4.7rem;
+  height: 6.55rem;
+}
+
+.small .title {
+  font-size: 0.4rem;
+}
+
+
+.small .card-image {
+  width: 55px;
+  height: 55px;
+}
+
+.small .description {
+  font-size: 0.539rem;
+  padding: 1.54px;
+  height: 15.4px;
+}
+
+.text-lg {
+  font-size: 1.25rem;
+}
+
+.text-base {
+  font-size: 1rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
 }
 </style>
