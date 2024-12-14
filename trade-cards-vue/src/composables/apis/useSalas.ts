@@ -1,4 +1,4 @@
-import { computed, ref, Ref } from "vue";
+import { computed, ref } from "vue";
 import { useSupaTable } from "@/util/useSupaTable";
 import { Jogador } from "@/type";
 import { supabase } from "@/util/supabase";
@@ -30,7 +30,7 @@ const columns = {
     "nullable": true
   }
 };
-const sala = useSerializedStorage<Salas | null>(null);
+const sala = useSerializedStorage<Salas | null>('sala', null);
 
 export function useSalas(myself?: Jogador) {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Salas>("salas", columns);
@@ -110,7 +110,7 @@ export function useSalas(myself?: Jogador) {
     .channel('room' + salaId)
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'salas' }, payload => {
       console.log('Change received!', payload.new)
-      const playersExceptMyself = payload.new.jogadores.filter((jogador: Jogador) => jogador.nickname !== myself?.value?.nickname);
+      const playersExceptMyself = payload.new.jogadores.filter((jogador: Jogador) => jogador.nickname !== myself?.nickname);
       players.value = playersExceptMyself;
       callback(payload.new)
     })

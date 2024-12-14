@@ -16,7 +16,7 @@ export function useSupaTable<T>(tableName: string, columns: TableColumns) {
 
   async function insertRecord(form: T) {
     const invalidInput = Object.entries(columns).some(
-      ([name, { nullable }]) => !form[name] && !nullable
+      ([name, { nullable }]) => !(form as Record<string, any>)[name] && !nullable
     );
 
     if (invalidInput) {

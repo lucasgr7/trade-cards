@@ -1,12 +1,7 @@
-import { TradingCard } from "@/type";
+import { TradingCard, CardTypeV3 } from "@/type";
 import { CardAssentoBuilder, CardPresenteBuilder, CardRevelearBuilder, CardTrocarBuilder } from "./cardbuilder.class";
 
-export enum CardTypeV3 {
-  Action = 'action',
-  Object = 'object',
-  Condition = 'condition',
-  Subtraction = 'subtraction',
-}
+// Removed duplicate CardTypeV3 enum
 
 
 // Classe Abstrata para definir a interface do builder

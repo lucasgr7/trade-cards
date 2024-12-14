@@ -1,10 +1,9 @@
 <script lang='ts' setup>
-import { CardTypeV3, TradingCard } from '@/type';
-import { computed } from 'vue';
+import {TradingCard } from '@/type';
 import Card from './Card.vue';
 import { usePlayerStore } from '@/state/usePlayerStore';
 
-const props = defineProps<{
+const {cartas} = defineProps<{
   cartas?: TradingCard[]
 }>();
 

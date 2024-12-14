@@ -2,3 +2,5 @@
 # Ignorar o arquivo .env
 .env
 trade-cards-vue/.env
+
+*.vue.js

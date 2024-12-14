@@ -9,7 +9,6 @@ const router = useRouter();
 const route = useRoute();
 const store = usePlayerStore();
 const { generateDeck } = useDeck();
-const INITIAL_ENERGY = 15;
 const SUN_DECK = {
   ENERGY: 5,
   JOKERS: 2,

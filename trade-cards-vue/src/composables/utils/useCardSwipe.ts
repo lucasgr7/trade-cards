@@ -1,11 +1,11 @@
 // trade-cards-vue/src/composables/useCardSwipe.ts
 import { Ref } from 'vue';
-import { Cartas } from '@/types';
 import { gsap } from 'gsap';
+import { TradingCard } from '@/type';
 
 export function useCardSwipe(
   cardRefs: Ref<HTMLElement[]>,
-  cardsInHand: Ref<Cartas[]>,
+  cardsInHand: Ref<TradingCard[]>,
   topCardIndex: Ref<number>,
   onSwipeUp: () => void,
 ) {

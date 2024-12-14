@@ -1,7 +1,7 @@
 import { finishTurn } from "./composables/apis/usePartidas";
 import { CardType } from "./enums/cardType";
 import { PartidaAcoes } from "./enums/partidas.actions";
-import { EnumStatusPartida } from "./enums/EnumStatusPartida";
+import { EnumStatusPartida } from "./enums/statusMatch";
 
 export interface Deck {
   [cardName: string]: {

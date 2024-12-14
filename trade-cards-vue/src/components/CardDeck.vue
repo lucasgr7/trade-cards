@@ -84,6 +84,7 @@ const reset = () => {
 }
 
 watch(() => store.signalResetDeck, (signal: boolean) => {
+  console.log(signal);
   reset();
 });
 

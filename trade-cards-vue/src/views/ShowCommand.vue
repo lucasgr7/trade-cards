@@ -5,7 +5,7 @@ import { usePlayerStore } from '@/state/usePlayerStore';
 import { Partidas } from '@/type';
 import { useRoute, useRouter } from 'vue-router';
 import HeaderPage from '@/components/HeaderPage.vue';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import PlayerPill from '@/components/PlayerPill.vue';
 
 const store = usePlayerStore();
@@ -50,17 +50,6 @@ const otherPlayersCommands = computed(() => {
     }));
 });
 
-function formatTime(ms: number): string {
-  const seconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-
-  const formattedHours = hours % 24;
-  const formattedMinutes = minutes % 60;
-  const formattedSeconds = seconds % 60;
-
-  return `${formattedHours}h ${formattedMinutes}m ${formattedSeconds}s`;
-}
 
 onMounted(async () => {
   // check if the match is the next rodada
