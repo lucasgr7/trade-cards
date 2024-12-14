@@ -5,6 +5,7 @@ import { ref } from 'vue';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
 import Footer from '@/components/Footer.vue';
+import { EnumStatusPartida } from '@/enums/statusMatch';
 
 const router = useRouter();
 const { insertRecord, getRecords, records } = useSalas();
@@ -27,7 +28,7 @@ async function createSession(event: Event) {
     const newSession: Salas = {
       name: sessionName.value,
       jogadores: [store.getMyself],
-      estado: 1,
+      estado: EnumStatusPartida.WAITINGSTATUS,
     };
 
     await insertRecord(newSession);

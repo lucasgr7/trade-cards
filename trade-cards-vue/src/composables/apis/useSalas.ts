@@ -118,6 +118,10 @@ export function useSalas(myself?: Jogador) {
   }
     
   const isMyselfCreatorSession = computed(() => {
+    console.log(sala.value?.jogadores[0]?.userSeed, myself?.userSeed)
+    if(!sala.value || !myself){
+      return false;
+    }
     return sala.value?.jogadores[0]?.userSeed === myself?.userSeed;
   })
   return {

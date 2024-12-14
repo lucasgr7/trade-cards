@@ -1,5 +1,7 @@
 <script lang='ts' setup>
 import { usePlayerStore } from '@/state/usePlayerStore';
+import { useTimestamp } from '@vueuse/core';
+import { computed } from 'vue';
 
 const store = usePlayerStore();
 const props = defineProps({
@@ -13,6 +15,14 @@ const props = defineProps({
   }
 })
 
+// initialize a timer, vueuse or lodash
+const timestamp = useTimestamp({ offset: 0 })
+const start = timestamp.value
+const timeSpent = computed(() => {
+  return timestamp.value - start
+})
+
+
 const emit = defineEmits(['leaveGame'])
 
 const handleLeaveGame = () => {
@@ -22,7 +32,9 @@ const handleLeaveGame = () => {
 </script>
 
 <template>
+    {{ Math.round(timeSpent / 10) }} | {{ store.currentRodada }}
   <div class="flex w-full items-center justify-between p-2">
+    
       <h1 class="text-base text-white font-black text-outline-blue">{{ props.title }}</h1>
       <div class="flex gap-x-2 ml-4">
         <button @click="store.toggleFullscreen"

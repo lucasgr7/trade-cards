@@ -5,10 +5,10 @@ import onlineIcon from '@/assets/icons/online_session.png';
 import offlineIcon from '@/assets/icons/offline_session.png';
 import { useRouter } from 'vue-router';
 import { Jogador } from 'type';
-import { StatusMatch } from '@/enums/statusMatch';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
 import Footer from '@/components/Footer.vue';
+import { EnumStatusPartida } from '@/enums/statusMatch';
 
 const { records, getPlayersCount, getSessionsCount, deleteOldRecords, updateRecord } = useSalas();
 const { getMyself } = usePlayerStore();
@@ -40,7 +40,7 @@ async function joinSession() {
     return;
   }
 
-  if (selectedSession.value.estado == StatusMatch.INITSTATUS) {
+  if (selectedSession.value.estado == EnumStatusPartida.INITSTATUS) {
     alert('Aqui não dá pra entrar, a partida já começou!');
     return;
   }
@@ -87,7 +87,7 @@ function leave() {
               <td class="py-5 px-7 border-b-2 border-trade-blue-900">{{ session.name }}</td>
               <td class="py-5 px-7 border-b-2 border-trade-blue-900">{{ getPlayersCount(session) }}</td>
               <td class="py-5 px-7 border-b-2 border-trade-blue-900 pl-10">
-                <img :src="session.estado === StatusMatch.WAITINGSTATUS ? onlineIcon : offlineIcon" alt="Status Icon" class="w-6 h-6" />
+                <img :src="session.estado === EnumStatusPartida.WAITINGSTATUS ? onlineIcon : offlineIcon" alt="Status Icon" class="w-6 h-6" />
               </td>
             </tr>
           </tbody>

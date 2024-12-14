@@ -5,94 +5,63 @@ import BagOfCards from '@/components/BagOfCards.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePartidas } from '../composables/apis/usePartidas';
 import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
-import ShowHand from '@/components/ShowHand.vue';
 import { usePlayerStore } from '@/state/usePlayerStore';
-import { useChatCompletion } from '@/composables/apis/useChatCompletion';
-import CommandPrompt from '@/components/CommandPrompt.vue';
-import EnergyBar from '@/components/EnergyBar.vue';
 import HeaderPage from '@/components/HeaderPage.vue';
+import { useTimestamp } from '@vueuse/core';
 
 const route = useRoute();
 const router = useRouter();
 const store = usePlayerStore();
-const { partida, initialize, isMyselfAdmin } = usePartidas(store.getMyself);
+const { partida, initialize, finishTurn } = usePartidas(store.getMyself);
 const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
-const { response, fetchChatCompletion, fetchChatCompletionRankingInstruction, ranking } = useChatCompletion();
 const bagOfCards = computed(() => store.bagOfCards);
-const totalEnergy = computed(() => store.energyUnits);
-const currentEnergy = computed(() => store.currentEnergy);
 
-// LOCAL EVENTS
-const responseCommand = ref('');
 // GAME EVENTS
 const {
   onLeaveGame,
-  allCardsSelected,
 } = usePartidaEvents();
+
+// initialize a timer, vueuse or lodash
+const timestamp = useTimestamp({ offset: 0 })
+const start = timestamp.value
 
 const isSubscribed = ref(false);
 
-async function onClickGenerateCommand() {
-  if (store.currentEnergy === 0) {
-    alert('Você não tem energia suficiente para gerar um comando.');
-    return;
-  }
-
-  try {
-    await fetchChatCompletion(store.bagOfCards);
-    console.log(response.value?.choices[0].message.content);
-    responseCommand.value = response.value?.choices[0]?.message?.content ?? '';
-    store.addCommandToList(responseCommand.value);
-    store.removeEnergy(store.deckType);
-  }
-  catch (error) {
-    console.error(error);
+async function onClickFinish() {
+  if(await finishTurn({
+    command: store.getCommandPhrase(),
+    Jogador: store.getMyself,
+    time: timeSpent.value,
+    weight: store.currentHandWeight,
+  })){
+    // display command phrase
+    router.push({ name: 'ShowCommand' });
   }
 }
 
 onMounted(async () => {
   await initialize(route, router);
   isSubscribed.value = true;
-  store.clearListOfCommands();
-  console.log(store.deck)
 });
 
-function accept() {
-  responseCommand.value = '';
-  store.clearBagOfCards(); // limpa as cartas escolhidas
-  store.clearListOfCommands(); // limpa os comandos da rodada
-  store.addEnergy(store.energyUnits); // restore energy
-}
+const timeSpent = computed(() => {
+  return timestamp.value - start
+})
 
-function tryAgain() {
-  console.log(`Lista de Comandos: ${store.listOfCommands}`)
-  onClickGenerateCommand();
-}
 
-function onCloseModal() {
-  responseCommand.value = '';
-}
-
-function handleUpdateCommand(command: string) {
-  responseCommand.value = command;
-}
 
 </script>
 
 <template>
-  <CommandPrompt :show="responseCommand !== ''" :ranking="ranking" :command="responseCommand"
-    @update:show="onCloseModal" @accept="accept" @try-again="tryAgain" @update:command="handleUpdateCommand">
-  </CommandPrompt>
   <div class="deck-table w-screen h-screen text-game">
     <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
-    <div class="fixed inset-0 flex mt-14 flex-col items-center justify-between" v-if="!allCardsSelected">
+    <div class="fixed inset-0 flex mt-14 flex-col items-center justify-between">
       <div class="flex gap-x-1 z-50">
         <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)" />
       </div>
       <div id="end-square">
         <p>Vazio</p>
       </div>
-      <EnergyBar :totalEnergy="totalEnergy" :current-energy="currentEnergy" />
       <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
         :isSubscribedUpdate="isSubscribed" />
       <div class="flex items-center justify-center xl:mt-10 text-[0.6rem]">
@@ -100,13 +69,16 @@ function handleUpdateCommand(command: string) {
           class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Reimpilhar
         </button>
-        <button @click="onClickGenerateCommand"
+        <button @click="onClickFinish"
           class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
-          Gerar Comando
+          Finalizar
+        </button>
+        <button @click="store.clearBagOfCards"
+          class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          Limpar sacola
         </button>
       </div>
     </div>
-    <ShowHand :is-myself-admin="isMyselfAdmin" v-else />
   </div>
 </template>
 

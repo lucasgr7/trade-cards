@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/howler": "^2.2.12",
+    "@types/lodash": "^4.17.13",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/test-utils": "^2.4.6",
     "@vueuse/core": "^11.1.0",

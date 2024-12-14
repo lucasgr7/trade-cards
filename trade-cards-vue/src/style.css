@@ -85,3 +85,27 @@ button:focus-visible {
 .text-game {
   font-family: 'Press Start 2P', sans-serif;
 }
+
+.font-cursive{
+  font-family: "Playwrite TZ Guides", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+.font-codystar-light {
+  font-family: "Codystar", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.font-codystar-regular {
+  font-family: "Codystar", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-playwrite-tz-guides-regular {
+  font-family: "Playwrite TZ Guides", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+

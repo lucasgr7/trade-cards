@@ -1,11 +1,15 @@
 <script lang='ts' setup>
-import { CartasType } from '@/type';
+import { CardTypeV3, TradingCard } from '@/type';
+import { computed } from 'vue';
+import Card from './Card.vue';
+import { usePlayerStore } from '@/state/usePlayerStore';
 
 const props = defineProps<{
-  cartas?: CartasType[]
+  cartas?: TradingCard[]
 }>();
 
 const emit = defineEmits(['removerCartaEscolhida']);
+const store = usePlayerStore();
 
 const removeCarta = (card: any) => {
   emit('removerCartaEscolhida', card);
@@ -14,12 +18,13 @@ const removeCarta = (card: any) => {
 </script>
 
 <template>
-  <div class="border-2 border-b-4 border-black p-4 w-[20rem] h-[6rem] rounded-lg bg-green-200 text-black 
-      mt-2 mb-4 flex flex-wrap gap-2 overflow-y-auto flex-shrink leading-snug">
-    <div v-for="(carta, index) in props.cartas" :key="index" @click="removeCarta(carta)"
-      :class="['card', `${carta.type.toLowerCase()}-card`, 'border p-2 rounded-lg bg-white border-black h-fit text-game text-[0.5rem]']">
-      {{ carta.nome }}
+  <div class = "flex flex-col gap-2">
+    <div class="border-2 border-b-4 border-black p-4 w-[20rem] h-[6rem] rounded-lg bg-green-200 text-black 
+        mt-2 mb-4 flex flex-wrap gap-2 overflow-y-auto flex-shrink font-serif leading-snug text-[0.8rem]" v-html="store.getCompleteCommandPhrase">
     </div>
+    <div  class="flex flex-row absolute mt-20" >
+      <Card :small="true" v-for="(carta, i) in cartas" :key="i" :card="carta" @click="removeCarta(carta)" />
+    </div>  
   </div>
 </template>
 
@@ -46,5 +51,11 @@ const removeCarta = (card: any) => {
 
 .joker-card {
   background: linear-gradient(135deg, #fcfcfc, #cecece);
+}
+s{
+  // remove all spacing
+  margin: 0;
+  padding: 0;
+  
 }
 </style>

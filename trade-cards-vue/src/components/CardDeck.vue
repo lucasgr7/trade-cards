@@ -3,13 +3,13 @@ import { computed, onMounted, ref, watch } from 'vue';
 import Card from './Card.vue';
 import ProgressBar from './ProgressBar.vue';
 import { useCardSwipe } from '@/composables/utils/useCardSwipe';
-import { CartasType } from '@/type';
+import { TradingCard} from '@/type';
 import { Howl } from 'howler'; // Library for handling sounds
 import { usePlayerStore } from '@/state/usePlayerStore';
 import * as _ from 'lodash';
 
 const store = usePlayerStore();
-const cardsInHand = ref<CartasType[]>([]);
+const cardsInHand = ref<TradingCard[]>([]);
 const cardRefs = ref<HTMLElement[]>([]);
 
 // multiple sound effects
@@ -56,11 +56,6 @@ const touchEvents = {
   touchend: endSwipe,
 };
 
-// Function to play the funny sound effect
-function playFunnySoundEffect() {
-  soundEffect.play();
-}
-
 function playCardSwipeSoundEffect() {
   soundEffect.play();
 }
@@ -83,25 +78,31 @@ defineExpose({
   removeCard
 });
 
-watch(() => store.signalResetDeck, (signal: boolean) => {
-  cardsInHand.value = _.cloneDeep(store.deck);
+const reset = () => {
+  cardsInHand.value = _.cloneDeep(store.getDeck);
   totalCards.value = store.deck.length;
+}
+
+watch(() => store.signalResetDeck, (signal: boolean) => {
+  reset();
 });
 
 onMounted(async () => {
   cardsInHand.value = [];
-  cardsInHand.value = [...store.deck];
-  totalCards.value = store.deck.length;
+  reset();
 });
+
+const visibleCardsCount = ref(5); // Number of cards to render at a time
 
 </script>
 
 <template>
   <div class="card-deck">
-    <!-- Render all cards in the stack -->
+    <!-- Render only a limited number of cards in the stack -->
     <div v-for="(card, index) in cardsInHand" :key="index" class="card-container"
       :class="{ 'current-card': index === topCardIndex }" :style="getCardStyle(index)"
-      :ref="el => setCardRef(el, index)" v-on="index === topCardIndex ? touchEvents : {}">
+      :ref="el => setCardRef(el as HTMLElement, index)" v-show="index >= topCardIndex - visibleCardsCount && index <= topCardIndex"
+      v-on="index === topCardIndex ? touchEvents : {}">
       <Card :card="card" :isBottomCard="index === 0" />
     </div>
     <ProgressBar :remainingCards="remainingCards" :totalCards="totalCards" />
@@ -111,7 +112,7 @@ onMounted(async () => {
 <style scoped>
 .card-deck {
   position: relative;
-  height: 105px;
+  height: 15rem;
   margin: auto;
 }
 

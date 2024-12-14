@@ -1,6 +1,5 @@
 <script lang='ts' setup>
 import { useDeck } from '@/composables/game/useDeck';
-import { DeckGameType } from '@/type';
 import { useRoute, useRouter } from 'vue-router';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import * as _ from 'lodash';
@@ -25,11 +24,11 @@ function leave() {
   router.push('/');
 }
 
-function selectDeck(deckType: DeckGameType) {
+function selectDeck() {
   const roomId = Number(route.params.id ?? 0);
-  store.deck = generateDeck(deckType)
-  store.setTotalEnergyUnits(INITIAL_ENERGY);
-  router.push(`/create-joker-card/${roomId}/${deckType}`);
+  const initialRoundsNumber = 10;
+  store.deck = generateDeck(initialRoundsNumber)
+  router.push(`/match/${roomId}`);
 }
 
 </script>
@@ -37,10 +36,10 @@ function selectDeck(deckType: DeckGameType) {
 <template>
   <div class="flex flex-col items-center justify-between p-4 text-game
     border border-white rounded-xl bg-trade-blue-100 w-screen h-screen">
-    <HeaderPage title="Escolha seu baralho" @leaveGame="leave"/>
+    <HeaderPage title="Escolha seu baralho" @leaveGame="leave" />
     <!-- decks -->
     <div id="deck-sun" class="px-10 text-[0.5rem] flex flex-col items-center">
-      <div class="h-[210px] w-[110px] mb-2 float shine" @click="selectDeck(DeckGameType.Sun)">
+      <div class="h-[210px] w-[110px] mb-2 float shine" @click="selectDeck()">
         <img src="@/assets/baralho-sol.png" alt="Baralho-Sol">
       </div>
       <div class="flex justify-between pt-1 pb-8">
@@ -55,7 +54,7 @@ function selectDeck(deckType: DeckGameType) {
       </div>
     </div>
     <div id="deck-moon" class="border-0 border-t-2 px-10 pt-12 border-black text-[0.5rem] flex flex-col items-center">
-      <div class="h-[210px] w-[110px] mb-2 float shine" @click="selectDeck(DeckGameType.Moon)">
+      <div class="h-[210px] w-[110px] mb-2 float shine" @click="selectDeck()">
         <img src="@/assets/baralho-lua.png" alt="Baralho-Lua">
       </div>
       <div class="flex justify-between pt-2">
@@ -80,6 +79,7 @@ function selectDeck(deckType: DeckGameType) {
 }
 
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0);

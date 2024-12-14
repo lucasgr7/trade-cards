@@ -20,7 +20,7 @@
   },
   "terminal.integrated.env.osx": {
     "PATH": "/Users/lucas.ribeiro.br/.nvm/versions/node/v18.x.x/bin:${env:PATH}"
-  },  
+  },
   "vitest.commandLine": "npx vitest",
   "testExplorer.codeLens": true,
   "testExplorer.gutterDecoration": true,
@@ -31,7 +31,11 @@
   // eslint
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,
-  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
   "eslint.probe": [
     "javascript",
     "javascriptreact",
@@ -52,13 +56,11 @@
   "prettier.trailingComma": "none",
   "editor.tabSize": 2,
   //configre for vue
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
+  "editor.formatOnSave": false,
   "eslint.validate": [
     "javascript",
     "javascriptreact",
+    "typescript",
     "vue"
   ],
   "eslint.options": {
@@ -66,5 +68,9 @@
       ".js",
       ".vue"
     ]
+  },
+  "editor.formatOnPaste": false,
+  "files.exclude": {
+    "**/node_modules": true
   }
 }

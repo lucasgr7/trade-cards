@@ -1,11 +1,12 @@
 // stores/usePlayerStore.ts
 import { defineStore } from 'pinia';
-import { CartasType, Jogador } from '@/type';
+import { Jogador, TradingCard } from '@/type';
 import * as _ from 'lodash';
 import { defaultWindow } from '@vueuse/core';
-import { CardTypeV3, DeckGameType, Rarity } from '../type';
+import { CardTypeV3 } from '../type';
+import { CardRevelearBuilder, CardTrocarBuilder } from '@/util/cardbuilder.class';
 
-const MAX_CARDS_IN_BAG = 15;
+const MAX_CARDS_IN_BAG = 4;
 
 function generateRandomSeed(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -16,13 +17,12 @@ export const usePlayerStore = defineStore('player', {
     userSeed: generateRandomSeed(),
     avatarUrl: '',
     isCreator: false,
-    deck: [] as CartasType[],
-    deckType: '' as DeckGameType,
+    deck: [] as TradingCard[],
     signalResetDeck: false,
-    bagOfCards: [] as CartasType[],
-    energyUnits: 0,
-    currentEnergy: 0,
-    listOfCommands: [] as string[],
+    bagOfCards: [] as TradingCard[],
+    currentHandWeight: 0,
+    salaId: 0,
+    currentRodada: 0,
   }),
   actions: {
     generateRandomSeed(): string {
@@ -39,8 +39,23 @@ export const usePlayerStore = defineStore('player', {
       this.isCreator = true;
     },
     shuffleDeck() {
-      this.addMissingActionCards();
-      this.deck = _.shuffle(this.deck);
+      // Separate the cards by type
+      const actionCards = this.deck.filter((c: TradingCard) => c.type === CardTypeV3.Action);
+      const objectCards = this.deck.filter((c: TradingCard) => c.type === CardTypeV3.Gift || c.type === CardTypeV3.Seat);
+      const otherCards = this.deck.filter((c: TradingCard) => c.type === CardTypeV3.Subtraction);
+
+      // Shuffle each group of cards
+      const shuffledActionCards = _.shuffle(actionCards);
+      const shuffledObjectCards = _.shuffle(objectCards);
+      const shuffledOtherCards = _.shuffle(otherCards);
+
+      // Ensure the first card is an action card, the second is an object card, and the rest are random
+      this.deck = [
+        ..._.shuffle([...shuffledActionCards.slice(1), ...shuffledObjectCards.slice(1), ...shuffledOtherCards]),
+        ...shuffledObjectCards.slice(0, 1),
+        ...shuffledActionCards.slice(0, 1)
+      ];
+
       this.signalResetDeck = !this.signalResetDeck;
     },
     toggleFullscreen() {
@@ -53,41 +68,47 @@ export const usePlayerStore = defineStore('player', {
       }
     },
     checkActionCardsInDeck(): boolean {
-      return this.deck.some((c: CartasType) => c.type === CardTypeV3.Action);
+      return this.deck.some((c: TradingCard) => c.type === CardTypeV3.Action);
     },
     addMissingActionCards() {
       // visto que o jogador não pode ficar sem cartas de ação, adiciona algumas cartas de ação básicas quando não houver
       if (!this.checkActionCardsInDeck()) {
-        const actionCards: CartasType[] = [
-          { nome: 'Troca', type: CardTypeV3.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png', },
-          { nome: 'Troca', type: CardTypeV3.Action, input: 'troca o', rarity: Rarity.basic, image: 'exchange.png', },
-          { nome: 'Revelar', type: CardTypeV3.Action, input: 'revelar o', rarity: Rarity.basic, image: 'reveal.png', },
+        const actionCards: TradingCard[] = [
+          new CardTrocarBuilder().build(),
+          new CardTrocarBuilder().build(),
+          new CardRevelearBuilder().build()
         ];
         this.deck.push(...actionCards);
       }
     },
     // métodos relacionados à bag de cartas
-    canAddCardToBag(): boolean {
+    canAddCardToBag(card: TradingCard): boolean {
       // validação de máximo de cartas na bag
       if (this.bagOfCards.length >= MAX_CARDS_IN_BAG) {
         defaultWindow?.alert(`Você já tem ${MAX_CARDS_IN_BAG} cartas escolhidas, remova uma para adicionar outra!`);
         this.shuffleDeck();
         return false;
       }
+      // check if already has a card of action
+      if (this.bagOfCards.some((c: TradingCard) => c.type === CardTypeV3.Action) && card.type === CardTypeV3.Action) {
+        defaultWindow?.alert('Você já tem uma carta de ação na sua bag, remova-a para adicionar outra!');
+        this.shuffleDeck();
+        return false;
+      }
       return true;
     },
-    addToBagOfCards(card: CartasType) {
-      if (!this.canAddCardToBag()) {
+    addToBagOfCards(card: TradingCard) {
+      if (!this.canAddCardToBag(card)) {
         return;
       }
       this.bagOfCards.push(card);
-      const index = this.deck.findIndex((c) => c.nome === card.nome && c.type === card.type);
+      const index = this.deck.findIndex((c) => c.description === card.description && c.type === card.type);
       if (index !== -1) {
         this.deck.splice(index, 1);
       }
     },
-    removeOfBagOfCards(card: CartasType) {
-      const index = this.bagOfCards.findIndex((c) => c.nome === card.nome && c.type === card.type);
+    removeOfBagOfCards(card: TradingCard) {
+      const index = this.bagOfCards.findIndex((c) => c.description === card.description && c.type === card.type);
       if (index !== -1) {
         this.bagOfCards.splice(index, 1);
       }
@@ -97,30 +118,29 @@ export const usePlayerStore = defineStore('player', {
     clearBagOfCards() {
       this.bagOfCards = [];
     },
-    // métodos relacionados à energia
-    setTotalEnergyUnits(units: number) {
-      this.energyUnits = units;
-      this.currentEnergy = units * 100;
+    setSalaId(salaId: number) {
+      this.salaId = salaId;
     },
-    addEnergy(units: number) {
-      if (this.currentEnergy + units <= this.energyUnits) {
-        this.currentEnergy += units;
-      }
+    setCurrentRodada(rodada: number) {
+      this.currentRodada = rodada;
     },
-    removeEnergy(deck: DeckGameType) {
-      if (deck == DeckGameType.Sun) {
-        this.currentEnergy -= 3; // Baralho Sun: custo de 3 de energia para cada comando
-      } else {
-        this.currentEnergy -= 5; // Baralho Moon: custo de 5 de energia para cada comando
-      }
-    },
-    // métodos relacionados à lista de comandos
-    addCommandToList(command: string) {
-      this.listOfCommands.push(command);
-    },
-    clearListOfCommands() {
-      this.listOfCommands = [];
-    },
+    getCommandPhrase(): string {
+      // return the command removing the negative cards
+      const negativeCards = this.bagOfCards.filter((card) => card.type === CardTypeV3.Subtraction);
+      const cards = this.bagOfCards || [];
+      const actionCards = cards.filter((card) => card.type === CardTypeV3.Action);
+      const objectCards = cards.filter((card) => card.type === CardTypeV3.Gift || card.type === CardTypeV3.Seat);
+      let phrase = actionCards.map((card) => card.completeText).join(' ');
+      // concat the object cards
+      phrase += ' ' + objectCards.map((card) => card.completeText).join(' ');
+      negativeCards.forEach((card) => {
+        phrase = phrase.replace(card.description, '');
+      });
+
+      // calculate the weight base on the active cards weight value subtract all the negative cards
+      this.currentHandWeight = actionCards.reduce((acc, card) => acc + card.weight, 0) - negativeCards.length;
+      return phrase;
+    }
   },
   getters: {
     getMyself(state): Jogador {
@@ -132,6 +152,35 @@ export const usePlayerStore = defineStore('player', {
         isValid: state.nickname.length > 0 && state.avatarUrl.length > 0,
       };
     },
+    getDeck(state): TradingCard[] {
+      return state.deck.map(card => {
+        const completeText = card.compositions
+          ? `${card.description} ${Object.values(card.compositions).flat().join(', ')}`
+          : card.description;
+        return { ...card, completeText };
+      });
+    },
+    getCompleteCommandPhrase(state): string {
+      // should organize the cards by type, first the action, then the object
+    
+      const cards = state.bagOfCards || [];
+      const actionCards = cards.filter((card) => card.type === CardTypeV3.Action);
+      const objectCards = cards.filter((card) => card.type === CardTypeV3.Gift || card.type === CardTypeV3.Seat);
+      const negativeCards = cards.filter((card) => card.type === CardTypeV3.Subtraction);
+    
+      // start compiling the phrase starting the action cards
+      let phrase = actionCards.map((card) => card.completeText).join(' ');
+    
+      // concat the object cards
+      phrase += ' ' + objectCards.map((card) => card.completeText).join(' ');
+    
+      // now identify the negative cards on the phrase and if found the exact word edit to include a cross on the word
+      negativeCards.forEach((card) => {
+        phrase = phrase.replace(card.description, `<s>${card.description}</s>`);
+      });
+    
+      return phrase;
+    }
   },
   persist: true, // Ativa a persistência para esta store
 });

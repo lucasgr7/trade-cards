@@ -1,6 +1,7 @@
+import { finishTurn } from "./composables/apis/usePartidas";
 import { CardType } from "./enums/cardType";
 import { PartidaAcoes } from "./enums/partidas.actions";
-import { StatusMatch } from "./enums/statusMatch";
+import { EnumStatusPartida } from "./enums/EnumStatusPartida";
 
 export interface Deck {
   [cardName: string]: {
@@ -10,30 +11,26 @@ export interface Deck {
   };
 }
 
-export enum DeckGameType {
-  Sun = 'sun',
-  Moon = 'moon',
-}
 
 export enum CardTypeV3 {
   Action = 'action',
-  Object = 'object',
-  Condition = 'condition',
+  Gift = 'gift',
+  Seat = 'seat',
   Subtraction = 'subtraction',
 }
 
-
-export interface CartasType {
-  nome: string; // seria o nome da carta apresentando "Homem", "Mulher", "Verde", "Calça"
+export interface TradingCard {
+  description: string;
+  title: string;
   type: CardTypeV3;
+  weight: number; // número de composições
+  compositions?: Composition;
   image?: string;
-  weight?: number;
-  compositions?: Composition[];
+  completeText?: string;
 }
 
 export interface Composition {
-  value: string;
-  description: string;
+  [key: string]: string[];
 }
 
 
@@ -51,9 +48,9 @@ export interface Partidas {
   cartas_disponiveis: any;
   jogadores: Jogador[];
   rodada_atual: number;
-  acoes: Acoes[];
+  acoes: finishTurn[];
   atualizado_em?: string;
-  estado: StatusMatch;
+  estado: EnumStatusPartida;
 }
 
 // Interface para o jogador

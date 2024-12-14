@@ -1,38 +1,11 @@
-import { SunDeck, MoonDeck } from "../../util/deckbuilder.class";
-import { CartasType, DeckGameType } from "../../type";
+import { TradingCard } from "@/type";
+import { DeckBuilder } from "@/util/deckbuilder.class";
 
 export const useDeck = () => {
-  const generateDeck = (type?: DeckGameType): CartasType[] => {
-    if (!type || type === DeckGameType.Sun) {
-      return generateSunDeck();
-    }
-    else if (type === DeckGameType.Moon) {
-      return generateMoonDeck();
-    }
-    return []
+  const generateDeck = (numberRounds: number): TradingCard[] => {
+    const deck = new DeckBuilder().withNumberOfRounds(numberRounds).build();
+    return deck;
   };
-
-  const generateSunDeck = (): CartasType[] => {
-    const deck = new SunDeck('Sun Deck');
-    deck.setPercentualBasic(40);
-    deck.setPercentualCommon(32);
-    deck.setPercentualRare(23);
-    deck.setPercentualEpic(5);
-
-    return deck.generateDeck(60);
-  }
-
-  const generateMoonDeck = (): CartasType[] => {
-    const deck = new MoonDeck('Moon Deck');
-    deck.setPercentualBasic(40);
-    deck.setPercentualCommon(40);
-    deck.setPercentualRare(12);
-    deck.setPercentualEpic(8);
-
-    return deck.generateDeck(60);
-  }
 
   return { generateDeck };
 };
-export { SunDeck as DictCartaType };
-
