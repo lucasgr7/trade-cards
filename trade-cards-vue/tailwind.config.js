@@ -1,4 +1,5 @@
-module.exports = {
+// tailwind.config.js
+export default {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
@@ -26,7 +27,7 @@ module.exports = {
         'trade-green-500': '#53a077',
         'white': '#FFFFFF',
         'black': '#000000',
-      }
+      },
     },
   },
   plugins: [],
