@@ -21,7 +21,6 @@ module.exports = {
         'trade-blue-50': '#b9d8db',
         'trade-red-300': '#ffb1a3',
         'trade-red-500': '#ff547a',
-        'trade-red-500': '#efcf48',
         'trade-green-300':'#a3ffab',
         'trade-green-400': '#7ed1a5',
         'trade-green-500': '#53a077',
