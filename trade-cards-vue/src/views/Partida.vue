@@ -8,6 +8,7 @@ import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
 import { useTimestamp } from '@vueuse/core';
+import loading from '@/components/Loading.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -15,6 +16,7 @@ const store = usePlayerStore();
 const { partida, initialize, finishTurn } = usePartidas(store.getMyself);
 const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
 const bagOfCards = computed(() => store.bagOfCards);
+const isLoading = ref(false);
 
 // GAME EVENTS
 const {
@@ -28,6 +30,7 @@ const start = timestamp.value
 const isSubscribed = ref(false);
 
 async function onClickFinish() {
+  isLoading.value = true;
   if(await finishTurn({
     command: store.getCommandPhrase(),
     Jogador: store.getMyself,
@@ -37,12 +40,18 @@ async function onClickFinish() {
     // display command phrase
     router.push({ name: 'ShowCommand' });
   }
+  isLoading.value = false;
 }
 
 onMounted(async () => {
+  isLoading.value = true;
   await initialize(route, router);
   isSubscribed.value = true;
   store.shuffleDeck();
+  if(partida.value?.rodada_atual !== store.currentRodada){
+    store.setCurrentRodada(partida.value!.rodada_atual);
+  }
+  isLoading.value = false;
 });
 
 const timeSpent = computed(() => {
@@ -54,6 +63,7 @@ const timeSpent = computed(() => {
 </script>
 
 <template>
+  <loading v-show="isLoading" />
   <div class="deck-table w-screen h-screen text-game">
     <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
     <div class="inset-0 flex flex-col items-center justify-between">
