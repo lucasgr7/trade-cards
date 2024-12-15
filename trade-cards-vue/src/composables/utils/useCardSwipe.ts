@@ -1,5 +1,5 @@
 // trade-cards-vue/src/composables/useCardSwipe.ts
-import { Ref } from 'vue';
+import { Ref, nextTick } from 'vue';
 import { gsap } from 'gsap';
 import { TradingCard } from '@/type';
 
@@ -12,6 +12,7 @@ export function useCardSwipe(
   let touchStartX = 0;
   let touchStartY = 0;
   const animationDuration = 0.15;
+  const lastCard: TradingCard[] = [];
 
   function startSwipe(event: TouchEvent) {
     const touch = event.touches[0];
@@ -40,9 +41,7 @@ export function useCardSwipe(
       if (nextCard) {
         gsap.to(nextCard, {
           x: deltaX * 0.1,
-          y:
-            -((cardsInHand.value.length - (topCardIndex.value - 1) - 1) * 5) +
-            deltaY * 0.1,
+          y: -((cardsInHand.value.length - (topCardIndex.value - 1) - 1) * 5) + deltaY * 0.1,
           duration: 0,
         });
       }
@@ -66,7 +65,10 @@ export function useCardSwipe(
         rotation: currentX > 0 ? 45 : -45,
         duration: animationDuration,
         onComplete: () => {
-          cardsInHand.value.pop();
+          const poppedCard = cardsInHand.value.pop();
+          if (poppedCard) {
+            lastCard.push(poppedCard);
+          }
         },
       });
     } else if (currentY < -thresholdY) {
@@ -103,14 +105,29 @@ export function useCardSwipe(
       }
     }
   }
-  function removeCard() {
-    cardsInHand.value.pop();
+
+  async function resetLastCard() {
+    const card = lastCard.pop();
+    if (card) {
+      cardsInHand.value.push(card);
+      await nextTick();
+      const cardElement = cardRefs.value[cardsInHand.value.length - 1];
+      if (cardElement) {
+        gsap.set(cardElement, { x: 500, opacity: 0 });
+        gsap.to(cardElement, {
+          x: 0,
+          opacity: 1,
+          duration: 0.5,
+          ease: "back.out(1.7)"
+        });
+      }
+    }
   }
 
   return {
     startSwipe,
     moveSwipe,
     endSwipe,
-    removeCard
+    resetLastCard
   };
 }

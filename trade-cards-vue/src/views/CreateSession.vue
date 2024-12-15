@@ -1,7 +1,7 @@
 <script lang='ts' setup>
 import { useRouter } from 'vue-router';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
 import Footer from '@/components/Footer.vue';
@@ -49,6 +49,11 @@ async function createSession(event: Event) {
 function cancel() {
   router.push('/sessions');
 }
+
+onMounted(() =>{
+  // give focus to the input
+  document.querySelector('input')?.focus();
+})
 </script>
 
 <template>

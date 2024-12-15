@@ -26,7 +26,7 @@ const totalCards = ref(0);
 const topCardIndex = computed(() => cardsInHand.value.length - 1);
 
 // Touch event handlers
-const { startSwipe, moveSwipe, endSwipe, removeCard } = useCardSwipe(
+const { startSwipe, moveSwipe, endSwipe, resetLastCard } = useCardSwipe(
   cardRefs,
   cardsInHand,
   topCardIndex,
@@ -75,7 +75,7 @@ function handleUsarCarta() {
 // Expose the functions and variables
 defineExpose({
   handleUsarCarta,
-  removeCard
+  resetLastCard
 });
 
 const reset = () => {
@@ -112,9 +112,9 @@ const visibleCardsCount = ref(5); // Number of cards to render at a time
 
 <style scoped>
 .card-deck {
-  position: relative;
+  position: fixed;
   height: 15rem;
-  margin: auto;
+  margin-top: 14rem;
 }
 
 .card-container {

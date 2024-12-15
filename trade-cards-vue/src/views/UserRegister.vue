@@ -37,7 +37,7 @@ const handleSave = () => {
       active:bg-trade-blue-400">Gerar Avatar</button>
       <button :disabled="!store.getMyself.nickname" @click="handleSave"
       class="border border-black rounded-xl py-10 px-4 mt-4 bg-trade-blue-200 font-bold
-      disabled:opacity-50 disabled:bg-opacity-85">Salvar</button>
+      disabled:opacity-50 disabled:bg-opacity-85">Jogar</button>
     </div>
     <Footer :message="footerMsg" />
   </div>

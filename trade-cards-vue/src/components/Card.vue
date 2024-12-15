@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { TradingCard } from '@/type';
+import { CardTypeV3, TradingCard } from '@/type';
 import { computed, PropType } from 'vue';
 
 // Definição das props
@@ -38,19 +38,41 @@ const image = computed(() => {
 
 const fontSizeClass = computed(() => {
   const length = props.card.completeText?.length ?? 0;
-  if (length <= 20) {
+  if (length <= 32) {
     return 'text-lg';
-  } else if (length <= 40) {
+  } else if (length <= 56) {
     return 'text-base';
   } else {
     return 'text-xs';
   }
 });
+
+const friendlyCompositionMessage = computed(() => {
+  const compositions = props.card.compositions;
+  if (!compositions) return '';
+
+  const emojiMap: { [key: string]: string } = {
+    ClothingType: '👗',
+    Positioning: '📍',
+    Player: '🧑',
+    ColorVariant: '🎨',
+    WrappedState: '🎁',
+    // Add more mappings as needed
+  };
+
+  const messages: string[] = [];
+  for (const [key, values] of Object.entries(compositions)) {
+    const emoji = emojiMap[key] || '';
+    messages.push(`${emoji} ${values.join(', ')}`);
+  }
+
+  return `${messages.join('<br/>')}`; // Use HTML line breaks
+});
 </script>
 
 <template>
   <div :class="['card', cardTypeClass, { 'top-card': isBottomCard }, {'small': small}]"
-    class="w-[10rem] h-[15rem] rounded-[20px] flex flex-col overflow-hidden touch-pan-x touch-pan-y relative shadow-lg">
+    class="w-[13rem] h-[20rem] rounded-[20px] flex flex-col overflow-hidden touch-pan-x touch-pan-y relative shadow-lg">
     <!-- Cabeçalho: Ícone e Título -->
     <div
       class="header flex items-center justify-between p-2 w-full bg-gradient-to-b from-white/60 to-transparent relative h-6">
@@ -68,20 +90,21 @@ const fontSizeClass = computed(() => {
 
 
     <!-- Imagem Principal -->
-    <div :class="['overflow-hidden flex justify-center items-center mt-1.5', isJokerCreation ? '' : 'relative']">
+    <div :class="['flex justify-center items-center mt-1.5 relative h-72']">
       <img :src="image" alt="Card Image"
-        :class="['card-image object-fit w-32 h-28 rounded-md', isJokerCreation ? 'top-[14.5rem]' : 'top-16']" />
+        :class="['card-image object-fit w-40 h-40 rounded-md', isJokerCreation ? 'top-[14.5rem]' : 'top-16']" />
     </div>
 
     <!-- Descrição -->
-    <p v-if="!small" :class="['description text-center', fontSizeClass]"
-       class="font-mono
-       bg-white/70 
-       backdrop-blur-md 
-       flex-shrink border-b-0 rounded-b-[14px] p-1.5
-       text-black font-medium leading-snug overflow-hidden mt-2 pt-4 h-20">
-      {{ card.completeText }}
-    </p>
+     <div class="bg-white/70 text-black  font-mono  overflow-hidden mt-2 pt-4 h-full" v-if="!small">
+       <p v-if="card.type == CardTypeV3.Action || card.type === CardTypeV3.Subtraction" :class="['description text-center', fontSizeClass]"
+         >
+        {{ card.completeText }}
+      </p>
+      <p v-if="card.type === CardTypeV3.Seat || card.type === CardTypeV3.Gift" :class="['description text-center', fontSizeClass]">
+        <span v-html="friendlyCompositionMessage"></span>
+      </p>
+     </div>
   </div>
 </template>
 

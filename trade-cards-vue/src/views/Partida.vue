@@ -42,6 +42,7 @@ async function onClickFinish() {
 onMounted(async () => {
   await initialize(route, router);
   isSubscribed.value = true;
+  store.shuffleDeck();
 });
 
 const timeSpent = computed(() => {
@@ -55,7 +56,7 @@ const timeSpent = computed(() => {
 <template>
   <div class="deck-table w-screen h-screen text-game">
     <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
-    <div class="fixed inset-0 flex mt-14 flex-col items-center justify-between">
+    <div class="inset-0 flex flex-col items-center justify-between">
       <div class="flex gap-x-1 z-50">
         <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)" />
       </div>
@@ -63,8 +64,9 @@ const timeSpent = computed(() => {
         <p>Vazio</p>
       </div>
       <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
+        
         :isSubscribedUpdate="isSubscribed" />
-      <div class="flex items-center justify-center xl:mt-10 text-[0.6rem]">
+      <div class="flex fixed bottom-0 items-center justify-center xl:mt-10 text-[0.6rem]">
         <button @click="store.shuffleDeck"
           class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Reimpilhar
@@ -73,9 +75,9 @@ const timeSpent = computed(() => {
           class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
           Finalizar
         </button>
-        <button @click="store.clearBagOfCards"
+        <button @click="cardDeckRef?.resetLastCard"
           class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
-          Limpar sacola
+          Voltar
         </button>
       </div>
     </div>

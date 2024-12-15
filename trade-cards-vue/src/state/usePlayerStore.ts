@@ -23,6 +23,7 @@ export const usePlayerStore = defineStore('player', {
     currentHandWeight: 0,
     salaId: 0,
     currentRodada: 0,
+    lastCard: {} as TradingCard,
   }),
   actions: {
     generateRandomSeed(): string {
@@ -92,6 +93,13 @@ export const usePlayerStore = defineStore('player', {
       // check if already has a card of action
       if (this.bagOfCards.some((c: TradingCard) => c.type === CardTypeV3.Action) && card.type === CardTypeV3.Action) {
         defaultWindow?.alert('Você já tem uma carta de ação na sua bag, remova-a para adicionar outra!');
+        this.shuffleDeck();
+        return false;
+      }
+      // check if already if trying to insert an object (seat or gift) and already has a object
+      if (this.bagOfCards.some((c: TradingCard) => c.type === CardTypeV3.Gift || c.type === CardTypeV3.Seat) &&
+        (card.type === CardTypeV3.Gift || card.type === CardTypeV3.Seat)) {
+        defaultWindow?.alert('Você já tem um objeto na sua bag, remova-o para adicionar outro!');
         this.shuffleDeck();
         return false;
       }
