@@ -10,6 +10,7 @@ import HeaderPage from '@/components/HeaderPage.vue';
 import { useTimestamp } from '@vueuse/core';
 import loading from '@/components/Loading.vue';
 import Alert from '@/components/Alert.vue';
+import Tutorial from '@/components/Tutorial.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -69,6 +70,7 @@ const timeSpent = computed(() => {
 <template>
   <loading v-show="isLoading" />
   <div class="deck-table w-screen h-screen text-game">
+    <Tutorial />
     <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
     <div class="inset-0 flex flex-col items-center justify-between">
       <div class="flex gap-x-1 z-50">
