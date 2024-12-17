@@ -2,13 +2,14 @@
 import { useRouter } from 'vue-router';
 import { Salas, useSalas } from '@/composables/apis/useSalas';
 import { onMounted, ref } from 'vue';
-import { usePlayerStore } from '@/state/usePlayerStore';
+import { usePlayerStore, alertMessage, showAlert } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
 import Footer from '@/components/Footer.vue';
 import { EnumStatusPartida } from '@/enums/statusMatch';
+import Alert from '@/components/Alert.vue';
 
 const router = useRouter();
-const { insertRecord, getRecords, records, alertMessage, showAlert } = useSalas();
+const { insertRecord, getRecords, records } = useSalas();
 const store = usePlayerStore();
 const footerMsg = 'Defina um nome para a sala de trade.';
 
@@ -36,14 +37,12 @@ async function createSession(event: Event) {
     var sala = records.value?.filter((sala: Salas) => sala.name === sessionName.value)[0];
 
     if (!sala) {
-      showAlert.value = true;
-      alertMessage.value = 'Erro ao criar a sala.';
+      store.showAlertMessage('Erro ao criar a sala.');
       return;
     }
     router.push(`/waiting-room/${sala.id}`);
   } catch (error: any) {
-    showAlert.value = true;
-    alertMessage.value = 'Erro ao criar a sala: ' + error.message;
+    store.showAlertMessage('Erro ao criar a sala: ' + error.message);
     return;
   }
 }
@@ -78,6 +77,7 @@ onMounted(() =>{
       </div>
     </form>
     <Footer :message="footerMsg" />
+    <Alert v-if="showAlert" :message="alertMessage" @close="showAlert = false" />
   </div>
 </template>
 

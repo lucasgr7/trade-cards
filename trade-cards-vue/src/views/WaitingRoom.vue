@@ -63,8 +63,7 @@ async function leave() {
 
   const playerIndex = sala.value.jogadores.findIndex((jogador: Jogador) => jogador.nickname === store.getMyself.nickname);
   if (playerIndex === -1) {
-    showAlert.value = true;
-    alertMessage.value = 'Jogador não encontrado na sala.';
+    store.showAlertMessage('Jogador não encontrado na sala.');
     return;
   }
 

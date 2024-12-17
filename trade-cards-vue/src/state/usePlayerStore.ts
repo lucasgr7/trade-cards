@@ -88,23 +88,20 @@ export const usePlayerStore = defineStore('player', {
     canAddCardToBag(card: TradingCard): boolean {
       // validação de máximo de cartas na bag
       if (this.bagOfCards.length >= MAX_CARDS_IN_BAG) {
-        alertMessage.value = `Você já tem ${MAX_CARDS_IN_BAG} cartas escolhidas, remova uma para adicionar outra!`;
-        showAlert.value = true;
+        this.showAlertMessage(`Você já tem ${MAX_CARDS_IN_BAG} cartas escolhidas, remova uma para adicionar outra!`);
         this.shuffleDeck();
         return false;
       }
       // check if already has a card of action
       if (this.bagOfCards.some((c: TradingCard) => c.type === CardTypeV3.Action) && card.type === CardTypeV3.Action) {
-        alertMessage.value = 'Você já tem uma carta de ação na sua bag, remova-a para adicionar outra!';
-        showAlert.value = true;
+        this.showAlertMessage('Você já tem uma carta de ação na sua bag, remova-a para adicionar outra!');
         this.shuffleDeck();
         return false;
       }
       // check if already if trying to insert an object (seat or gift) and already has a object
       if (this.bagOfCards.some((c: TradingCard) => c.type === CardTypeV3.Gift || c.type === CardTypeV3.Seat) &&
         (card.type === CardTypeV3.Gift || card.type === CardTypeV3.Seat)) {
-        alertMessage.value = 'Você já tem um objeto na sua bag, remova-o para adicionar outro!';
-        showAlert.value = true;
+        this.showAlertMessage('Você já tem um objeto na sua bag, remova-o para adicionar outro!');
         this.shuffleDeck();
         return false;
       }
@@ -130,6 +127,29 @@ export const usePlayerStore = defineStore('player', {
     },
     clearBagOfCards() {
       this.bagOfCards = [];
+    },
+    checkCardType(cardType: CardTypeV3): boolean {
+      return this.bagOfCards.some(card => card.type === cardType);
+    },
+    showAlertMessage(message: string): void {
+      showAlert.value = true;
+      alertMessage.value = message;
+    },
+    canFinishRound(): boolean {
+      const hasActionCards = this.checkCardType(CardTypeV3.Action);
+      const hasObjectCards = this.bagOfCards.some(card => card.type === CardTypeV3.Seat || card.type === CardTypeV3.Gift);
+    
+      if (!hasActionCards) {
+        this.showAlertMessage('Você precisa adicionar uma carta de ação para finalizar a rodada!');
+        return false;
+      }
+    
+      if (!hasObjectCards) {
+        this.showAlertMessage('Você precisa adicionar um objeto para finalizar a rodada!');
+        return false;
+      }
+    
+      return true;
     },
     setSalaId(salaId: number) {
       this.salaId = salaId;
@@ -197,3 +217,8 @@ export const usePlayerStore = defineStore('player', {
   },
   persist: true, // Ativa a persistência para esta store
 });
+
+export {
+  showAlert,
+  alertMessage
+};

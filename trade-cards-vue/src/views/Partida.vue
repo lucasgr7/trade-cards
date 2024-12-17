@@ -5,10 +5,11 @@ import BagOfCards from '@/components/BagOfCards.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePartidas } from '../composables/apis/usePartidas';
 import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
-import { usePlayerStore } from '@/state/usePlayerStore';
+import { usePlayerStore, showAlert, alertMessage } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
 import { useTimestamp } from '@vueuse/core';
 import loading from '@/components/Loading.vue';
+import Alert from '@/components/Alert.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -31,6 +32,11 @@ const isSubscribed = ref(false);
 
 async function onClickFinish() {
   isLoading.value = true;
+  if(!store.canFinishRound()){
+    isLoading.value = false;
+    return;
+  }
+  
   if(await finishTurn({
     command: store.getCommandPhrase(),
     Jogador: store.getMyself,
@@ -58,8 +64,6 @@ const timeSpent = computed(() => {
   return timestamp.value - start
 })
 
-
-
 </script>
 
 <template>
@@ -74,7 +78,6 @@ const timeSpent = computed(() => {
         <p>Vazio</p>
       </div>
       <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
-        
         :isSubscribedUpdate="isSubscribed" />
       <div class="flex fixed bottom-0 items-center justify-center xl:mt-10 text-[0.6rem]">
         <button @click="store.shuffleDeck"
@@ -90,6 +93,7 @@ const timeSpent = computed(() => {
           Voltar
         </button>
       </div>
+      <Alert v-if="showAlert" :title="'Alerta'" :message="alertMessage" @close="showAlert = false" />
     </div>
   </div>
 </template>

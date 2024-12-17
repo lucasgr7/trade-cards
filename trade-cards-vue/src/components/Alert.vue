@@ -22,8 +22,8 @@ const closeModal = () => {
 
 <template>
   <div class="modal-container text-black z-50">
-    <div class="modal-content flex flex-col gap-y-6 items-center text-center mr-4 ml-1">
-      <p class="text-xl">{{ props.title }}</p>
+    <div class="modal-content flex flex-col gap-y-6 items-center text-center">
+      <p class="text-xl">Alerta</p>
       <p>{{ props.message }}</p>
       <button @click="closeModal" class="bg-blue-400 py-4 px-10 border-black">OK</button>
     </div>
