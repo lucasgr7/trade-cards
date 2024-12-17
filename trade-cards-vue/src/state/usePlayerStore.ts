@@ -203,9 +203,9 @@ export const usePlayerStore = defineStore('player', {
     
       // start compiling the phrase starting the action cards
       let phrase = actionCards.map((card) => card.completeText).join(' ');
-    
+
       // concat the object cards
-      phrase += ' ' + objectCards.map((card) => card.completeText).join(' ');
+      phrase += ' ' + objectCards.map((card) => getEmojiForComposition(card.compositions)).join(' ');
     
       // now identify the negative cards on the phrase and if found the exact word edit to include a cross on the word
       negativeCards.forEach((card) => {
@@ -222,3 +222,24 @@ export {
   showAlert,
   alertMessage
 };
+
+function getEmojiForComposition(compositions: any): string {
+  if (!compositions) return '';
+
+  const emojiMap: { [key: string]: string } = {
+    ClothingType: '👗',
+    Positioning: '📍',
+    Player: '🧑',
+    ColorVariant: '🎨',
+    WrappedState: '🎁',
+    // Adicione mais mapeamentos conforme necessário
+  };
+
+  const messages: string[] = [];
+  for (const [key, values] of Object.entries(compositions) as [string, string[]][]) {
+    const emoji = emojiMap[key] || '';
+    messages.push(`${emoji} ${values.join(', ')}`);
+  }
+
+  return messages.join(' ');
+}
