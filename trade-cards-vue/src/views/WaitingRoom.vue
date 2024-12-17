@@ -122,7 +122,7 @@ onMounted(async () => {
     </div>
     <div class="w-[20rem] bg-trade-red-500 h-24 rounded-xl px-5 border border-black
       flex flex-col text-black text-center justify-center items-center">
-      <h1 class="text-base truncate text-ellipsis">{{ store.getMyself.nickname }}</h1>
+      <h1 class="text-base truncate w-64 break-all">{{ store.getMyself.nickname }}</h1>
       <p class="text-xs">{{ randomSentence }}</p>
     </div>
     <div class="flex flex-col w-full gap-y-4 max-h-[26rem] mb-12">
@@ -135,7 +135,7 @@ onMounted(async () => {
               <UserPicture :src="jogador.avatarUrl || ''" class="user-picture-small" />
               <div class="flex w-full border-t-4 border-trade-blue-900 mt-2"></div>
               <div class="h-16 flex flex-col items-center justify-center text-center">
-                <p class="text-white flex-wrap text-xs">{{ jogador.nickname }}</p>
+                <p class="text-white flex-wrap text-xs break-all overflow-y-auto">{{ jogador.nickname }}</p>
               </div>
             </div>
           </li>
