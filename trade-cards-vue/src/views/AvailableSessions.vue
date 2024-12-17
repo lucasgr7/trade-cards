@@ -9,8 +9,9 @@ import { usePlayerStore } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
 import Footer from '@/components/Footer.vue';
 import { EnumStatusPartida } from '@/enums/statusMatch';
+import Alert from '@/components/Alert.vue';
 
-const { records, getPlayersCount, getSessionsCount, deleteOldRecords, updateRecord } = useSalas();
+const { records, getPlayersCount, getSessionsCount, deleteOldRecords, updateRecord, showAlert, alertMessage } = useSalas();
 const { getMyself } = usePlayerStore();
 const router = useRouter();
 const footerMsg = 'Selecione uma sala online ou crie a sua própria.';
@@ -31,17 +32,20 @@ async function joinSession() {
   const player = getMyself
 
   if (!player.avatarUrl || !player.nickname) {
-    alert('Dados do jogador não encontrados.');
+    showAlert.value = true;
+    alertMessage.value = 'Dados do jogador não encontrados.';
     return;
   }
 
   if (selectedSession.value.jogadores.find((jogador: Jogador) => jogador.nickname === player.nickname)) {
-    alert('Jogador já está na sala.');
+    showAlert.value = true;
+    alertMessage.value = 'Jogador já está na sala.';
     return;
   }
 
   if (selectedSession.value.estado == EnumStatusPartida.INITSTATUS) {
-    alert('Aqui não dá pra entrar, a partida já começou!');
+    showAlert.value = true;
+    alertMessage.value = 'Aqui não dá pra entrar, a partida já começou!';
     return;
   }
 
@@ -51,7 +55,8 @@ async function joinSession() {
     await updateRecord(selectedSession.value.id as number, selectedSession.value);
     router.push({ name: 'WaitingRoom', params: { id: selectedSession.value.id } });
   } catch (error: any) {
-    alert('Erro ao entrar na sala: ' + error.message);
+    showAlert.value = true;
+    alertMessage.value = 'Erro ao entrar na sala: ' + error.message;
   }
 }
 
@@ -105,6 +110,7 @@ function leave() {
       </button>
     </div>
     <Footer :message="footerMsg" />
+    <Alert v-if="showAlert" title="Alerta" :message="alertMessage" @close="showAlert = false" />
   </div>
 </template>
 

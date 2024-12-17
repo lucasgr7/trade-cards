@@ -34,7 +34,8 @@ const sala = useSerializedStorage<Salas | null>('sala', null);
 
 export function useSalas(myself?: Jogador) {
   const { records, error, insertRecord, getRecords, updateRecord, deleteRecord, getRecordById, search, createId } = useSupaTable<Salas>("salas", columns);
-
+  const showAlert = ref(false);
+  const alertMessage = ref('');
   const players = ref<Jogador[]>([]);
 
   function getPlayersCount(sala: Salas): number {
@@ -83,7 +84,8 @@ export function useSalas(myself?: Jogador) {
     const salaData = await getRecordById(salaId);
 
     if (!salaData) {
-      alert('Sala não encontrada.');
+      alertMessage.value = 'Sala não encontrada.';
+      showAlert.value = true;
       return;
     }
 
@@ -141,6 +143,8 @@ export function useSalas(myself?: Jogador) {
     sala,
     players,
     isMyselfCreatorSession,
-    subscribeToChanges
+    subscribeToChanges,
+    showAlert,
+    alertMessage
   };
 }

@@ -8,7 +8,7 @@ import Footer from '@/components/Footer.vue';
 import { EnumStatusPartida } from '@/enums/statusMatch';
 
 const router = useRouter();
-const { insertRecord, getRecords, records } = useSalas();
+const { insertRecord, getRecords, records, alertMessage, showAlert } = useSalas();
 const store = usePlayerStore();
 const footerMsg = 'Defina um nome para a sala de trade.';
 
@@ -36,12 +36,14 @@ async function createSession(event: Event) {
     var sala = records.value?.filter((sala: Salas) => sala.name === sessionName.value)[0];
 
     if (!sala) {
-      alert('Erro ao criar a sala.');
+      showAlert.value = true;
+      alertMessage.value = 'Erro ao criar a sala.';
       return;
     }
     router.push(`/waiting-room/${sala.id}`);
   } catch (error: any) {
-    alert('Erro ao criar a sala: ' + error.message);
+    showAlert.value = true;
+    alertMessage.value = 'Erro ao criar a sala: ' + error.message;
     return;
   }
 }

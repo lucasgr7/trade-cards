@@ -2,11 +2,13 @@
 import { defineStore } from 'pinia';
 import { Jogador, TradingCard } from '@/type';
 import * as _ from 'lodash';
-import { defaultWindow } from '@vueuse/core';
 import { CardTypeV3 } from '../type';
 import { CardRevelearBuilder, CardTrocarBuilder } from '@/util/cardbuilder.class';
+import { ref } from 'vue';
 
 const MAX_CARDS_IN_BAG = 4;
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 function generateRandomSeed(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -86,20 +88,23 @@ export const usePlayerStore = defineStore('player', {
     canAddCardToBag(card: TradingCard): boolean {
       // validação de máximo de cartas na bag
       if (this.bagOfCards.length >= MAX_CARDS_IN_BAG) {
-        defaultWindow?.alert(`Você já tem ${MAX_CARDS_IN_BAG} cartas escolhidas, remova uma para adicionar outra!`);
+        alertMessage.value = `Você já tem ${MAX_CARDS_IN_BAG} cartas escolhidas, remova uma para adicionar outra!`;
+        showAlert.value = true;
         this.shuffleDeck();
         return false;
       }
       // check if already has a card of action
       if (this.bagOfCards.some((c: TradingCard) => c.type === CardTypeV3.Action) && card.type === CardTypeV3.Action) {
-        defaultWindow?.alert('Você já tem uma carta de ação na sua bag, remova-a para adicionar outra!');
+        alertMessage.value = 'Você já tem uma carta de ação na sua bag, remova-a para adicionar outra!';
+        showAlert.value = true;
         this.shuffleDeck();
         return false;
       }
       // check if already if trying to insert an object (seat or gift) and already has a object
       if (this.bagOfCards.some((c: TradingCard) => c.type === CardTypeV3.Gift || c.type === CardTypeV3.Seat) &&
         (card.type === CardTypeV3.Gift || card.type === CardTypeV3.Seat)) {
-        defaultWindow?.alert('Você já tem um objeto na sua bag, remova-o para adicionar outro!');
+        alertMessage.value = 'Você já tem um objeto na sua bag, remova-o para adicionar outro!';
+        showAlert.value = true;
         this.shuffleDeck();
         return false;
       }

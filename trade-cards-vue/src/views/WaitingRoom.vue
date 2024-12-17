@@ -9,13 +9,15 @@ import { Partidas, Jogador } from 'type';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
 import { EnumStatusPartida } from '@/enums/statusMatch';
+import Alert from '@/components/Alert.vue';
 
 const store = usePlayerStore();;
 const { updateRecord,
   getPlayersFromSession,
   sala,
   players,
-  isMyselfCreatorSession } = useSalas(store.getMyself);
+  isMyselfCreatorSession,
+  showAlert, alertMessage } = useSalas(store.getMyself);
 const { insertRecord, partida, initialize } = usePartidas(store.getMyself);
 
 const route = useRoute();
@@ -61,7 +63,8 @@ async function leave() {
 
   const playerIndex = sala.value.jogadores.findIndex((jogador: Jogador) => jogador.nickname === store.getMyself.nickname);
   if (playerIndex === -1) {
-    alert('Jogador não encontrado na sala.');
+    showAlert.value = true;
+    alertMessage.value = 'Jogador não encontrado na sala.';
     return;
   }
 
@@ -144,6 +147,7 @@ onMounted(async () => {
       class="border border-white rounded-full py-4 px-14 bg-trade-red-500 font-bold text-xs text-black">
       {{ isMyselfCreatorSession ? 'Escolher Baralho' : 'Acelerar início' }}
     </button>
+    <Alert v-if="showAlert" :message="alertMessage" @close="showAlert = false" />
   </div>
 </template>
 
