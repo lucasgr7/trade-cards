@@ -114,7 +114,7 @@ const visibleCardsCount = ref(5); // Number of cards to render at a time
 .card-deck {
   position: fixed;
   height: 15rem;
-  margin-top: 14rem;
+  margin-top: 12rem;
 }
 
 .card-container {
