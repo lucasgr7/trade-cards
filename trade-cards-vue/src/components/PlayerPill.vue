@@ -19,9 +19,9 @@ const props = defineProps({
 })
 </script>
 <template>
-<div class="player-pill w-52" :class="{ 'shining': isShining, 'inverted': isShining }">
+<div class="player-pill w-40 flex justify-center items-center" :class="{ 'shining': isShining, 'inverted': isShining }">
   <img :src="player.avatarUrl" alt="Player Image" class="player-image" /> 
-  <span class="player-name truncate w-40">{{ player.nickname }} <p class="text-red-500">{{ props.ranking }}</p></span>
+  <span class="player-name">{{ player.nickname }} <p class="text-red-500">{{ props.ranking }}</p></span>
 </div>
 </template>
 

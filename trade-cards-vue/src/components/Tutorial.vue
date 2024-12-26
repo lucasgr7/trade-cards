@@ -9,10 +9,12 @@ function closeModal() {
 </script>
 
 <template>
-  <div v-if="showModal" class="modal-overlay">
-    <div class="modal-content text-center">
-      <h2>Tutorial</h2>
-      <p>Bem-vindo ao tutorial! Aqui você aprenderá como jogar.</p>
+  <div v-if="showModal" class="modal-overlay ">
+    <div class="modal-content text-center flex flex-col p-8 rounded-lg flex justify-center items-center">
+      <img src="/public/v2/swipe-up.gif" alt="Tutorial" class="w-16 align-middle bg-transparent rounded-lg" />
+      <p>Selecionar carta</p>
+      <img class="w-16 align-middle bg-transparent  mt-12 rounded-lg" src="/public/v2/touch.gif" alt="Tutorial" />
+      <p>Descartar</p>
       <button @click="closeModal" class="bg-white py-4 px-10 text-black mt-4">OK</button>
     </div>
   </div>

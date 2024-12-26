@@ -62,7 +62,7 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <div class="deck-table w-screen h-screen text-game">
+  <div class="deck-table flex flex-col justify-center items-center w-screen h-screen text-game">
   <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
     <hr/>
     <div class="mt-2" v-for="(command, i) in otherPlayersCommands" :key="i">

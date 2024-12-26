@@ -30,10 +30,12 @@ const title = computed(() => {
 })
 
 const image = computed(() => {
+  // count number of compositions 
   if (props.card.image) {
     return `/v2/${props.card.image}`;
   }
-  return `/v2/${props.card.type}.png`;
+  const weight = props.card.weight > 4 ? 4 : props.card.weight;
+  return `/v2/${props.card.type}${weight}.png`;
 });
 
 const fontSizeClass = computed(() => {
@@ -43,7 +45,7 @@ const fontSizeClass = computed(() => {
   } else if (length <= 56) {
     return 'text-base';
   } else {
-    return 'text-xs';
+    return 'text-sm';
   }
 });
 
@@ -89,14 +91,14 @@ const friendlyCompositionMessage = computed(() => {
     </div>
 
 
-    <!-- Imagem Principal -->
+
     <div :class="['flex justify-center items-center mt-1.5 relative h-72']">
       <img :src="image" alt="Card Image"
-        :class="['card-image object-fit w-40 h-40 rounded-md', isJokerCreation ? 'top-[14.5rem]' : 'top-16']" />
+      :class="['card-image object-fit w-40 h-40 rounded-md', isJokerCreation ? 'top-[14.5rem]' : 'top-16']" />
     </div>
 
     <!-- Descrição -->
-     <div class="bg-white/70 text-black  font-mono  overflow-hidden mt-2 pt-4 h-full" v-if="!small">
+    <div class="bg-white/70 text-black  font-mono  overflow-hidden mt-2 pt-4 h-full" v-if="!small">
        <p v-if="card.type == CardTypeV3.Action || card.type === CardTypeV3.Subtraction" :class="['description text-center', fontSizeClass]"
          >
         {{ card.completeText }}

@@ -204,6 +204,16 @@ export const usePlayerStore = defineStore('player', {
       // start compiling the phrase starting the action cards
       let phrase = actionCards.map((card) => card.completeText).join(' ');
 
+      // if card type is Gift add the word "Presente" 
+      objectCards.forEach((card) => {
+        if (card.type === CardTypeV3.Gift) {
+          phrase += ' o Presente';
+        }
+        if (card.type === CardTypeV3.Seat) {
+          phrase += ' a Cadeira';
+        }
+      });
+
       // concat the object cards
       phrase += ' ' + objectCards.map((card) => getEmojiForComposition(card.compositions)).join(' ');
     

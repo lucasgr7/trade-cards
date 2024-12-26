@@ -113,7 +113,7 @@ export class CardPresenteBuilder extends CardBuilder {
         [CardCompositionEnum.Positioning]: ['A minha frente', 'A minha direita', 'A minha esquerda', 'entre duas mulheres', 'entre dois homens'],
       }
     );
-    this.withTitle(CardNameEnum.Presente).withImage('gift.png').withDescription('Presente');
+    this.withTitle(CardNameEnum.Presente).withDescription('Presente');
   }
 }
 
@@ -126,7 +126,7 @@ export class CardAssentoBuilder extends CardBuilder {
         [CardCompositionEnum.ClothingType]: ['usando Camisa', 'usando Calça', 'usando Vestido', 'usando Bermuda'],
         [CardCompositionEnum.ColorVariant]: ['verde', 'vermelho', 'azul', 'amarelo', 'preto', 'branco', 'rosa', 'roxo', 'laranja'],
       });
-    this.withTitle(CardNameEnum.Assento).withImage('seat.png').withDescription('Assento');
+    this.withTitle(CardNameEnum.Assento).withDescription('Assento');
   }
 }
 

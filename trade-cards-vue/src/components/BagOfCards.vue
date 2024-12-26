@@ -20,7 +20,7 @@ const removeCarta = (card: any) => {
   <div class = "flex flex-col gap-2">
     <h1 class="absolute text-white text-outline ml-[6.6rem]">Comando</h1>
     <div class="border-2 border-b-4 border-black p-4 w-[20rem] h-[6rem] rounded-lg bg-green-200 text-black 
-        mt-2 mb-4 flex flex-wrap gap-2 overflow-y-auto flex-shrink font-serif leading-snug text-[0.8rem]" v-html="store.getCompleteCommandPhrase">
+        mt-2 mb-4 flex flex-wrap gap-2 overflow-y-auto font-mono leading-snug text-[0.9rem]" v-html="store.getCompleteCommandPhrase">
     </div>
     <div class="flex flex-row absolute mt-20">
       <Card :small="true" v-for="(carta, i) in cartas" :key="i" :card="carta" @click="removeCarta(carta)" />
