@@ -21,6 +21,7 @@
   z-index: 1000; /* Ensure it's on top of other elements */
 }
 
+
 .loading-spinner {
   border: 16px solid #f3f3f3;
   border-top: 16px solid #3498db;

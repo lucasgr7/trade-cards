@@ -8,7 +8,7 @@ import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
 import { usePlayerStore, showAlert, alertMessage } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
 import { useTimestamp } from '@vueuse/core';
-import loading from '@/components/Loading.vue';
+import loading from '@/components/loading.vue';
 import Alert from '@/components/Alert.vue';
 import Tutorial from '@/components/Tutorial.vue';
 
