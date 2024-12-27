@@ -29,20 +29,22 @@ const pillObject = computed(() => {
 </script>
 <template>
   <div class="flex flex-row">
-    <div :class="['pill', color]" class="nes-btn text-game text-white" style="text-align: center;">
+    <div :class="['pill', color]" class="text-sm text-game text-white" style="text-align: center;">
       {{ pillAction }}
     </div>
-    <div :class="['pill', colorObject]" class="nes-btn text-game text-white" style="text-align: center;">
+    <div :class="['pill', colorObject]" class="text-sm text-game text-white" style="text-align: center;">
       {{ pillObject }}
     </div>
   </div>
 </template>
 <style scoped>
 .pill{
-  border: 1px solid black;
-  border-radius: 10px;
+  border: 2px solid black;
+  border-radius: 20px;
   padding: 5px;
   margin: 5px;
+  background: white;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5);
 }
 .red {
   background: linear-gradient(135deg, #ff4b1f, #ff9068);
