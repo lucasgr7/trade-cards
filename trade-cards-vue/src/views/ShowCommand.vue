@@ -7,11 +7,15 @@ import { useRoute, useRouter } from 'vue-router';
 import HeaderPage from '@/components/HeaderPage.vue';
 import { computed, onMounted } from 'vue';
 import PlayerPill from '@/components/PlayerPill.vue';
+import { useCompositionEmojifier } from '@/composables/utils/useCompositionEmojifier';
+import Pill from '@/components/Pill.vue';
 
 const store = usePlayerStore();
 const {isMyselfAdmin, nextTurn, subscribeToChanges, partida, initialize} = usePartidas(store.getMyself);
 const router = useRouter();
 const route = useRoute();
+const {compositionDescription} = useCompositionEmojifier();
+
 // GAME EVENTS
 const {
   onLeaveGame,
@@ -25,22 +29,13 @@ subscribeToChanges(store.salaId, (callback: Partidas) => {
   }
 })
 
-const otherPlayersCommands = computed(() => {
+const allPlayerCommands = computed(() => {
   const acoes = partida.value?.acoes;
   // Remove the filter to include all players
   const currentRodadaAcoes = acoes?.filter((a) => a.round === store.currentRodada);
   
   // Sort by least time and then by highest weight
-  return currentRodadaAcoes
-    ?.sort((a, b) => {
-    if (a.time !== b.time) {
-      // Combine time and weight into a single value for sorting
-      const combinedA = a.time + a.weight * 1000;
-      const combinedB = b.time + b.weight * 1000;
-      return combinedA - combinedB; // Sort by combined value
-    }
-    return b.weight - a.weight; // Higher
-    })
+  return currentRodadaAcoes!
     .map((a, index) => ({
       jogador: a.Jogador,
       command: a.command,
@@ -49,6 +44,25 @@ const otherPlayersCommands = computed(() => {
       weight: a.weight,
     }));
 });
+
+const commandAppendedEmoji = (command: string) => {
+  // remove commas
+  const commandsForSplit = command.split(/,/g);
+
+  // the first commmand would have appended the action and the object, we should remove the words 'trocar', 'presente', 'assento' and 'revelear'
+
+  // remove double commas like ', ,'
+  commandsForSplit.forEach((c, i) => {
+    if(c.trim() === ''){
+      commandsForSplit.splice(i, 1);
+    }
+  });
+  
+
+  const firstCommand = commandsForSplit[0].toLocaleLowerCase().split(' ').filter((c) => !['troque', 'presente', 'assento', 'revelar'].includes(c)).join(' ');
+  commandsForSplit[0] = firstCommand;
+  return commandsForSplit.map((c) => compositionDescription(c)).join('<br/> ');
+}
 
 
 onMounted(async () => {
@@ -60,16 +74,17 @@ onMounted(async () => {
     router.push(`/match/${store.salaId}`);
   }
 })
+
 </script>
 <template>
-  <div class="deck-table flex flex-col justify-center items-center w-screen h-screen text-game">
+  <div class="flex flex-col justify-center items-center w-screen text-game overflow-y-auto">
   <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
-    <hr/>
-    <div class="mt-2" v-for="(command, i) in otherPlayersCommands" :key="i">
+    <div class="mt-4 w-screen" v-for="(command, i) in allPlayerCommands" :key="i">
       <player-pill :player="command.jogador" :ranking="command.ranking" 
       :isShining="store.getMyself.seed == command.jogador.seed"></player-pill>
-      <div class="notebook text-playwrite-tz-guides-regular">
-        {{ command.command.toLocaleLowerCase() }}
+      <div class="notebook" >
+        <Pill :command="command.command" />
+        <span v-html="commandAppendedEmoji(command.command)"></span>
       </div>
     </div>
     <div class="flex flex-row">
@@ -83,14 +98,18 @@ onMounted(async () => {
 .notebook {
   background-color: #fff;
   border: 1px solid #ccc;
-  padding: 20px;
-  margin: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  font-family: 'Cursive', sans-serif;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
   font-size: 1.2em;
   line-height: 1.5;
-  border-radius: 10px;
+  border-radius: 0px;
   color: black;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>

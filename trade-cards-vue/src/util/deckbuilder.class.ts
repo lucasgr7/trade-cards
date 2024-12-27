@@ -46,15 +46,15 @@ export abstract class AbstractDeckBuilder {
     }
 
     // 50% of rounds should be 'Presente' with 3 compositions
-    this.createCards(Math.round(this.rounds * 0.25), 4);
+    this.createCards(Math.round(this.rounds * 0.35), 4);
     // 50% of rounds should be 'Presente' with 3 compositions
-    this.createCards(Math.round(this.rounds * 0.25), 3);
+    this.createCards(Math.round(this.rounds * 0.35), 3);
 
     // 30% of rounds should be 'Presente' with 2 compositions
     this.createCards(Math.round(this.rounds * 0.3), 2);
 
-    // 20% of rounds should be 'Presente' with 1 composition
-    this.createCards(Math.round(this.rounds * 0.2), 1);
+    // 5% of rounds should be 'Presente' with 1 composition
+    this.createCards(Math.round(this.rounds * 0.05), 1);
 
     // eliminate 25% of negative cards from deck
     this.deck = this.deck.filter((card) => card.type !== CardTypeV3.Subtraction || Math.random() > 0.25);

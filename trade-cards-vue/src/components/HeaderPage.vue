@@ -1,7 +1,5 @@
 <script lang='ts' setup>
 import { usePlayerStore } from '@/state/usePlayerStore';
-import { useTimestamp } from '@vueuse/core';
-import { computed } from 'vue';
 
 const store = usePlayerStore();
 const props = defineProps({
@@ -15,13 +13,6 @@ const props = defineProps({
   }
 })
 
-// initialize a timer, vueuse or lodash
-const timestamp = useTimestamp({ offset: 0 })
-const start = timestamp.value
-const timeSpent = computed(() => {
-  return timestamp.value - start
-})
-
 
 const emit = defineEmits(['leaveGame'])
 
@@ -32,10 +23,12 @@ const handleLeaveGame = () => {
 </script>
 
 <template>
-    {{ Math.round(timeSpent / 10) }} | {{ store.currentRodada }}
+  <div class="flex w-full text-xs items-center justify-between p-2 bg-bg-green text-white">
+    Trade Cards <hr/> R: {{ store.currentRodada }} <hr/> {{props.title}}
+  </div>
   <div class="flex w-full items-center justify-between p-2">
     
-      <h1 class="text-base text-white font-black text-outline-blue">{{ props.title }}</h1>
+      <h1 class="text-base text-white font-black text-outline-blue">{{  }}</h1>
       <div class="flex gap-x-2 ml-4">
         <button @click="store.toggleFullscreen"
           class="text-trade-blue-900 border-2 border-black bg-trade-green-500 p-2">

@@ -7,7 +7,7 @@ import { usePartidas } from '../composables/apis/usePartidas';
 import { usePartidaEvents } from '@/composables/game/usePartidaEvents';
 import { usePlayerStore, showAlert, alertMessage } from '@/state/usePlayerStore';
 import HeaderPage from '@/components/HeaderPage.vue';
-import { useTimestamp } from '@vueuse/core';
+import { useLocalStorage, useTimestamp } from '@vueuse/core';
 import loading from '@/components/loading.vue';
 import Alert from '@/components/Alert.vue';
 import Tutorial from '@/components/Tutorial.vue';
@@ -19,17 +19,25 @@ const { partida, initialize, finishTurn } = usePartidas(store.getMyself);
 const cardDeckRef = ref<InstanceType<typeof CardDeck> | null>(null);
 const bagOfCards = computed(() => store.bagOfCards);
 const isLoading = ref(false);
+const isShowTutorial = useLocalStorage('showModal', 0);
 
 // GAME EVENTS
 const {
   onLeaveGame,
 } = usePartidaEvents();
 
-// initialize a timer, vueuse or lodash
-const timestamp = useTimestamp({ offset: 0 })
-const start = timestamp.value
+// Store the start timestamp in localStorage
+const storedStart = useLocalStorage('startTimestamp', Date.now());
 
 const isSubscribed = ref(false);
+
+// Initialize useTimestamp to get reactive current time
+const timestamp = useTimestamp();
+
+// Store the start timestamp in localStorage if not already set
+if (!storedStart.value) {
+    storedStart.value = Date.now();
+}
 
 async function onClickFinish() {
   isLoading.value = true;
@@ -37,11 +45,10 @@ async function onClickFinish() {
     isLoading.value = false;
     return;
   }
-  
   if(await finishTurn({
     command: store.getCommandPhrase(),
     Jogador: store.getMyself,
-    time: timeSpent.value,
+    time: Math.floor((timestamp.value - storedStart.value) / 10),
     weight: store.currentHandWeight,
   })){
     // display command phrase
@@ -58,20 +65,19 @@ onMounted(async () => {
   if(partida.value?.rodada_atual !== store.currentRodada){
     store.setCurrentRodada(partida.value!.rodada_atual);
   }
+  if (!storedStart.value) {
+    storedStart.value = Date.now();
+  }
   isLoading.value = false;
 });
-
-const timeSpent = computed(() => {
-  return timestamp.value - start
-})
 
 </script>
 
 <template>
   <loading v-show="isLoading" />
   <div class="deck-table w-screen h-screen text-game">
-    <Tutorial />
-    <HeaderPage :title="`Trade-Cards ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
+    <Tutorial  v-if="isShowTutorial <= 2"/>
+    <HeaderPage :title="`S: ${partida?.id ?? ''}`" @leaveGame="onLeaveGame" />
     <div class="inset-0 flex flex-col items-center justify-between">
       <div class="flex gap-x-1 z-50">
         <BagOfCards :cartas="bagOfCards" @removerCartaEscolhida="(carta) => store.removeOfBagOfCards(carta)" />
@@ -81,17 +87,17 @@ const timeSpent = computed(() => {
       </div>
       <CardDeck ref="cardDeckRef" @usarCarta="(carta) => store.addToBagOfCards(carta)"
         :isSubscribedUpdate="isSubscribed" />
-      <div class="flex fixed bottom-0 items-center justify-center xl:mt-10 text-[0.6rem]">
+      <div class="flex fixed bottom-2 flex-row justify-between text-[0.6rem]">
         <button @click="store.shuffleDeck"
-          class="mt-4 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          class="myButton">
           Reimpilhar
         </button>
         <button @click="onClickFinish"
-          class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          class="myButton">
           Finalizar
         </button>
         <button @click="cardDeckRef?.resetLastCard"
-          class="mt-4 ml-3 mb-4 text-trade-blue-900 border-2 border-black bg-trade-red-500 p-4">
+          class="myButton">
           Voltar
         </button>
       </div>
@@ -155,6 +161,40 @@ h1 {
   color: white;
   line-height: 100px;
   /* Centraliza verticalmente o texto */
+}
+
+.myButton {
+	box-shadow: 0px 1px 0px 0px #1c1b18;
+	background:linear-gradient(to bottom, #eae0c2 5%, #ccc2a6 100%);
+	background-color:#eae0c2;
+	border-radius:15px;
+	border:2px solid #333029;
+	display:inline-block;
+	cursor:pointer;
+	color:#505739;
+	font-family:Arial;
+	font-size:14px;
+	font-weight:bold;
+	padding:12px 16px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #ffffff;
+  margin-left: 0.4rem;
+}
+.myButton:hover {
+	background-color:#b34332;
+}
+.myButton:active {
+	animation: funnyEffect 0.5s;
+	position:relative;
+	top:1px;
+}
+
+@keyframes funnyEffect {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1) rotate(10deg); }
+  50% { transform: scale(0.9) rotate(-10deg); }
+  75% { transform: scale(1.05) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
 }
 
 /* Ajustes para telas menores */

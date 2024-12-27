@@ -18,8 +18,9 @@ const removeCarta = (card: any) => {
 
 <template>
   <div class = "flex flex-col gap-2">
-    <h1 class="absolute text-white text-outline ml-[6.6rem]">Comando</h1>
-    <div class="border-2 border-b-4 border-black p-4 w-[20rem] h-[6rem] rounded-lg bg-green-200 text-black 
+    <h1 class="absolute text-white text-outline ml-[6.6rem]">COMANDO</h1>
+    <div class="border-2 border-b-4 border-black p-4 w-[20rem] h-[6rem]
+        bg-red-800 text-white 
         mt-2 mb-4 flex flex-wrap gap-2 overflow-y-auto font-mono leading-snug text-[0.9rem]" v-html="store.getCompleteCommandPhrase">
     </div>
     <div class="flex flex-row absolute mt-20">
@@ -52,11 +53,11 @@ const removeCarta = (card: any) => {
 .joker-card {
   background: linear-gradient(135deg, #fcfcfc, #cecece);
 }
-s{
-  // remove all spacing
+s {
+  display: inline;
+  line-height: normal;
   margin: 0;
   padding: 0;
-  
 }
 .text-outline {
   text-shadow: 

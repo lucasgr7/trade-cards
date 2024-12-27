@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { CardTypeV3 } from '../type';
 import { CardRevelearBuilder, CardTrocarBuilder } from '@/util/cardbuilder.class';
 import { ref } from 'vue';
+import { useCompositionEmojifier } from '@/composables/utils/useCompositionEmojifier';
 
 const MAX_CARDS_IN_BAG = 4;
 const showAlert = ref(false);
@@ -123,7 +124,6 @@ export const usePlayerStore = defineStore('player', {
         this.bagOfCards.splice(index, 1);
       }
       this.deck.push(card); // carta retornada ao deck
-      this.shuffleDeck();
     },
     clearBagOfCards() {
       this.bagOfCards = [];
@@ -195,6 +195,8 @@ export const usePlayerStore = defineStore('player', {
     },
     getCompleteCommandPhrase(state): string {
       // should organize the cards by type, first the action, then the object
+
+      const { friendlyCompositionMessage } = useCompositionEmojifier();
     
       const cards = state.bagOfCards || [];
       const actionCards = cards.filter((card) => card.type === CardTypeV3.Action);
@@ -215,7 +217,7 @@ export const usePlayerStore = defineStore('player', {
       });
 
       // concat the object cards
-      phrase += ' ' + objectCards.map((card) => getEmojiForComposition(card.compositions)).join(' ');
+      phrase += ' ' + objectCards.map((card) => friendlyCompositionMessage(card, false)).join(' ');
     
       // now identify the negative cards on the phrase and if found the exact word edit to include a cross on the word
       negativeCards.forEach((card) => {
@@ -233,23 +235,3 @@ export {
   alertMessage
 };
 
-function getEmojiForComposition(compositions: any): string {
-  if (!compositions) return '';
-
-  const emojiMap: { [key: string]: string } = {
-    ClothingType: '👗',
-    Positioning: '📍',
-    Player: '🧑',
-    ColorVariant: '🎨',
-    WrappedState: '🎁',
-    // Adicione mais mapeamentos conforme necessário
-  };
-
-  const messages: string[] = [];
-  for (const [key, values] of Object.entries(compositions) as [string, string[]][]) {
-    const emoji = emojiMap[key] || '';
-    messages.push(`${emoji} ${values.join(', ')}`);
-  }
-
-  return messages.join(' ');
-}

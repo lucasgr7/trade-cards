@@ -103,6 +103,11 @@ watch(() => sala.value, (newValue) => {
   initialized.value = true;
 });
 
+//every 10 seconds trigger getPlayersFromSession
+setInterval(() => {
+  getPlayersFromSession(route.params.id);
+}, 10000);
+
 onMounted(async () => {
   await initialize(route, router);
   getRandomSentence();

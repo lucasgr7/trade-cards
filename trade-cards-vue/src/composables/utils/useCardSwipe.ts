@@ -1,7 +1,8 @@
 // trade-cards-vue/src/composables/useCardSwipe.ts
-import { Ref, nextTick } from 'vue';
+import { Ref, nextTick, watch } from 'vue';
 import { gsap } from 'gsap';
 import { TradingCard } from '@/type';
+import { usePlayerStore } from '@/state/usePlayerStore';
 
 export function useCardSwipe(
   cardRefs: Ref<HTMLElement[]>,
@@ -13,6 +14,11 @@ export function useCardSwipe(
   let touchStartY = 0;
   const animationDuration = 0.15;
   const lastCard: TradingCard[] = [];
+  const playerStore = usePlayerStore();
+
+  watch(() => playerStore.signalResetDeck, () => {
+    lastCard.length = 0;
+  });
 
   function startSwipe(event: TouchEvent) {
     const touch = event.touches[0];

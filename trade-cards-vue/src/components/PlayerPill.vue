@@ -52,19 +52,18 @@ const props = defineProps({
   animation: shine 2s infinite;
 }
 
-.inverted {
-  filter: invert(1);
-}
-
 @keyframes shine {
   0% {
     box-shadow: 0 0 5px rgb(1, 121, 233);
+    filter: brightness(75%);
   }
   50% {
-    box-shadow: 0 0 20px rgb(1, 121, 233);
+    box-shadow: 0 0 20px rgb(1, 155, 233);
+    filter: brightness(125%);
   }
   100% {
     box-shadow: 0 0 5px rgb(180, 214, 245);
+    filter: brightness(75%);
   }
 }
 

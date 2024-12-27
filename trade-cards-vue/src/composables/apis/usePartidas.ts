@@ -120,28 +120,63 @@ export function usePartidas(getMyself: Jogador | null) {
 
   async function finishTurn(data: finishTurn): Promise<boolean> {
     const hash = generateHash();
+    const maxRetries = 3;
+    let attempts = 0;
 
-    if(!partida.value){
+    if (!partida.value) {
       return false;
     }
-    try{
-      partida.value.acoes.push({
-        hash,
-        Jogador: data.Jogador,
-        weight: data.weight,
-        time: Date.now(),
-        command: data.command,
-        round: partida.value.rodada_atual
-      })
-      await updateRecord(partida.value.id!, partida.value);
+
+    while (attempts < maxRetries) {
+      try {
+        // Fetch the latest partida from the database
+        const latestPartida = await getPartidaBySalaId(partida.value.sala_id);
+        if (!latestPartida) {
+          throw new Error('Partida not found');
+        }
+
+        // Create the new action
+        const newAcoes = {
+          hash,
+          Jogador: data.Jogador,
+          weight: data.weight,
+          time: Date.now(),
+          command: data.command,
+          round: latestPartida.rodada_atual
+        };
+
+        // Append the new action to the existing acoes array
+        const updatedAcoes = latestPartida.acoes ? [...latestPartida.acoes, newAcoes] : [newAcoes];
+
+        // Attempt to update the partida with the new acoes
+        await updateRecord(latestPartida.id!, { acoes: updatedAcoes });
+
+        // Add a 5-second wait
+        new Promise(res => setTimeout(res, 5000));
+
+        // New verification query after the wait
+        const verifiedPartida = await getPartidaBySalaId(latestPartida.sala_id);
+        if (verifiedPartida && verifiedPartida.acoes.some(a => a.hash === hash)) {
+          partida.value = verifiedPartida;
+          return true;
+        }
+
+        throw new Error('Verification failed: New action not found.');
+      } catch (e) {
+        console.error(`Attempt ${attempts + 1} to finish turn failed:`, e);
+        attempts += 1;
+
+        if (attempts >= maxRetries) {
+          console.error('Max retries reached. Failed to finish turn.');
+          return false;
+        }
+
+        // Optional: Add a short delay before retrying
+        await new Promise(res => setTimeout(res, 100));
+      }
     }
-    catch(e){
-      console.error('Erro ao finalizar turno:', e);
-      return false;
-    }
-    finally{
-      return true;
-    }
+
+    return false;
   }
 
   async function nextTurn() {

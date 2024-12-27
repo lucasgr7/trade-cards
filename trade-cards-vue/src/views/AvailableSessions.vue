@@ -73,24 +73,20 @@ function leave() {
       border border-white rounded-xl bg-trade-blue-100 w-screen h-screen">
     <HeaderPage title="Salas disponíveis" @leaveGame="leave"/>
     <span class="text-trade-blue-900 text-sm border bg-white rounded-full p-2 w-12 text-center">{{ getSessionsCount() }}</span>
-    <div class="text-trade-blue-900 bg-trade-blue-100 border-4 rounded-2xl border-trade-blue-900 border-b-0 my-2">
+    <div class="text-black bg-trade-blue-100 border-4  border-trade-blue-900  my-2">
       <div class="max-h-96 overflow-y-auto max-w-80">
-        <table class="w-20 text-[0.5rem]">
+        <table class="w-20 text-[0.6rem]">
           <thead class="bg-trade-blue-100 sticky top-0 z-10">
             <tr>
               <th class="py-5 px-6 border-b-2 border-trade-blue-900">Sala</th>
               <th class="py-5 px-6 border-b-2 border-trade-blue-900">Jogadores</th>
-              <th class="py-5 px-6 border-b-2 border-trade-blue-900">Status</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="session in records" :key="session.id" @click="selectSession(session)"
-              :class="{ 'bg-trade-blue-50': selectedSession && selectedSession.id === session.id }">
+              :class="{ 'bg-emerald-600-blue-50': selectedSession && selectedSession.id === session.id }">
               <td class="py-5 px-7 border-b-2 border-trade-blue-900">{{ session.name }}</td>
               <td class="py-5 px-7 border-b-2 border-trade-blue-900">{{ getPlayersCount(session) }}</td>
-              <td class="py-5 px-7 border-b-2 border-trade-blue-900 pl-10">
-                <img :src="session.estado === EnumStatusPartida.WAITINGSTATUS ? onlineIcon : offlineIcon" alt="Status Icon" class="w-6 h-6" />
-              </td>
             </tr>
           </tbody>
         </table>

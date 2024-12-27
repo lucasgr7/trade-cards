@@ -62,16 +62,16 @@ onMounted(() =>{
     border border-white rounded-xl bg-trade-blue-100
     w-screen h-screen">
     <HeaderPage title="Criar Sala" @leaveGame="cancel"/>
-    <img src="@/assets/icons/world.png" alt="Logo" class="w-3/4 h-60 mx-auto">
     <form @submit="createSession($event)">
+      <input type="text" placeholder="Nome da sala" v-model="sessionName"
+      class="w-full p-3 bg-white text-trade-blue-900 border mb-12 border-trade-blue-900 rounded-full text-sm text-center" />
+      <img src="@/assets/icons/world.png" alt="Logo" class="w-3/4 h-60 mx-auto">
       <div class="flex flex-col gap-y-4">
-        <input type="text" placeholder="Nome da sala" v-model="sessionName"
-          class="w-full p-2 bg-white text-trade-blue-900 border border-trade-blue-900 rounded-full text-sm text-center">
         <span v-if="sessionNameError" class="absolute text-red-600 text-sm bottom-[77px] left-[110px]">
           {{ sessionNameError }}
         </span>
         <button type="submit"
-          class="w-full p-4 bg-trade-blue-800 text-white border border-trade-blue-900 rounded-full text-center text-xs">
+          class="w-full p-4 mt-12 bg-trade-blue-800 text-white border border-trade-blue-900 rounded-full text-center text-xs">
           Criar Sala
         </button>
       </div>

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useCompositionEmojifier } from '@/composables/utils/useCompositionEmojifier';
 import { CardTypeV3, TradingCard } from '@/type';
 import { computed, PropType } from 'vue';
 
@@ -22,6 +23,9 @@ const props = defineProps({
   }
 });
 
+
+const { friendlyCompositionMessage, compositionDescription } = useCompositionEmojifier();
+
 const cardTypeClass = computed(() => `${props.card?.type}-card`);
 
 const title = computed(() => {
@@ -31,7 +35,7 @@ const title = computed(() => {
 
 const image = computed(() => {
   // count number of compositions 
-  if (props.card.image) {
+  if (props.card.image && (props.card.type === CardTypeV3.Action || props.card.type === CardTypeV3.Subtraction)) {
     return `/v2/${props.card.image}`;
   }
   const weight = props.card.weight > 4 ? 4 : props.card.weight;
@@ -43,33 +47,13 @@ const fontSizeClass = computed(() => {
   if (length <= 32) {
     return 'text-lg';
   } else if (length <= 56) {
-    return 'text-base';
+    return 'text-md';
   } else {
     return 'text-sm';
   }
 });
 
-const friendlyCompositionMessage = computed(() => {
-  const compositions = props.card.compositions;
-  if (!compositions) return '';
 
-  const emojiMap: { [key: string]: string } = {
-    ClothingType: '👗',
-    Positioning: '📍',
-    Player: '🧑',
-    ColorVariant: '🎨',
-    WrappedState: '🎁',
-    // Add more mappings as needed
-  };
-
-  const messages: string[] = [];
-  for (const [key, values] of Object.entries(compositions)) {
-    const emoji = emojiMap[key] || '';
-    messages.push(`${emoji} ${values.join(', ')}`);
-  }
-
-  return `${messages.join('<br/>')}`; // Use HTML line breaks
-});
 </script>
 
 <template>
@@ -99,12 +83,15 @@ const friendlyCompositionMessage = computed(() => {
 
     <!-- Descrição -->
     <div class="bg-white/70 text-black  font-mono  overflow-hidden mt-2 pt-4 h-full" v-if="!small">
-       <p v-if="card.type == CardTypeV3.Action || card.type === CardTypeV3.Subtraction" :class="['description text-center', fontSizeClass]"
+       <p v-if="card.type == CardTypeV3.Action" :class="['description text-center', fontSizeClass]"
          >
         {{ card.completeText }}
       </p>
       <p v-if="card.type === CardTypeV3.Seat || card.type === CardTypeV3.Gift" :class="['description text-center', fontSizeClass]">
-        <span v-html="friendlyCompositionMessage"></span>
+        <span v-html="friendlyCompositionMessage(props.card)"></span>
+      </p>
+      <p v-if="card.type === CardTypeV3.Subtraction" :class="['description text-center', fontSizeClass]">
+        {{ compositionDescription(props.card.description) }}
       </p>
      </div>
   </div>
