@@ -110,7 +110,7 @@ export class CardPresenteBuilder extends CardBuilder {
         [CardCompositionEnum.WrappedState]: ['Embrulhado', 'Desembrulhado'],
         [CardCompositionEnum.ColorVariant]: ['verde', 'vermelho', 'azul', 'amarelo', 'preto', 'branco', 'rosa', 'roxo', 'laranja'],
         [CardCompositionEnum.Player]: ['de um Homem', 'de uma Mulher'],
-        [CardCompositionEnum.ClothingType]: ['usando Camisa', 'usando Calça', 'usando Vestido', 'usando Bermuda'],
+        [CardCompositionEnum.ClothingType]: ['usando Camisa', 'usando Calça', 'usando Vestido', 'usando Bermuda', 'tem barba', 'com cabelo curto', 'com cabelo longo'],
         [CardCompositionEnum.Positioning]: ['A minha frente', 'A minha direita', 'A minha esquerda', 'entre duas mulheres', 'entre dois homens'],
       }
     );

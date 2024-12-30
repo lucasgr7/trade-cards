@@ -63,7 +63,7 @@ const fontSizeClass = computed(() => {
     <div
       class="header flex items-center justify-between p-2 w-full bg-gradient-to-b from-white/60 to-transparent relative h-6">
       <h3 class="title font-press-start text-[0.6rem] text-[#0c0c0c] uppercase leading-[1.2] text-center m-0 py-2"
-        :class="{ 'text-[8px]': card.title.length >= 10, 'text-[0.5rem]': card.title.length < 10 }">
+        :class="{ 'text-[8px]': card.title?.length ?? 0 >= 10, 'text-[0.5rem]': card.title?.length ?? 0 < 10 }">
         {{ title }}
       </h3>
       <h2 class="rarity text-black text-[0.5rem] font-bold uppercase p-1 rounded-[16px]"
