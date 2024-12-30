@@ -64,12 +64,15 @@ class CardBuilder {
 
   addRandomComposition() {
     // randomly select a composition, garantee is not repeated using the property usedCompositions
-    const composition = Object.keys(this.compositions!)
+    if (!this.compositions) {
+      throw new Error('No compositions available');
+    }
+    const composition = Object.keys(this.compositions)
       .filter((composition) => !this.usedCompositions.includes(composition));
 
     const selectedComposition = composition[Math.floor(Math.random() * composition.length)] as CardCompositionEnum;
 
-    if (!composition) {
+    if (!composition || composition.length === 0) {
       throw new Error('No composition available');
     }
 
@@ -108,9 +111,9 @@ export class CardPresenteBuilder extends CardBuilder {
     super(CardTypeV3.Gift,
       {
         [CardCompositionEnum.WrappedState]: ['Embrulhado', 'Desembrulhado'],
-        [CardCompositionEnum.ColorVariant]: ['verde', 'vermelho', 'azul', 'amarelo', 'preto', 'branco', 'rosa', 'roxo', 'laranja'],
+        [CardCompositionEnum.ColorVariant]: ['verde', 'vermelho', 'azul', 'amarelo', 'preto', 'branco', 'rosa', 'roxo', 'em corações'],
         [CardCompositionEnum.Player]: ['de um Homem', 'de uma Mulher'],
-        [CardCompositionEnum.ClothingType]: ['usando Camisa', 'usando Calça', 'usando Vestido', 'usando Bermuda', 'tem barba', 'com cabelo curto', 'com cabelo longo'],
+        [CardCompositionEnum.ClothingType]: ['usando Camisa', 'usando Calça', 'usando Vestido', 'usando Bermuda', 'tem barba', 'ruiva', 'morena', 'loira'],
         [CardCompositionEnum.Positioning]: ['A minha frente', 'A minha direita', 'A minha esquerda', 'entre duas mulheres', 'entre dois homens'],
       }
     );
@@ -125,7 +128,6 @@ export class CardAssentoBuilder extends CardBuilder {
         [CardCompositionEnum.Positioning]: ['A minha frente', 'A minha direita', 'A minha esquerda', 'entre duas mulheres', 'entre dois homens'],
         [CardCompositionEnum.Player]: ['de um Homem', 'de uma Mulher'],
         [CardCompositionEnum.ClothingType]: ['usando Camisa', 'usando Calça', 'usando Vestido', 'usando Bermuda'],
-        [CardCompositionEnum.ColorVariant]: ['verde', 'vermelho', 'azul', 'amarelo', 'preto', 'branco', 'rosa', 'roxo', 'laranja'],
       });
     this.withTitle(CardNameEnum.Assento).withImage('seat.png').withDescription('Assento');
   }

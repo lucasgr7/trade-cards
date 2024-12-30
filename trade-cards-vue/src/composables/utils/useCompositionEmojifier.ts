@@ -26,8 +26,9 @@ export function useCompositionEmojifier() {
       'entre duas mulheres': '👭',
       'entre dois homens': '👬',
       'tem barba' : '🧔',
-      'com cabelo curto': '👨‍🦲',
-      'com cabelo longo': '👨‍🦱'
+      'loira': '👱‍♀',
+      'morena': '👩',
+      'ruiva': '👩‍🦰'
     };
   const friendlyCompositionMessage = (card: TradingCard, addBreakingLine :boolean = true) => {
     const compositions = card.compositions;
@@ -53,4 +54,4 @@ export function useCompositionEmojifier() {
   return {
     friendlyCompositionMessage, compositionDescription
   }
-}
+};
